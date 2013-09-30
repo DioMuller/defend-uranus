@@ -5,6 +5,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DefendUranus", "DefendUranu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{EB11C04C-EFB2-412E-B18B-2EF361550847}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGameLib.Core", "..\submodule\monogame-aux-lib\src\MonoGameLib.Core\MonoGameLib.Core.csproj", "{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGameLib.GUI", "..\submodule\monogame-aux-lib\src\MonoGameLib.GUI\MonoGameLib.GUI.csproj", "{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGameLib.Tiled", "..\submodule\monogame-aux-lib\src\MonoGameLib.Tiled\MonoGameLib.Tiled.csproj", "{F2C71160-3C00-40DD-AB52-151C9A914570}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,8 +31,43 @@ Global
 		{4DBE2B06-C1FB-4394-B398-E056D97DCDE5}.Release|Mixed Platforms.Build.0 = Release|x86
 		{4DBE2B06-C1FB-4394-B398-E056D97DCDE5}.Release|x86.ActiveCfg = Release|x86
 		{4DBE2B06-C1FB-4394-B398-E056D97DCDE5}.Release|x86.Build.0 = Release|x86
+		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}.Release|x86.ActiveCfg = Release|Any CPU
+		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}.Release|x86.ActiveCfg = Release|Any CPU
+		{F2C71160-3C00-40DD-AB52-151C9A914570}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2C71160-3C00-40DD-AB52-151C9A914570}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2C71160-3C00-40DD-AB52-151C9A914570}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F2C71160-3C00-40DD-AB52-151C9A914570}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{F2C71160-3C00-40DD-AB52-151C9A914570}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F2C71160-3C00-40DD-AB52-151C9A914570}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2C71160-3C00-40DD-AB52-151C9A914570}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2C71160-3C00-40DD-AB52-151C9A914570}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{F2C71160-3C00-40DD-AB52-151C9A914570}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{F2C71160-3C00-40DD-AB52-151C9A914570}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68} = {EB11C04C-EFB2-412E-B18B-2EF361550847}
+		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9} = {EB11C04C-EFB2-412E-B18B-2EF361550847}
+		{F2C71160-3C00-40DD-AB52-151C9A914570} = {EB11C04C-EFB2-412E-B18B-2EF361550847}
 	EndGlobalSection
 EndGlobal

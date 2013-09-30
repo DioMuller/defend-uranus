@@ -1,0 +1,3 @@
+[submodule "submodule/monogame-aux-lib"]
+	path = submodule/monogame-aux-lib
+	url = https://github.com/DiogoMuller/monogame-aux-lib.git
