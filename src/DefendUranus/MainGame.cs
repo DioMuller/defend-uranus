@@ -43,7 +43,25 @@ namespace DefendUranus
         /// </summary>
         protected override async Task Play()
         {
-            var res = await new StartScreen(this).Run();
+            var startScreen = new StartScreen(this);
+
+            while (true)
+            {
+                switch (await startScreen.Run())
+                {
+                    case StartScreen.Options.Exit:
+                        return;
+                    case StartScreen.Options.HowToPlay:
+                        await new HowToPlay(this).Run();
+                        continue;
+                    case StartScreen.Options.Play:
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+
+                // TODO: Run GamePlay activity.
+            }
         }
     }
 }

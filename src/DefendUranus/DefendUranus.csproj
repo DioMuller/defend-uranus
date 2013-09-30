@@ -41,6 +41,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Activities\GameActivity.cs" />
+    <Compile Include="Activities\HowToPlay.cs" />
     <Compile Include="Activities\StartScreen.cs" />
     <Compile Include="MainGame.cs" />
     <Compile Include="Program.cs" />
