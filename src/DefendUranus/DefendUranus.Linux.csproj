@@ -19,8 +19,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\WindowsGL\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;WINDOWS</DefineConstants>
+    <OutputPath>bin\Linux\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;LINUX</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -29,8 +29,8 @@
     <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\WindowsGL\Release\</OutputPath>
-    <DefineConstants>TRACE;WINDOWS</DefineConstants>
+    <OutputPath>bin\Linux\Release\</OutputPath>
+    <DefineConstants>TRACE;LINUX</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -51,16 +51,16 @@
       <HintPath>..\references\MonoGameLib.Activities.dll</HintPath>
     </Reference>
     <Reference Include="Lidgren.Network">
-      <HintPath>..\..\submodule\monogame-aux-lib\references\WinGL\MonoGame\3.2\Lidgren.Network.dll</HintPath>
+      <HintPath>..\..\submodule\monogame-aux-lib\references\Linux\MonoGame\3.2\Lidgren.Network.dll</HintPath>
     </Reference>
     <Reference Include="MonoGame.Framework">
-      <HintPath>..\..\submodule\monogame-aux-lib\references\WinGL\MonoGame\3.2\MonoGame.Framework.dll</HintPath>
+      <HintPath>..\..\submodule\monogame-aux-lib\references\Linux\MonoGame\3.2\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK">
-      <HintPath>..\..\submodule\monogame-aux-lib\references\WinGL\MonoGame\3.2\OpenTK.dll</HintPath>
+      <HintPath>..\..\submodule\monogame-aux-lib\references\Linux\MonoGame\3.2\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="Tao.Sdl">
-      <HintPath>..\..\submodule\monogame-aux-lib\references\WinGL\MonoGame\3.2\Tao.Sdl.dll</HintPath>
+      <HintPath>..\..\submodule\monogame-aux-lib\references\Linux\MonoGame\3.2\Tao.Sdl.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -79,17 +79,17 @@
     <Folder Include="Content\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\submodule\monogame-aux-lib\src\MonoGameLib.Core\MonoGameLib.Core.csproj">
+    <ProjectReference Include="..\..\submodule\monogame-aux-lib\src\MonoGameLib.Core\MonoGameLib.Core.Linux.csproj">
       <Project>{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}</Project>
-      <Name>MonoGameLib.Core</Name>
+      <Name>MonoGameLib.Core.Linux</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\submodule\monogame-aux-lib\src\MonoGameLib.GUI\MonoGameLib.GUI.csproj">
+    <ProjectReference Include="..\..\submodule\monogame-aux-lib\src\MonoGameLib.GUI\MonoGameLib.GUI.Linux.csproj">
       <Project>{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}</Project>
-      <Name>MonoGameLib.GUI</Name>
+      <Name>MonoGameLib.GUI.Linux</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\submodule\monogame-aux-lib\src\MonoGameLib.Tiled\MonoGameLib.Tiled.csproj">
+    <ProjectReference Include="..\..\submodule\monogame-aux-lib\src\MonoGameLib.Tiled\MonoGameLib.Tiled.Linux.csproj">
       <Project>{F2C71160-3C00-40DD-AB52-151C9A914570}</Project>
-      <Name>MonoGameLib.Tiled</Name>
+      <Name>MonoGameLib.Tiled.Linux</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
