@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoGameLib.Core.Input;
 using System;
 
@@ -17,6 +19,7 @@ namespace DefendUranus.Activities
 
         #region Attributes
         KeyboardWatcher _keyboard;
+        private Texture2D _title;
         #endregion
 
         #region Constructors
@@ -29,7 +32,13 @@ namespace DefendUranus.Activities
         protected override void Activating()
         {
             _keyboard = new KeyboardWatcher();
+            _title = Content.Load<Texture2D>("Images/Title.png");
             base.Activating();
+        }
+
+        protected override void Deactivating()
+        {
+            
         }
 
         protected override void Update(Microsoft.Xna.Framework.GameTime gameTime)
@@ -47,8 +56,9 @@ namespace DefendUranus.Activities
         {
             GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.CornflowerBlue);
 
-            //SpriteBatch.Begin();
-            //SpriteBatch.End();
+            SpriteBatch.Begin();
+            SpriteBatch.Draw(_title, Vector2.Zero, Color.White);
+            SpriteBatch.End();
         }
     }
 }

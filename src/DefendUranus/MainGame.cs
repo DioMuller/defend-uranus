@@ -29,8 +29,8 @@ namespace DefendUranus
         {
             graphics = new GraphicsDeviceManager(this)
             {
-                PreferredBackBufferWidth = 640,
-                PreferredBackBufferHeight = 480
+                PreferredBackBufferWidth = 800,
+                PreferredBackBufferHeight = 600
             };
             Content.RootDirectory = "Content";
 
