@@ -24,7 +24,7 @@ namespace DefendUranus.Activities
         }
         #endregion
 
-        protected override void Update(Microsoft.Xna.Framework.GameTime gameTime)
+        protected override void Update(GameTime gameTime)
         {
             if (_syncUpdate != null)
             {
@@ -56,20 +56,27 @@ namespace DefendUranus.Activities
             return _syncUpdate.Task;
         }
 
-        protected async Task FloatAnimation(int duration, Action<float> valueStep)
+        protected Task FloatAnimation(int duration, Action<float> valueStep)
+        {
+            return FloatAnimation(duration, 0, 1, valueStep);
+        }
+
+        protected async Task FloatAnimation(int duration, float min, float max, Action<float> valueStep)
         {
             if (valueStep == null)
                 throw new ArgumentNullException("valueStep");
+            if (max <= min)
+                throw new ArgumentOutOfRangeException("max", "The max value must be greater than min");
 
-            float maxDuration = duration;
+            float curDuration = 0;
             do
             {
                 var gt = await SyncDraw();
-                duration -= (int)gt.ElapsedGameTime.TotalMilliseconds;
+                curDuration += (int)gt.ElapsedGameTime.TotalMilliseconds;
 
-                var alpha = duration / maxDuration;
-                valueStep(MathHelper.Clamp(1 - alpha, 0, 1));
-            } while (duration > 0);
+                var curValue = curDuration / duration;
+                valueStep(MathHelper.Clamp(min + (max - min) * curValue, min, max));
+            } while (curDuration < duration);
         }
 
         protected async Task FadeIn(int duration, Action<Color> colorStep)
