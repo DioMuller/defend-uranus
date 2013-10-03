@@ -40,6 +40,9 @@
     <Compile Include="Activities\HowToPlay.cs" />
     <Compile Include="Activities\StartScreen.cs" />
     <Compile Include="MainGame.cs" />
+    <Compile Include="Particles\Particle.cs" />
+    <Compile Include="Particles\ParticleEmiter.cs" />
+    <Compile Include="Particles\ParticleState.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Activities\GamePlaySetup.cs" />
