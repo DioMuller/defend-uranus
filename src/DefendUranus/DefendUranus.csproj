@@ -47,9 +47,6 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="MonoGameLib.Activities">
-      <HintPath>..\references\MonoGameLib.Activities.dll</HintPath>
-    </Reference>
     <Reference Include="Lidgren.Network">
       <HintPath>..\..\submodule\monogame-aux-lib\references\WinGL\MonoGame\3.2\Lidgren.Network.dll</HintPath>
     </Reference>
@@ -80,6 +77,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ProjectReference Include="..\..\submodule\monogame-aux-lib\src\MonoGameLib.Activities\MonoGameLib.Activities.csproj">
+      <Project>{b63836a7-fc4d-4c6b-86f7-abeab15788b3}</Project>
+      <Name>MonoGameLib.Activities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\submodule\monogame-aux-lib\src\MonoGameLib.Core\MonoGameLib.Core.csproj">
       <Project>{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}</Project>
       <Name>MonoGameLib.Core</Name>

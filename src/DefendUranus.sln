@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGameLib.GUI", "..\submo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGameLib.Tiled", "..\submodule\monogame-aux-lib\src\MonoGameLib.Tiled\MonoGameLib.Tiled.csproj", "{F2C71160-3C00-40DD-AB52-151C9A914570}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGameLib.Activities", "..\submodule\monogame-aux-lib\src\MonoGameLib.Activities\MonoGameLib.Activities.csproj", "{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +63,16 @@ Global
 		{F2C71160-3C00-40DD-AB52-151C9A914570}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{F2C71160-3C00-40DD-AB52-151C9A914570}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{F2C71160-3C00-40DD-AB52-151C9A914570}.Release|x86.ActiveCfg = Release|Any CPU
+		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -69,5 +81,6 @@ Global
 		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68} = {EB11C04C-EFB2-412E-B18B-2EF361550847}
 		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9} = {EB11C04C-EFB2-412E-B18B-2EF361550847}
 		{F2C71160-3C00-40DD-AB52-151C9A914570} = {EB11C04C-EFB2-412E-B18B-2EF361550847}
+		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3} = {EB11C04C-EFB2-412E-B18B-2EF361550847}
 	EndGlobalSection
 EndGlobal
