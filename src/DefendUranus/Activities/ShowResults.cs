@@ -1,20 +1,20 @@
 ﻿#region Using Statements
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MonoGameLib.Core.Input;
-using System;
 #endregion
 
 namespace DefendUranus.Activities
 {
-    class HowToPlay : GameActivity<bool>
+    class ShowResults : GameActivity<bool>
     {
         #region Attributes
         KeyboardWatcher _keyboard;
         #endregion
 
         #region Constructors
-        public HowToPlay(MainGame game)
+        public ShowResults(MainGame game, GamePlay.Result results)
             : base(game)
         {
         }
@@ -32,13 +32,13 @@ namespace DefendUranus.Activities
         protected override void Update(GameTime gameTime)
         {
             _keyboard.Update();
-            if (_keyboard.IsPressed(Keys.Escape))
+            if (_keyboard.IsPressed(Keys.Escape) || _keyboard.IsPressed(Keys.Enter))
                 Exit(false);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(Color.LightBlue);
 
             //SpriteBatch.Begin();
             //SpriteBatch.End();

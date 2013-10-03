@@ -44,6 +44,7 @@ namespace DefendUranus
         protected override async Task Play()
         {
             var startScreen = new StartScreen(this);
+            var setupScreen = new GamePlaySetup(this);
 
             while (true)
             {
@@ -60,7 +61,22 @@ namespace DefendUranus
                         throw new NotImplementedException();
                 }
 
-                // TODO: Run GamePlay activity.
+                bool playAgain;
+                do
+                {
+                    var setup = await setupScreen.Run();
+                    if (setup.Aborted)
+                        break;
+
+                    var gamePlay = new GamePlay(this, setup);
+                    var gameResult = await gamePlay.Run();
+
+                    playAgain = gameResult.Aborted;
+
+                    if(!gameResult.Aborted)
+                        await new ShowResults(this, gameResult).Run();
+
+                } while(playAgain);
             }
         }
     }

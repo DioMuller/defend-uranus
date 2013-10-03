@@ -1,9 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿#region Using Statements
+using Microsoft.Xna.Framework;
 using MonoGameLib.Activities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+#endregion
 
 namespace DefendUranus.Activities
 {
@@ -24,6 +26,35 @@ namespace DefendUranus.Activities
         }
         #endregion
 
+        #region Activity Life-Cycle
+#if DEBUG
+        protected override void Activating()
+        {
+            base.Activating();
+            Console.WriteLine("{0} Activating", GetType().Name);
+        }
+
+        protected override void Deactivating()
+        {
+            base.Deactivating();
+            Console.WriteLine("{0} Deactivating", GetType().Name);
+        }
+
+        /*protected override void Starting()
+        {
+            base.Starting();
+            Console.WriteLine("{0} Starting", GetType().Name);
+        }
+
+        protected override void Completing()
+        {
+            base.Completing();
+            Console.WriteLine("{0} Completing", GetType().Name);
+        }*/
+#endif
+        #endregion
+
+        #region Game Loop
         protected override void Update(GameTime gameTime)
         {
             if (_syncUpdate != null)
@@ -41,22 +72,26 @@ namespace DefendUranus.Activities
                 _syncDraw = null;
             }
         }
+        #endregion
 
-        Task<GameTime> SyncDraw()
+        #region Sync
+        public Task<GameTime> SyncDraw()
         {
             if (_syncDraw == null)
                 _syncDraw = new TaskCompletionSource<GameTime>();
             return _syncDraw.Task;
         }
 
-        Task<GameTime> SyncUpdate()
+        public Task<GameTime> SyncUpdate()
         {
             if (_syncUpdate == null)
                 _syncUpdate = new TaskCompletionSource<GameTime>();
             return _syncUpdate.Task;
         }
+        #endregion
 
-        protected async Task FloatAnimation(int duration, Action<float> valueStep, int begin = 0)
+        #region Animations
+        public async Task FloatAnimation(int duration, Action<float> valueStep, int begin = 0)
         {
             if (duration <= 0)
                 throw new ArgumentOutOfRangeException("duration", "Duration must be greater than zero");
@@ -78,7 +113,7 @@ namespace DefendUranus.Activities
             } while (curDuration < duration);
         }
 
-        protected Task FloatAnimation(int duration, float start, float end, Action<float> valueStep, int begin = 0)
+        public Task FloatAnimation(int duration, float start, float end, Action<float> valueStep, int begin = 0)
         {
             if (valueStep == null)
                 throw new ArgumentNullException("valueStep");
@@ -89,7 +124,7 @@ namespace DefendUranus.Activities
             }, begin);
         }
 
-        protected async Task FadeIn(int duration, Action<Color> colorStep, int begin = 0)
+        public async Task FadeIn(int duration, Action<Color> colorStep, int begin = 0)
         {
             if (colorStep == null)
                 throw new ArgumentNullException("colorStep");
@@ -100,7 +135,7 @@ namespace DefendUranus.Activities
             }, begin);
         }
 
-        protected async Task FadeOut(int duration, Action<Color> colorStep, int begin = 0)
+        public async Task FadeOut(int duration, Action<Color> colorStep, int begin = 0)
         {
             if (colorStep == null)
                 throw new ArgumentNullException("colorStep");
@@ -110,5 +145,6 @@ namespace DefendUranus.Activities
                 colorStep(new Color(Color.White, 1 - value));
             }, begin);
         }
+        #endregion
     }
 }
