@@ -47,9 +47,6 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="MonoGameLib.Activities">
-      <HintPath>..\references\MonoGameLib.Activities.dll</HintPath>
-    </Reference>
     <Reference Include="Lidgren.Network">
       <HintPath>..\..\submodule\monogame-aux-lib\references\Linux\MonoGame\3.2\Lidgren.Network.dll</HintPath>
     </Reference>
@@ -91,6 +88,10 @@
     <ProjectReference Include="..\..\submodule\monogame-aux-lib\src\MonoGameLib.Tiled\MonoGameLib.Tiled.Linux.csproj">
       <Project>{F2C71160-3C00-40DD-AB52-151C9A914570}</Project>
       <Name>MonoGameLib.Tiled.Linux</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\submodule\monogame-aux-lib\src\MonoGameLib.Activities\MonoGameLib.Activities.Linux.csproj">
+      <Project>{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}</Project>
+      <Name>MonoGameLib.Activities.Linux</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
