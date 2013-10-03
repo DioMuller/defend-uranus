@@ -53,7 +53,7 @@ namespace DefendUranus.Activities
         protected async override Task<StartScreen.Options> RunActivity()
         {
             var fade = FadeIn(100, c => _drawColor = c);
-            var zoom = FloatAnimation(100, v => _scale = new Vector2(2 - v));
+            var zoom = FloatAnimation(100, 2, 1, v => _scale = new Vector2(v));
             await fade;
             await zoom;
 

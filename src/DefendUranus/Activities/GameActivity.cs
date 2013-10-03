@@ -56,17 +56,16 @@ namespace DefendUranus.Activities
             return _syncUpdate.Task;
         }
 
-        protected Task FloatAnimation(int duration, Action<float> valueStep)
+        protected async Task FloatAnimation(int duration, Action<float> valueStep, int begin = 0)
         {
-            return FloatAnimation(duration, 0, 1, valueStep);
-        }
+            if (duration <= 0)
+                throw new ArgumentOutOfRangeException("duration", "Duration must be greater than zero");
 
-        protected async Task FloatAnimation(int duration, float min, float max, Action<float> valueStep)
-        {
             if (valueStep == null)
                 throw new ArgumentNullException("valueStep");
-            if (max <= min)
-                throw new ArgumentOutOfRangeException("max", "The max value must be greater than min");
+
+            if (begin > 0)
+                await TaskEx.Delay(begin);
 
             float curDuration = 0;
             do
@@ -75,24 +74,41 @@ namespace DefendUranus.Activities
                 curDuration += (int)gt.ElapsedGameTime.TotalMilliseconds;
 
                 var curValue = curDuration / duration;
-                valueStep(MathHelper.Clamp(min + (max - min) * curValue, min, max));
+                valueStep(MathHelper.Clamp(curValue, 0, 1));
             } while (curDuration < duration);
         }
 
-        protected async Task FadeIn(int duration, Action<Color> colorStep)
+        protected Task FloatAnimation(int duration, float start, float end, Action<float> valueStep, int begin = 0)
         {
+            if (valueStep == null)
+                throw new ArgumentNullException("valueStep");
+
+            return FloatAnimation(duration, value =>
+            {
+                valueStep(start + (end - start) * value);
+            }, begin);
+        }
+
+        protected async Task FadeIn(int duration, Action<Color> colorStep, int begin = 0)
+        {
+            if (colorStep == null)
+                throw new ArgumentNullException("colorStep");
+
             await FloatAnimation(duration, value =>
             {
                 colorStep(new Color(Color.White, value));
-            });
+            }, begin);
         }
 
-        protected async Task FadeOut(int duration, Action<Color> colorStep)
+        protected async Task FadeOut(int duration, Action<Color> colorStep, int begin = 0)
         {
+            if (colorStep == null)
+                throw new ArgumentNullException("colorStep");
+
             await FloatAnimation(duration, value =>
             {
                 colorStep(new Color(Color.White, 1 - value));
-            });
+            }, begin);
         }
     }
 }
