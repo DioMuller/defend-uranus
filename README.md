@@ -59,7 +59,7 @@ Referências
 =============
 
 * Jogo Ur-Quan Masters (Remake do Star Control II)
+	* Download: http://sc2.sourceforge.net/downloads.php
 * Entrar em modo Melee
-	http://sc2.sourceforge.net/downloads.php
 
 * Procure jogar o jogo com seu colega de equipe até entender bem sua mecânica.
