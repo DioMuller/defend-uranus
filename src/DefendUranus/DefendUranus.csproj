@@ -70,10 +70,18 @@
     <Content Include="Content\Images\Title.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Sprites\Avenger.png" />
-    <Content Include="Content\Sprites\Explorer.png" />
-    <Content Include="Content\Sprites\Fatboy.png" />
-    <Content Include="Content\Sprites\Meteoroid.png" />
+    <Content Include="Content\Sprites\Avenger.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Sprites\Explorer.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Sprites\Fatboy.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Sprites\Meteoroid.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Descricao.txt" />
     <Content Include="lib\x86\OpenAL32.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
