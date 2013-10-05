@@ -66,6 +66,9 @@
     <Reference Include="Tao.Sdl">
       <HintPath>..\..\submodule\monogame-aux-lib\references\WinGL\MonoGame\3.2\Tao.Sdl.dll</HintPath>
     </Reference>
+    <Reference Include="XNATweener">
+      <HintPath>..\references\XNATweener.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Images\Title.png">

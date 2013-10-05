@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using XNATweener;
 #endregion
 
 namespace DefendUranus.Activities
@@ -91,16 +92,14 @@ namespace DefendUranus.Activities
         #endregion
 
         #region Animations
-        public async Task FloatAnimation(int duration, Action<float> valueStep, int begin = 0)
+
+        public async Task FloatAnimation(int duration, float start, float end, Action<float> valueStep, TweeningFunction easingFunction = null)
         {
             if (duration <= 0)
                 throw new ArgumentOutOfRangeException("duration", "Duration must be greater than zero");
 
             if (valueStep == null)
                 throw new ArgumentNullException("valueStep");
-
-            if (begin > 0)
-                await TaskEx.Delay(begin);
 
             float curDuration = 0;
             do
@@ -109,41 +108,33 @@ namespace DefendUranus.Activities
                 curDuration += (int)gt.ElapsedGameTime.TotalMilliseconds;
 
                 var curValue = curDuration / duration;
-                valueStep(MathHelper.Clamp(curValue, 0, 1));
+                if (easingFunction != null)
+                    valueStep(easingFunction(curDuration, start, end - start, duration));
+                else
+                    valueStep(MathHelper.Lerp(start, end, MathHelper.Clamp(curValue, 0, 1)));
             } while (curDuration < duration);
         }
 
-        public Task FloatAnimation(int duration, float start, float end, Action<float> valueStep, int begin = 0)
-        {
-            if (valueStep == null)
-                throw new ArgumentNullException("valueStep");
-
-            return FloatAnimation(duration, value =>
-            {
-                valueStep(start + (end - start) * value);
-            }, begin);
-        }
-
-        public async Task FadeIn(int duration, Action<Color> colorStep, int begin = 0)
+        public async Task FadeIn(int duration, Action<Color> colorStep)
         {
             if (colorStep == null)
                 throw new ArgumentNullException("colorStep");
 
-            await FloatAnimation(duration, value =>
+            await FloatAnimation(duration, 0, 1, value =>
             {
                 colorStep(new Color(Color.White, value));
-            }, begin);
+            });
         }
 
-        public async Task FadeOut(int duration, Action<Color> colorStep, int begin = 0)
+        public async Task FadeOut(int duration, Action<Color> colorStep)
         {
             if (colorStep == null)
                 throw new ArgumentNullException("colorStep");
 
-            await FloatAnimation(duration, value =>
+            await FloatAnimation(duration, 1, 0, value =>
             {
-                colorStep(new Color(Color.White, 1 - value));
-            }, begin);
+                colorStep(new Color(Color.White, value));
+            });
         }
         #endregion
     }

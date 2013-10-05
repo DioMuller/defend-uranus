@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 using DefendUranus.Entities;
+using XNATweener;
 #endregion
 
 namespace DefendUranus.Activities
@@ -158,18 +159,20 @@ namespace DefendUranus.Activities
             else if (player == 1)
                 _result.Player2Ship = _ships[nextOption];
 
-            await TaskEx.WhenAll(
-                // Anima deslocamento para direita/esquerda
-                FloatAnimation(200, 0, _spacing * (left ? 1 : -1), v => _shift[player] = (int)v),
-                // Anima zoom out, de nave desselecionada
-                FloatAnimation(200, 2, 1, v => _iconScales[player][oldOption] = new Vector2(v)),
-                // Anima zoom in, de nave selecionada
-                FloatAnimation(200, 1, 2, v => _iconScales[player][nextOption] = new Vector2(v))
-            );
+            // Anima zoom in, de nave selecionada
+            var zoomIn = FloatAnimation(300, 1, 2, v => _iconScales[player][nextOption] = new Vector2(v), easingFunction: Sinusoidal.EaseOut);
+            // Anima zoom out, de nave desselecionada
+            var zoomOut = FloatAnimation(100, 2, 1, v => _iconScales[player][oldOption] = new Vector2(v));
+
+            // Anima deslocamento para direita/esquerda
+            await FloatAnimation(100, 0, _spacing * (left ? 1 : -1), v => _shift[player] = (int)v);
 
             _shift[player] = 0;
-            _shifting[player] = false;
             _option[player] = nextOption;
+
+            await TaskEx.WhenAll(zoomIn, zoomOut);
+
+            _shifting[player] = false;
         }
 
         int Mod(int value, int max)
