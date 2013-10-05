@@ -7,6 +7,7 @@ using MonoGameLib.Core.Input;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
+using DefendUranus.Entities;
 #endregion
 
 namespace DefendUranus.Activities
@@ -18,15 +19,16 @@ namespace DefendUranus.Activities
         {
             public bool Aborted { get; set; }
 
-            public string Player1Ship { get; set; }
-            public string Player2Ship { get; set; }
+            public Ship Player1Ship { get; set; }
+            public Ship Player2Ship { get; set; }
         }
         #endregion
 
         #region Attributes
+        const int _spacing = 72;
         KeyboardWatcher _keyboard;
         Result _result;
-        List<Texture2D> _ships;
+        List<Ship> _ships;
         int[] _option = new[] { 0, 0 };
         int[] _shift = new[] { 0, 0 };
         bool[] _shifting = new[] { false, false };
@@ -39,7 +41,7 @@ namespace DefendUranus.Activities
         {
             _result = new Result();
 
-            _ships = new List<Texture2D>();
+            _ships = new List<Ship>();
         }
         #endregion
 
@@ -54,12 +56,13 @@ namespace DefendUranus.Activities
         {
             base.Activating();
             _keyboard = new KeyboardWatcher();
+            // TODO: Load ships from XML
             _ships.AddRange(new[]
             {
-                Content.Load<Texture2D>("Sprites/Avenger"),
-                Content.Load<Texture2D>("Sprites/Explorer"),
-                Content.Load<Texture2D>("Sprites/Fatboy"),
-                Content.Load<Texture2D>("Sprites/Meteoroid")
+                new Ship { Texture = Content.Load<Texture2D>("Sprites/Avenger"), Description = "Earth Avenger" },
+                new Ship { Texture = Content.Load<Texture2D>("Sprites/Explorer"), Description = "Uranus Explorer" },
+                new Ship { Texture = Content.Load<Texture2D>("Sprites/Fatboy"), Description = "Big Fatboy" },
+                new Ship { Texture = Content.Load<Texture2D>("Sprites/Meteoroid"), Description = "Meteoroid Destroyer" },
             });
             _iconScales = new[]{
                 Enumerable.Range(0, _ships.Count).ToDictionary(i => i, i => Vector2.One),
@@ -104,7 +107,7 @@ namespace DefendUranus.Activities
             var nextOption = Mod(_option[player] + (left ? 1 : -1), _ships.Count);
 
             await TaskEx.WhenAll(
-                FloatAnimation(100, 0, 48 * (left ? -1 : 1), v => _shift[player] = (int)v),
+                FloatAnimation(100, 0, _spacing * (left ? -1 : 1), v => _shift[player] = (int)v),
                 FloatAnimation(100, 2, 1, v => _iconScales[player][_option[player]] = new Vector2(v)),
                 FloatAnimation(100, 1, 2, v => _iconScales[player][nextOption] = new Vector2(v))
             );
@@ -129,21 +132,20 @@ namespace DefendUranus.Activities
             GraphicsDevice.Clear(Color.DarkGreen);
 
             SpriteBatch.Begin();
-            DrawPlayerSelection(0, 32);
-            DrawPlayerSelection(1, 320);
+            DrawPlayerSelection(0, 200);
+            DrawPlayerSelection(1, 400);
             SpriteBatch.End();
         }
 
         private void DrawPlayerSelection(int player, int height)
         {
             int sideShips = _ships.Count - 2;
-            int spacing = 48;
-            int width = (sideShips * 2 + 1) * spacing;
+            int width = (sideShips * 2 + 1) * _spacing;
             var option = _option[player];
-            for (int i = option - sideShips, x = (800 - width) / 2 + 32; i <= option + sideShips; i++, x += spacing)
+            for (int i = option - sideShips, x = (800 - width) / 2 + 32; i <= option + sideShips; i++, x += _spacing)
             {
                 int ship = Mod(i, _ships.Count);
-                SpriteBatch.Draw(_ships[ship],
+                SpriteBatch.Draw(_ships[ship].Texture,
                     new Vector2(x + _shift[player], height),
                     color: Color.White,
                     scale: _iconScales[player][ship],
