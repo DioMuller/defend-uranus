@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using DefendUranus.Entities;
 
 namespace DefendUranus.SteeringBehaviors
 {
@@ -15,6 +16,8 @@ namespace DefendUranus.SteeringBehaviors
         /// Panic Distance.
         /// </summary>
         public float PanicDistance { get; set; }
+
+        public Flee(SteeringEntity parent) : base(parent) { }
 
         /// <summary>
         /// Calculates movement vector for this behavior.

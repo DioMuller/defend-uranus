@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MonoGameLib.Core.Extensions;
+using DefendUranus.Entities;
 
 namespace DefendUranus.SteeringBehaviors
 {
@@ -12,6 +13,8 @@ namespace DefendUranus.SteeringBehaviors
     /// </summary>
     class Pursuit : SteeringBehavior
     {
+        public Pursuit(SteeringEntity parent) : base(parent) { }
+
         /// <summary>
         /// Calculates movement vector for this behavior.
         /// </summary>

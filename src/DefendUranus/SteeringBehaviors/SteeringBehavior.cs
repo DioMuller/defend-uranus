@@ -41,7 +41,7 @@ namespace DefendUranus.SteeringBehaviors
         /// Calculates movement vector for this behavior.
         /// </summary>
         /// <returns>Movement vector</returns>
-        public virtual Vector2 Calculate();
+        public abstract Vector2 Calculate();
         #endregion Virtual Methods
     }
 }

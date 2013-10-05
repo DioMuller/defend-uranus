@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 
 namespace DefendUranus.Entities
 {
-    class SteeringEntity : PhysicsEntity
+    public class SteeringEntity : PhysicsEntity
     {
         #region Properties
         /// <summary>
