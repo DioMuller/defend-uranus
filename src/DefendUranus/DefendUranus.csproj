@@ -39,6 +39,9 @@
     <Compile Include="Activities\GameActivity.cs" />
     <Compile Include="Activities\HowToPlay.cs" />
     <Compile Include="Activities\StartScreen.cs" />
+    <Compile Include="Entities\PhysicsEntity.cs" />
+    <Compile Include="Entities\SteeringEntity.cs" />
+    <Compile Include="Helpers\WorldHelper.cs" />
     <Compile Include="MainGame.cs" />
     <Compile Include="Particles\Particle.cs" />
     <Compile Include="Particles\ParticleEmiter.cs" />
@@ -48,6 +51,10 @@
     <Compile Include="Activities\GamePlaySetup.cs" />
     <Compile Include="Activities\GamePlay.cs" />
     <Compile Include="Activities\ShowResults.cs" />
+    <Compile Include="SteeringBehaviors\Flee.cs" />
+    <Compile Include="SteeringBehaviors\Pursuit.cs" />
+    <Compile Include="SteeringBehaviors\Seek.cs" />
+    <Compile Include="SteeringBehaviors\SteeringBehavior.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Xml.Linq" />
