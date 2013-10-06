@@ -39,6 +39,7 @@
     <Compile Include="Activities\GameActivity.cs" />
     <Compile Include="Activities\HowToPlay.cs" />
     <Compile Include="Activities\StartScreen.cs" />
+    <Compile Include="Activities\TestActivity.cs" />
     <Compile Include="Entities\PhysicsEntity.cs" />
     <Compile Include="Entities\SteeringEntity.cs" />
     <Compile Include="Helpers\WorldHelper.cs" />
