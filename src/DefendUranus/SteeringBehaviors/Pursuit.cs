@@ -19,7 +19,7 @@ namespace DefendUranus.SteeringBehaviors
         /// Calculates movement vector for this behavior.
         /// </summary>
         /// <returns>Movement vector</returns>
-        public override Vector2 Calculate()
+        public override Vector2 Calculate(GameTime gameTime)
         {
             Vector2 futurePosition;
             Vector2 toEvader = Target.Position - Parent.Position;

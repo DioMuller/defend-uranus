@@ -39,7 +39,7 @@ namespace DefendUranus.Entities
 
             foreach( SteeringBehavior sb in SteeringBehaviors )
             {
-                steering += sb.Calculate();
+                steering += sb.Calculate(gameTime);
             }
 
             ConstantForces["Steering"] = steering;
