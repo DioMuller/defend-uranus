@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
 using MonoGameLib.Activities;
+using MonoGameLib.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -35,6 +36,12 @@ namespace DefendUranus
             Content.RootDirectory = "Content";
 
             Window.Title = "Defend Uranus";
+        }
+
+        protected override void Initialize()
+        {
+            base.Initialize();
+            GameContent.Initialize(Content);
         }
 
         /// <summary>

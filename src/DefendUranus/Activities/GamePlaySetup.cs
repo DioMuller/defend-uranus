@@ -64,10 +64,10 @@ namespace DefendUranus.Activities
             {
                 _ships = new List<Ship>
                 {
-                    new Ship { Texture = Content.Load<Texture2D>("Sprites/Avenger"), Description = "Earth Avenger" },
-                    new Ship { Texture = Content.Load<Texture2D>("Sprites/Explorer"), Description = "Uranus Explorer" },
-                    new Ship { Texture = Content.Load<Texture2D>("Sprites/Fatboy"), Description = "Big Fatboy" },
-                    new Ship { Texture = Content.Load<Texture2D>("Sprites/Meteoroid"), Description = "Meteoroid Destroyer" },
+                    new Ship("Sprites/Avenger") { Description = "Earth Avenger" },
+                    new Ship("Sprites/Explorer") { Description = "Uranus Explorer" },
+                    new Ship("Sprites/Fatboy") { Description = "Big Fatboy" },
+                    new Ship("Sprites/Meteoroid") { Description = "Meteoroid Destroyer" },
                 };
                 _spacing = (int)800 / _ships.Count;
                 _result.Player1Ship = _ships[0];
@@ -121,12 +121,12 @@ namespace DefendUranus.Activities
             GraphicsDevice.Clear(Color.DarkGreen);
 
             SpriteBatch.Begin();
-            DrawPlayerSelection(0, 200);
-            DrawPlayerSelection(1, 400);
+            DrawPlayerSelection(gameTime, 0, 200);
+            DrawPlayerSelection(gameTime, 1, 400);
             SpriteBatch.End();
         }
 
-        private void DrawPlayerSelection(int player, int height)
+        private void DrawPlayerSelection(GameTime gameTime, int player, int height)
         {
             int sideShips = _ships.Count - 2;
             int width = (sideShips * 2 + 1) * _spacing;
@@ -136,11 +136,10 @@ namespace DefendUranus.Activities
             for (int i = option - sideShips; i <= option + sideShips; i++, x += _spacing)
             {
                 int ship = Mod(i, _ships.Count);
-                SpriteBatch.Draw(_ships[ship].Texture,
-                    new Vector2(x + _shift[player], height),
+                _ships[ship].Sprite.Draw(gameTime, SpriteBatch,
+                    position: new Vector2(x + _shift[player], height),
                     color: Color.White,
-                    scale: _iconScales[player][ship],
-                    origin: new Vector2(16));
+                    scale: _iconScales[player][ship]);
             }
         }
         #endregion
