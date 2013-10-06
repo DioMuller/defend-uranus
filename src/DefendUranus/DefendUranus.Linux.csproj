@@ -45,6 +45,14 @@
     <Compile Include="Activities\GamePlaySetup.cs" />
     <Compile Include="Activities\GamePlay.cs" />
     <Compile Include="Activities\ShowResults.cs" />
+    <Compile Include="Entities\PhysicsEntity.cs" />
+    <Compile Include="Entities\Ship.cs" />
+    <Compile Include="Entities\SteeringEntity.cs" />
+    <Compile Include="Helpers\WorldHelper.cs" />
+    <Compile Include="SteeringBehaviors\Flee.cs" />
+    <Compile Include="SteeringBehaviors\Pursuit.cs" />
+    <Compile Include="SteeringBehaviors\Seek.cs" />
+    <Compile Include="SteeringBehaviors\SteeringBehavior.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Xml.Linq" />
@@ -62,6 +70,9 @@
     <Reference Include="Tao.Sdl">
       <HintPath>..\..\submodule\monogame-aux-lib\references\Linux\MonoGame\3.2\Tao.Sdl.dll</HintPath>
     </Reference>
+    <Reference Include="XNATweener">
+      <HintPath>..\references\XNATweener.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Descricao.txt" />
@@ -78,6 +89,10 @@
   <ItemGroup>
     <Folder Include="Content\" />
     <Folder Include="Content\Images\" />
+    <Folder Include="Entities\" />
+    <Folder Include="Helpers\" />
+    <Folder Include="SteeringBehaviors\" />
+    <Folder Include="Content\Sprites\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\submodule\monogame-aux-lib\src\MonoGameLib.Core\MonoGameLib.Core.Linux.csproj">
@@ -107,6 +122,18 @@
   -->
   <ItemGroup>
     <None Include="Content\Images\Title.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Sprites\Avenger.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Sprites\Explorer.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Sprites\Fatboy.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Sprites\Meteoroid.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
