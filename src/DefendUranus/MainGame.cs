@@ -55,35 +55,42 @@ namespace DefendUranus
 
             while (true)
             {
-                switch (await startScreen.Run())
+                try
                 {
-                    case StartScreen.Options.Exit:
-                        return;
-                    case StartScreen.Options.HowToPlay:
-                        await new HowToPlay(this).Run();
-                        continue;
-                    case StartScreen.Options.Play:
-                        break;
-                    default:
-                        throw new NotImplementedException();
+                    switch (await startScreen.Run())
+                    {
+                        case StartScreen.Options.Exit:
+                            return;
+                        case StartScreen.Options.HowToPlay:
+                            await new HowToPlay(this).Run();
+                            continue;
+                        case StartScreen.Options.Play:
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
+
+                    bool playAgain;
+                    do
+                    {
+                        var setup = await setupScreen.Run();
+                        if (setup.Aborted)
+                            break;
+
+                        var gamePlay = new GamePlay(this, setup);
+                        var gameResult = await gamePlay.Run();
+
+                        playAgain = gameResult.Aborted;
+
+                        if(!gameResult.Aborted)
+                            await new ShowResults(this, gameResult).Run();
+
+                    } while(playAgain);
                 }
-
-                bool playAgain;
-                do
+                catch (Exception ex)
                 {
-                    var setup = await setupScreen.Run();
-                    if (setup.Aborted)
-                        break;
-
-                    var gamePlay = new GamePlay(this, setup);
-                    var gameResult = await gamePlay.Run();
-
-                    playAgain = gameResult.Aborted;
-
-                    if(!gameResult.Aborted)
-                        await new ShowResults(this, gameResult).Run();
-
-                } while(playAgain);
+                    Console.WriteLine(ex);
+                }
             }
         }
     }
