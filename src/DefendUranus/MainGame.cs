@@ -90,6 +90,10 @@ namespace DefendUranus
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex);
+#if DEBUG
+                    if (Debugger.IsAttached)
+                        Debugger.Break();
+#endif
                 }
             }
         }
