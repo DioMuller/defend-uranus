@@ -73,6 +73,7 @@
     <Reference Include="XNATweener">
       <HintPath>..\references\XNATweener.dll</HintPath>
     </Reference>
+    <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Descricao.txt" />

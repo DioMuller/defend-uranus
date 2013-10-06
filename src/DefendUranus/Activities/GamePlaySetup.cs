@@ -1,14 +1,14 @@
 #region Using Statements
 using System;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework;
-using System.Threading.Tasks;
-using MonoGameLib.Core.Input;
-using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
-using DefendUranus.Entities;
+using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using MonoGameLib.Core.Input;
 using XNATweener;
+using DefendUranus.Entities;
 #endregion
 
 namespace DefendUranus.Activities
