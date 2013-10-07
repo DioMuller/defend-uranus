@@ -22,10 +22,10 @@ namespace DefendUranus.Activities
     class GamePlay : GameActivity<GamePlay.Result>
     {
         #region Constants
-        const float MaxZoomFactor = 1;
+        const float MaxZoomFactor = 2f;
         const float MinZoomFactor = 0.5f;
 
-        const float MinZoomDistance = 550;
+        const float MinZoomDistance = 150;
         const float MaxZoomDistance = 650;
         #endregion
 
@@ -155,19 +155,19 @@ namespace DefendUranus.Activities
             var p1 = _ships[0];
             var p2 = _ships[1];
             var dist = p2.Position - p1.Position;
-            if (dist.X > Game.Window.ClientBounds.Width / MinZoomFactor)
+            if (Math.Abs(dist.X) > Game.Window.ClientBounds.Width / MinZoomFactor)
             {
                 if (p1.Momentum.LengthSquared() > p2.Momentum.LengthSquared())
-                    p1.Position += new Vector2(dist.X * (p1.Position.X < p2.Position.X ? 2 : -2), 0);
+                    p1.Position += new Vector2(dist.X * 2, 0);
                 else
-                    p2.Position += new Vector2(dist.X * (p2.Position.X < p1.Position.X ? 2 : -2), 0);
+                    p2.Position += new Vector2(dist.X * 2, 0);
             }
-            if (dist.Y > Game.Window.ClientBounds.Height / MinZoomFactor)
+            if (Math.Abs(dist.Y) > Game.Window.ClientBounds.Height / MinZoomFactor)
             {
                 if (p1.Momentum.LengthSquared() > p2.Momentum.LengthSquared())
-                    p1.Position += new Vector2(0, dist.Y * (p1.Position.Y < p2.Position.Y ? 2 : -2));
+                    p1.Position += new Vector2(0, dist.Y * 2);
                 else
-                    p2.Position += new Vector2(0, dist.Y * (p2.Position.Y < p1.Position.Y ? 2 : -2));
+                    p2.Position += new Vector2(0, dist.Y * 2);
             }
         }
         #endregion
