@@ -60,19 +60,19 @@ namespace DefendUranus.Activities
             _keyboard = new KeyboardWatcher();
 
             // TODO: Load ships from XML
-            if (_ships == null)
+            // TODO: Change to ship definitions, and create the ships on gameplay.
+            // this should fix the bug when 2 players select the same ship
+            _ships = new List<Ship>
             {
-                _ships = new List<Ship>
-                {
-                    new Ship("Sprites/Avenger") { Description = "Earth Avenger" },
-                    new Ship("Sprites/Explorer") { Description = "Uranus Explorer" },
-                    new Ship("Sprites/Fatboy") { Description = "Big Fatboy" },
-                    new Ship("Sprites/Meteoroid") { Description = "Meteoroid Destroyer" },
-                };
-                _spacing = (int)800 / _ships.Count;
-                _result.Player1Ship = _ships[0];
-                _result.Player2Ship = _ships[_ships.Count / 2];
-            }
+                new Ship("Sprites/Avenger") { Mass = 2, Description = "Earth Avenger" },
+                new Ship("Sprites/Explorer") { Mass = 1, Description = "Uranus Explorer" },
+                new Ship("Sprites/Fatboy") { Mass = 4, Description = "Big Fatboy" },
+                new Ship("Sprites/Meteoroid") { Mass = 3, Description = "Meteoroid Destroyer" },
+            };
+            _spacing = (int)Game.Window.ClientBounds.Width / _ships.Count;
+            _result.Player1Ship = _ships[0];
+            _result.Player2Ship = _ships[_ships.Count / 2];
+
 
             _option = new[] {
                 _ships.IndexOf(_result.Player1Ship),
@@ -130,7 +130,7 @@ namespace DefendUranus.Activities
         {
             int sideShips = _ships.Count - 2;
             int width = (sideShips * 2 + 1) * _spacing;
-            int x = (800 - width) / 2 + _spacing / 2;
+            int x = (Game.Window.ClientBounds.Width - width) / 2 + _spacing / 2;
 
             var option = _option[player];
             for (int i = option - sideShips; i <= option + sideShips; i++, x += _spacing)
