@@ -21,6 +21,14 @@ namespace DefendUranus.Activities
 {
     class GamePlay : GameActivity<GamePlay.Result>
     {
+        #region Constants
+        const float MaxZoomFactor = 1;
+        const float MinZoomFactor = 0.5f;
+
+        const float MinZoomDistance = 550;
+        const float MaxZoomDistance = 650;
+        #endregion
+
         #region Nested
         public class Result
         {
@@ -45,6 +53,9 @@ namespace DefendUranus.Activities
             setup.Player1Ship.Position = new Vector2(-10, 0);
             setup.Player2Ship.Position = new Vector2(10, 0);
 
+            setup.Player1Ship.Behaviors.Add(new ShipInputBehavior(PlayerIndex.One, setup.Player1Ship));
+            setup.Player2Ship.Behaviors.Add(new ShipInputBehavior(PlayerIndex.Two, setup.Player2Ship));
+
             _ships = new List<Ship>
             {
                 setup.Player1Ship,
@@ -64,19 +75,18 @@ namespace DefendUranus.Activities
         #endregion
 
         #region Game Loop
-        Vector2 _debugDirection = new Vector2(-1, 0);
         protected override void Update(GameTime gameTime)
         {
             _duration += gameTime.ElapsedGameTime;
             _keyboard.Update();
 
-            _ships.First().Position += _debugDirection;
-
-            if (_keyboard.IsPressed(Keys.Space))
-                _debugDirection *= -1;
-
             if (IsGameEnded())
                 return;
+
+            foreach (var ent in _entities.ToList())
+                ent.Update(gameTime);
+
+            UpdateCyclicSpace();
         }
 
         protected override void Draw(GameTime gameTime)
@@ -121,29 +131,44 @@ namespace DefendUranus.Activities
 
         Matrix GetCameraTransformation(GraphicsDevice graphicsDevice)
         {
-            const float maxZoomFactor = 2;
-            const float minZoomFactor = 0.5f;
-
-            const float minZoomDistance = 200 / maxZoomFactor;
-            const float maxZoomDistance = 800 / minZoomFactor;
-
             var dist = _ships.Last().Position - _ships.First().Position;
             var distLength = dist.Length();
 
             Vector2 pos = (_ships.Last().Position + _ships.First().Position) / 2;
 
             float zoom;
-            if (distLength < minZoomDistance)
-                zoom = maxZoomFactor;
-            else if (distLength > maxZoomDistance)
-                zoom = minZoomFactor;
+            if (distLength < MinZoomDistance)
+                zoom = MaxZoomFactor;
+            else if (distLength > MaxZoomDistance)
+                zoom = MinZoomFactor;
             else
-                zoom = XNATweener.Cubic.EaseOut(distLength - minZoomDistance, maxZoomFactor, minZoomFactor - maxZoomFactor, maxZoomDistance - minZoomDistance);
+                zoom = XNATweener.Cubic.EaseOut(distLength - MinZoomDistance, MaxZoomFactor, MinZoomFactor - MaxZoomFactor, MaxZoomDistance - MinZoomDistance);
 
             return Matrix.CreateTranslation(new Vector3(-pos.X, -pos.Y, 0)) *
                 //Matrix.CreateRotationZ(Rotation) *
                 Matrix.CreateScale(new Vector3(zoom, zoom, 1)) *
                 Matrix.CreateTranslation(new Vector3(graphicsDevice.Viewport.Width * 0.5f, graphicsDevice.Viewport.Height * 0.5f, 0));
+        }
+
+        void UpdateCyclicSpace()
+        {
+            var p1 = _ships[0];
+            var p2 = _ships[1];
+            var dist = p2.Position - p1.Position;
+            if (dist.X > Game.Window.ClientBounds.Width / MinZoomFactor)
+            {
+                if (p1.Momentum.LengthSquared() > p2.Momentum.LengthSquared())
+                    p1.Position += new Vector2(dist.X * (p1.Position.X < p2.Position.X ? 2 : -2), 0);
+                else
+                    p2.Position += new Vector2(dist.X * (p2.Position.X < p1.Position.X ? 2 : -2), 0);
+            }
+            if (dist.Y > Game.Window.ClientBounds.Height / MinZoomFactor)
+            {
+                if (p1.Momentum.LengthSquared() > p2.Momentum.LengthSquared())
+                    p1.Position += new Vector2(0, dist.Y * (p1.Position.Y < p2.Position.Y ? 2 : -2));
+                else
+                    p2.Position += new Vector2(0, dist.Y * (p2.Position.Y < p1.Position.Y ? 2 : -2));
+            }
         }
         #endregion
     }

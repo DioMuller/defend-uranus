@@ -57,6 +57,7 @@
     <Compile Include="SteeringBehaviors\Seek.cs" />
     <Compile Include="SteeringBehaviors\SteeringBehavior.cs" />
     <Compile Include="SteeringBehaviors\Wander.cs" />
+    <Compile Include="Entities\Behaviors\ShipInputBehavior.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Xml.Linq" />

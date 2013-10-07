@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,11 +11,20 @@ namespace DefendUranus.Entities
 {
     public class PhysicsEntity : Entity
     {
+        #region Attributes
+        float _angularForces;
+        #endregion
+
         #region Properties
         /// <summary>
         /// Body momentum.
         /// </summary>
         public Vector2 Momentum { get; set; }
+
+        /// <summary>
+        /// Body angular momentum.
+        /// </summary>
+        public float AngularMomentum { get; set; }
 
         /// <summary>
         /// Movement Direction.
@@ -37,6 +46,17 @@ namespace DefendUranus.Entities
         }
 
         /// <summary>
+        /// Limit the entity maximum speed.
+        /// </summary>
+        /// <value>The max speed.</value>
+        public float MaxSpeed { get; set; }
+
+        /// <summary>
+        /// Limit the entity maximum rotation speed.
+        /// </summary>
+        public float MaxRotationSpeed { get; set; }
+
+        /// <summary>
         /// Constant forces applied on the body.
         /// </summary>
         public Dictionary<string, Vector2> ConstantForces { get; set; }
@@ -54,7 +74,7 @@ namespace DefendUranus.Entities
         /// <summary>
         /// Does the entity rotate with the force?
         /// </summary>
-        public bool Rotate { get; set; }
+        public bool RotateToMomentum { get; set; }
 
         /// <summary>
         /// Constant friction being applied on the body.
@@ -63,12 +83,12 @@ namespace DefendUranus.Entities
         #endregion Properties
 
         #region Constructor
-        public PhysicsEntity() : base()
+        public PhysicsEntity()
         {
             Forces = new Stack<Vector2>();
             ConstantForces = new Dictionary<string,Vector2>();
 
-            Friction = Vector2.One;
+            Friction = Vector2.Zero;
         }
         #endregion Constructor
 
@@ -100,16 +120,36 @@ namespace DefendUranus.Entities
             Vector2 acceleration = (forces / Mass);
             Vector2 accelSecs = acceleration * secs;
 
+            Momentum *= (Vector2.One - Friction);
             Position += WorldHelper.MetersToPixels((Momentum + accelSecs / 2) * secs);
             Momentum += (accelSecs + instantForces);
-            Momentum *= (Vector2.One - Friction);
 
-            if (Rotate)
+            if (!RotateToMomentum)
             {
-                Rotation = Momentum.GetAngle();
+                var angularAccelSecs = _angularForces * secs;
+                var sum = (AngularMomentum + angularAccelSecs / 2);
+
+                AngularMomentum *= (Vector2.One - Friction).Length() / Vector2.One.Length();
+                var toRotate = sum * secs;
+                Rotation += toRotate;
+                AngularMomentum += angularAccelSecs;
+
+                _angularForces = 0;
             }
 
+            if (RotateToMomentum)
+                Rotation = Momentum.GetAngle();
+
+            AngularMomentum = MathHelper.Clamp(AngularMomentum, -MaxRotationSpeed, MaxRotationSpeed);
+            if (Speed > MaxSpeed)
+                Momentum *= MaxSpeed / Speed;
+
             base.Update(gameTime);
+        }
+
+        public void ApplyRotation(float force)
+        {
+            _angularForces += force / Mass;
         }
         #endregion Methods
     }

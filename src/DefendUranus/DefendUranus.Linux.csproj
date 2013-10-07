@@ -53,6 +53,8 @@
     <Compile Include="SteeringBehaviors\Pursuit.cs" />
     <Compile Include="SteeringBehaviors\Seek.cs" />
     <Compile Include="SteeringBehaviors\SteeringBehavior.cs" />
+    <Compile Include="SteeringBehaviors\Wander.cs" />
+    <Compile Include="Entities\Behaviors\ShipInputBehavior.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Xml.Linq" />
@@ -94,6 +96,7 @@
     <Folder Include="Helpers\" />
     <Folder Include="SteeringBehaviors\" />
     <Folder Include="Content\Sprites\" />
+    <Folder Include="Entities\Behaviors\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\submodule\monogame-aux-lib\src\MonoGameLib.Core\MonoGameLib.Core.Linux.csproj">
