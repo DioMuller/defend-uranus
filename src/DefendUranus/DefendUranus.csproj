@@ -81,6 +81,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Backgrounds\Background.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Backgrounds\Background2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Backgrounds\Uranus.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Images\Title.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
