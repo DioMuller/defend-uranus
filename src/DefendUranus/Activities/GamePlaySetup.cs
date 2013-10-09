@@ -10,6 +10,7 @@ using MonoGameLib.Core.Input;
 using XNATweener;
 using DefendUranus.Entities;
 using Microsoft.Xna.Framework.Content;
+using DefendUranus.Helpers;
 #endregion
 
 namespace DefendUranus.Activities
@@ -55,17 +56,21 @@ namespace DefendUranus.Activities
         #endregion
 
         #region Attributes
-        public List<ShipDescription> _ships;
-        int _spacing;
-        KeyboardWatcher _keyboard;
+        readonly public List<ShipDescription> _ships;
+        readonly int _spacing;
+
         Result _result;
         PlayerSelectionInfo _p1Info, _p2Info;
+        PlayerInput _p1Input, _p2Input;
+        GameInput _gameInput;
         #endregion
 
         #region Constructors
         public GamePlaySetup(MainGame game)
             : base(game)
         {
+            _ships = LoadShips();
+            _spacing = (int)GraphicsDevice.PresentationParameters.BackBufferWidth / _ships.Count;
         }
         #endregion
 
@@ -79,24 +84,25 @@ namespace DefendUranus.Activities
             else
                 _result.Aborted = false;
 
-            _ships = LoadShips();
+
             _result.Player1Ship = _ships[0];
             _result.Player2Ship = _ships[_ships.Count / 2];
-            _spacing = (int)Game.Window.ClientBounds.Width / _ships.Count;
         }
 
         protected override void Activating()
         {
             base.Activating();
-            _keyboard = new KeyboardWatcher();
+            _p1Input = new PlayerInput(PlayerIndex.One);
+            _p2Input = new PlayerInput(PlayerIndex.Two);
+            _gameInput = new GameInput();
 
             _p1Info = new PlayerSelectionInfo
             {
-                IconScales = _ships.ToDictionary(i => i, i => i == _result.Player1Ship? new Vector2(2) : Vector2.One)
+                IconScales = _ships.ToDictionary(i => i, i => i == _result.Player1Ship ? new Vector2(2) : Vector2.One)
             };
             _p2Info = new PlayerSelectionInfo
             {
-                IconScales = _ships.ToDictionary(i => i, i => i == _result.Player2Ship? new Vector2(2) : Vector2.One)
+                IconScales = _ships.ToDictionary(i => i, i => i == _result.Player2Ship ? new Vector2(2) : Vector2.One)
             };
         }
         #endregion
@@ -104,25 +110,29 @@ namespace DefendUranus.Activities
         #region Game Loop
         protected override void Update(GameTime gameTime)
         {
-            _keyboard.Update();
-            if (_keyboard.IsPressed(Keys.Escape))
+            _p1Input.Update();
+            _p2Input.Update();
+            _gameInput.Update();
+
+            if (_gameInput.Cancel)
             {
                 _result.Aborted = true;
                 Exit(_result);
             }
-            else if (_keyboard.IsPressed(Keys.Enter))
+            // TODO: Start the game when both players have confirmed selection.
+            else if (_gameInput.Confirm)
             {
                 Exit(_result);
             }
 
-            if (_keyboard.IsPressed(Keys.Right))
+            if (_p1Input.Right)
                 ShiftSelection(_p1Info, left: false);
-            else if (_keyboard.IsPressed(Keys.Left))
+            else if (_p1Input.Left)
                 ShiftSelection(_p1Info, left: true);
 
-            if (_keyboard.IsPressed(Keys.D))
+            if (_p2Input.Right)
                 ShiftSelection(_p2Info, left: false);
-            else if (_keyboard.IsPressed(Keys.A))
+            else if (_p2Input.Left)
                 ShiftSelection(_p2Info, left: true);
 
             base.Update(gameTime);
@@ -164,7 +174,7 @@ namespace DefendUranus.Activities
             if (info.ShiftingSelection) return;
             info.ShiftingSelection = true;
 
-            var oldOption = info == _p1Info? _result.Player1Ship : _result.Player2Ship;
+            var oldOption = info == _p1Info ? _result.Player1Ship : _result.Player2Ship;
             var nextOption = _ships[Mod(_ships.IndexOf(oldOption) + (left ? -1 : 1), _ships.Count)];
 
             if (info == _p1Info)

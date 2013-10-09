@@ -15,6 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MonoGameLib.Core.Input;
 using DefendUranus.Entities;
+using DefendUranus.Helpers;
 #endregion
 
 namespace DefendUranus.Activities
@@ -39,7 +40,7 @@ namespace DefendUranus.Activities
         #endregion
 
         #region Attributes
-        private KeyboardWatcher _keyboard;
+        private GameInput _gameInput;
         private TimeSpan _duration;
         private List<Entities.PhysicsEntity> _entities;
         private List<Ship> _ships;
@@ -69,7 +70,7 @@ namespace DefendUranus.Activities
         protected override void Activating()
         {
             base.Activating();
-            _keyboard = new KeyboardWatcher();
+            _gameInput = new GameInput();
         }
         #endregion
 
@@ -77,7 +78,7 @@ namespace DefendUranus.Activities
         protected override void Update(GameTime gameTime)
         {
             _duration += gameTime.ElapsedGameTime;
-            _keyboard.Update();
+            _gameInput.Update();
 
             if (IsGameEnded())
                 return;
@@ -107,7 +108,7 @@ namespace DefendUranus.Activities
         bool IsGameEnded()
         {
             // Check game abort
-            if (_keyboard.IsPressed(Keys.Escape))
+            if (_gameInput.Cancel)
             {
                 Exit(new Result { Aborted = true });
                 return true;

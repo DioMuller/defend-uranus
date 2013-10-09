@@ -42,6 +42,8 @@
     <Compile Include="Activities\TestActivity.cs" />
     <Compile Include="Entities\PhysicsEntity.cs" />
     <Compile Include="Entities\SteeringEntity.cs" />
+    <Compile Include="Helpers\GameInput.cs" />
+    <Compile Include="Helpers\PlayerInput.cs" />
     <Compile Include="Helpers\WorldHelper.cs" />
     <Compile Include="Entities\Ship.cs" />
     <Compile Include="MainGame.cs" />

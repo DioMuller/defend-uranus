@@ -7,13 +7,14 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MonoGameLib.Core.Entities;
 using MonoGameLib.Core.Input;
+using DefendUranus.Helpers;
 
 namespace DefendUranus.Activities
 {
     class TestActivity : GameActivity<bool>
     {
         #region Attributes
-        KeyboardWatcher _keyboard;
+        GameInput _gameInput;
         List<Entity> _entities;
         #endregion
 
@@ -28,7 +29,7 @@ namespace DefendUranus.Activities
         protected override void Activating()
         {
             base.Activating();
-            _keyboard = new KeyboardWatcher();
+            _gameInput = new GameInput();
 
             _entities = new List<Entity>();
             //TODO: Create Entities
@@ -38,8 +39,8 @@ namespace DefendUranus.Activities
         #region Game Loop
         protected override void Update(GameTime gameTime)
         {
-            _keyboard.Update();
-            if (_keyboard.IsPressed(Keys.Escape))
+            _gameInput.Update();
+            if (_gameInput.Cancel)
                 Exit(false);
         }
 

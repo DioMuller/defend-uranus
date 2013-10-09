@@ -1,4 +1,5 @@
 ﻿#region Using Statements
+using DefendUranus.Helpers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -20,7 +21,7 @@ namespace DefendUranus.Activities
         #endregion
 
         #region Attributes
-        private KeyboardWatcher _keyboard;
+        private GameInput _gameInput;
         private Texture2D _title;
         private Color _drawColor;
         private Vector2 _scale;
@@ -37,7 +38,7 @@ namespace DefendUranus.Activities
         protected override void Activating()
         {
             base.Activating();
-            _keyboard = new KeyboardWatcher();
+            _gameInput = new GameInput();
             _title = Content.Load<Texture2D>("Images/Title");
         }
 
@@ -62,13 +63,13 @@ namespace DefendUranus.Activities
         #region Game Loop
         protected override void Update(GameTime gameTime)
         {
-            _keyboard.Update();
+            _gameInput.Update();
 
-            if (_keyboard.IsPressed(Keys.Escape))
+            if (_gameInput.Cancel)
                 Exit(Options.Exit);
-            else if (_keyboard.IsPressed(Keys.F1))
+            else if (_gameInput.Help)
                 Exit(Options.HowToPlay);
-            else if (_keyboard.IsPressed(Keys.Enter))
+            else if (_gameInput.Confirm)
                 Exit(Options.Play);
 
             base.Update(gameTime);

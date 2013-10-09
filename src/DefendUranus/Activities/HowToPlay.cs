@@ -1,4 +1,5 @@
 ﻿#region Using Statements
+using DefendUranus.Helpers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MonoGameLib.Core.Input;
@@ -10,7 +11,7 @@ namespace DefendUranus.Activities
     class HowToPlay : GameActivity<bool>
     {
         #region Attributes
-        KeyboardWatcher _keyboard;
+        GameInput _gameInput;
         #endregion
 
         #region Constructors
@@ -24,15 +25,15 @@ namespace DefendUranus.Activities
         protected override void Activating()
         {
             base.Activating();
-            _keyboard = new KeyboardWatcher();
+            _gameInput = new GameInput();
         }
         #endregion
 
         #region Game Loop
         protected override void Update(GameTime gameTime)
         {
-            _keyboard.Update();
-            if (_keyboard.IsPressed(Keys.Escape))
+            _gameInput.Update();
+            if (_gameInput.Cancel)
                 Exit(false);
         }
 
