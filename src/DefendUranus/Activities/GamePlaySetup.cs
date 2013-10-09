@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGameLib.Core.Input;
 using XNATweener;
 using DefendUranus.Entities;
+using Microsoft.Xna.Framework.Content;
 #endregion
 
 namespace DefendUranus.Activities
@@ -20,20 +21,45 @@ namespace DefendUranus.Activities
         {
             public bool Aborted { get; set; }
 
-            public Ship Player1Ship { get; set; }
-            public Ship Player2Ship { get; set; }
+            public ShipDescription Player1Ship { get; set; }
+            public ShipDescription Player2Ship { get; set; }
+        }
+
+        class PlayerSelectionInfo
+        {
+            public int DrawShift { get; set; }
+            public bool ShiftingSelection { get; set; }
+            //public bool SelectionConfirmed { get; set; }
+            public Dictionary<ShipDescription, Vector2> IconScales { get; set; }
+        }
+        public class ShipDescription
+        {
+            public ShipDescription(ContentManager content, string texturePath, float mass, string description)
+            {
+                Texture = content.Load<Texture2D>(texturePath);
+                TexturePath = texturePath;
+                Mass = mass;
+                Description = description;
+            }
+
+            public Texture2D Texture { get; private set; }
+            public string TexturePath { get; set; }
+            public string Description { get; set; }
+            public float Mass { get; set; }
+
+            public Ship BuildShip()
+            {
+                return new Ship(TexturePath) { Mass = Mass };
+            }
         }
         #endregion
 
         #region Attributes
+        public List<ShipDescription> _ships;
         int _spacing;
         KeyboardWatcher _keyboard;
         Result _result;
-        List<Ship> _ships;
-        int[] _option;
-        int[] _shift = new[] { 0, 0 };
-        bool[] _shifting = new[] { false, false };
-        Dictionary<int, Vector2>[] _iconScales;
+        PlayerSelectionInfo _p1Info, _p2Info;
         #endregion
 
         #region Constructors
@@ -52,6 +78,11 @@ namespace DefendUranus.Activities
                 _result = new Result();
             else
                 _result.Aborted = false;
+
+            _ships = LoadShips();
+            _result.Player1Ship = _ships[0];
+            _result.Player2Ship = _ships[_ships.Count / 2];
+            _spacing = (int)Game.Window.ClientBounds.Width / _ships.Count;
         }
 
         protected override void Activating()
@@ -59,32 +90,14 @@ namespace DefendUranus.Activities
             base.Activating();
             _keyboard = new KeyboardWatcher();
 
-            // TODO: Load ships from XML
-            // TODO: Change to ship definitions, and create the ships on gameplay.
-            // this should fix the bug when 2 players select the same ship
-            _ships = new List<Ship>
+            _p1Info = new PlayerSelectionInfo
             {
-                new Ship("Sprites/Avenger") { Mass = 2, Description = "Earth Avenger" },
-                new Ship("Sprites/Explorer") { Mass = 1, Description = "Uranus Explorer" },
-                new Ship("Sprites/Fatboy") { Mass = 4, Description = "Big Fatboy" },
-                new Ship("Sprites/Meteoroid") { Mass = 3, Description = "Meteoroid Destroyer" },
+                IconScales = _ships.ToDictionary(i => i, i => i == _result.Player1Ship? new Vector2(2) : Vector2.One)
             };
-            _spacing = (int)Game.Window.ClientBounds.Width / _ships.Count;
-            _result.Player1Ship = _ships[0];
-            _result.Player2Ship = _ships[_ships.Count / 2];
-
-
-            _option = new[] {
-                _ships.IndexOf(_result.Player1Ship),
-                _ships.IndexOf(_result.Player2Ship)
+            _p2Info = new PlayerSelectionInfo
+            {
+                IconScales = _ships.ToDictionary(i => i, i => i == _result.Player2Ship? new Vector2(2) : Vector2.One)
             };
-
-            _iconScales = new[]{
-                Enumerable.Range(0, _ships.Count).ToDictionary(i => i, i => Vector2.One),
-                Enumerable.Range(0, _ships.Count).ToDictionary(i => i, i => Vector2.One)
-            };
-            _iconScales[0][_option[0]] = new Vector2(2);
-            _iconScales[1][_option[1]] = new Vector2(2);
         }
         #endregion
 
@@ -103,14 +116,14 @@ namespace DefendUranus.Activities
             }
 
             if (_keyboard.IsPressed(Keys.Right))
-                ShiftSelection(0, left: false);
+                ShiftSelection(_p1Info, left: false);
             else if (_keyboard.IsPressed(Keys.Left))
-                ShiftSelection(0, left: true);
+                ShiftSelection(_p1Info, left: true);
 
             if (_keyboard.IsPressed(Keys.D))
-                ShiftSelection(1, left: false);
+                ShiftSelection(_p2Info, left: false);
             else if (_keyboard.IsPressed(Keys.A))
-                ShiftSelection(1, left: true);
+                ShiftSelection(_p2Info, left: true);
 
             base.Update(gameTime);
         }
@@ -121,57 +134,55 @@ namespace DefendUranus.Activities
             GraphicsDevice.Clear(Color.DarkGreen);
 
             SpriteBatch.Begin();
-            DrawPlayerSelection(gameTime, 0, 200);
-            DrawPlayerSelection(gameTime, 1, 400);
+            DrawPlayerSelection(gameTime, _result.Player1Ship, _p1Info, 200);
+            DrawPlayerSelection(gameTime, _result.Player2Ship, _p2Info, 400);
             SpriteBatch.End();
         }
 
-        private void DrawPlayerSelection(GameTime gameTime, int player, int height)
+        private void DrawPlayerSelection(GameTime gameTime, ShipDescription selection, PlayerSelectionInfo info, int height)
         {
             int sideShips = _ships.Count - 2;
             int width = (sideShips * 2 + 1) * _spacing;
             int x = (Game.Window.ClientBounds.Width - width) / 2 + _spacing / 2;
 
-            var option = _option[player];
+            var option = _ships.IndexOf(selection);
             for (int i = option - sideShips; i <= option + sideShips; i++, x += _spacing)
             {
-                int ship = Mod(i, _ships.Count);
-                _ships[ship].Sprite.Draw(gameTime, SpriteBatch,
-                    position: new Vector2(x + _shift[player], height),
-                    color: Color.White,
-                    scale: _iconScales[player][ship]);
+                var ship = _ships[Mod(i, _ships.Count)];
+                SpriteBatch.Draw(ship.Texture,
+                    position: new Vector2(x + info.DrawShift, height),
+                    scale: info.IconScales[ship],
+                    origin: new Vector2(ship.Texture.Width / 2, ship.Texture.Height / 2),
+                    color: Color.White);
             }
         }
         #endregion
 
         #region Private
-        async void ShiftSelection(int player, bool left)
+        async void ShiftSelection(PlayerSelectionInfo info, bool left)
         {
-            if (_shifting[player]) return;
-            _shifting[player] = true;
+            if (info.ShiftingSelection) return;
+            info.ShiftingSelection = true;
 
-            var oldOption = _option[player];
-            var nextOption = Mod(_option[player] + (left ? -1 : 1), _ships.Count);
+            var oldOption = info == _p1Info? _result.Player1Ship : _result.Player2Ship;
+            var nextOption = _ships[Mod(_ships.IndexOf(oldOption) + (left ? -1 : 1), _ships.Count)];
 
-            if (player == 0)
-                _result.Player1Ship = _ships[nextOption];
-            else if (player == 1)
-                _result.Player2Ship = _ships[nextOption];
+            if (info == _p1Info)
+                _result.Player1Ship = nextOption;
+            else
+                _result.Player2Ship = nextOption;
 
             // Anima zoom in, de nave selecionada
-            var zoomIn = FloatAnimation(300, 1, 2, v => _iconScales[player][nextOption] = new Vector2(v), easingFunction: Sinusoidal.EaseOut);
+            var zoomIn = FloatAnimation(300, 1, 2, v => info.IconScales[nextOption] = new Vector2(v), easingFunction: Sinusoidal.EaseOut);
             // Anima zoom out, de nave desselecionada
-            var zoomOut = FloatAnimation(100, 2, 1, v => _iconScales[player][oldOption] = new Vector2(v));
+            var zoomOut = FloatAnimation(100, 2, 1, v => info.IconScales[oldOption] = new Vector2(v));
 
             // Anima deslocamento para direita/esquerda
-            await FloatAnimation(100, 0, _spacing * (left ? 1 : -1), v => _shift[player] = (int)v);
-
-            _shift[player] = 0;
-            _option[player] = nextOption;
+            await FloatAnimation(100, _spacing * (left ? -1 : +1), 0, v => info.DrawShift = (int)v);
 
             await TaskEx.WhenAll(zoomIn, zoomOut);
 
-            _shifting[player] = false;
+            info.ShiftingSelection = false;
         }
 
         int Mod(int value, int max)
@@ -181,6 +192,18 @@ namespace DefendUranus.Activities
             if (value >= max)
                 return value % max;
             return value;
+        }
+
+        List<ShipDescription> LoadShips()
+        {
+            // TODO: Load ships from XML
+            return new List<ShipDescription>
+            {
+                new ShipDescription(Content, "Sprites/Avenger", 2, "Earth Avenger"),
+                new ShipDescription(Content, "Sprites/Explorer", 1, "Uranus Explorer"),
+                new ShipDescription(Content, "Sprites/Fatboy", 4, "Big Fatboy"),
+                new ShipDescription(Content, "Sprites/Meteoroid", 3, "Meteoroid Destroyer"),
+            };
         }
         #endregion
     }

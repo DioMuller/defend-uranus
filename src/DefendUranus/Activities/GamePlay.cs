@@ -49,18 +49,17 @@ namespace DefendUranus.Activities
         public GamePlay(MainGame game, GamePlaySetup.Result setup)
             : base(game)
         {
+            var p1Ship = setup.Player1Ship.BuildShip();
+            var p2Ship = setup.Player2Ship.BuildShip();
+
             // TODO: Set initial position based on ship size
-            setup.Player1Ship.Position = new Vector2(-10, 0);
-            setup.Player2Ship.Position = new Vector2(10, 0);
+            p1Ship.Position = new Vector2(-10, 0);
+            p2Ship.Position = new Vector2(10, 0);
 
-            setup.Player1Ship.Behaviors.Add(new ShipInputBehavior(PlayerIndex.One, setup.Player1Ship));
-            setup.Player2Ship.Behaviors.Add(new ShipInputBehavior(PlayerIndex.Two, setup.Player2Ship));
+            p1Ship.Behaviors.Add(new ShipInputBehavior(PlayerIndex.One, p1Ship));
+            p2Ship.Behaviors.Add(new ShipInputBehavior(PlayerIndex.Two, p2Ship));
 
-            _ships = new List<Ship>
-            {
-                setup.Player1Ship,
-                setup.Player2Ship
-            };
+            _ships = new List<Ship> { p1Ship, p2Ship };
             _entities = new List<PhysicsEntity>(_ships);
             _duration = TimeSpan.Zero;
         }
