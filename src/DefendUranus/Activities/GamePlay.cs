@@ -160,14 +160,14 @@ namespace DefendUranus.Activities
                 if (p1.Momentum.LengthSquared() > p2.Momentum.LengthSquared())
                     p1.Position += new Vector2(dist.X * 2, 0);
                 else
-                    p2.Position += new Vector2(dist.X * 2, 0);
+                    p2.Position -= new Vector2(dist.X * 2, 0);
             }
             if (Math.Abs(dist.Y) > Game.Window.ClientBounds.Height / MinZoomFactor)
             {
                 if (p1.Momentum.LengthSquared() > p2.Momentum.LengthSquared())
                     p1.Position += new Vector2(0, dist.Y * 2);
                 else
-                    p2.Position += new Vector2(0, dist.Y * 2);
+                    p2.Position -= new Vector2(0, dist.Y * 2);
             }
         }
         #endregion
