@@ -44,6 +44,7 @@ namespace DefendUranus.Activities
         private TimeSpan _duration;
         private List<Entities.PhysicsEntity> _entities;
         private List<Ship> _ships;
+        private Texture2D _background, _stars;
         #endregion
 
         #region Constructors
@@ -71,6 +72,8 @@ namespace DefendUranus.Activities
         {
             base.Activating();
             _gameInput = new GameInput();
+            _background = Content.Load<Texture2D>("Backgrounds/Background");
+            _stars = Content.Load<Texture2D>("Backgrounds/Background2");
         }
         #endregion
 
@@ -91,18 +94,47 @@ namespace DefendUranus.Activities
 
         protected override void Draw(GameTime gameTime)
         {
+            Vector2 camera = (_ships.Last().Position + _ships.First().Position) / 2;
+            float zoom = GetZoomFactor();
+
             GraphicsDevice.Clear(Color.Black);
 
-            SpriteBatch.Begin(SpriteSortMode.BackToFront,
-                        BlendState.AlphaBlend,
-                        null,
-                        null,
-                        null,
-                        null,
-                        GetCameraTransformation(Game.GraphicsDevice));
+            camera = DrawStars(camera, zoom);
+
+            SpriteBatch.Begin(camera, zoom, Game.GraphicsDevice.Viewport);
             foreach (var ent in _entities.ToList())
                 ent.Draw(gameTime, SpriteBatch);
             SpriteBatch.End();
+        }
+
+        private Vector2 DrawStars(Vector2 camera, float zoom)
+        {
+            const float backgroundSlideFactor = 0.05f;
+            const float backgroundMaxScale = 0.9f;
+            const float backgroundMinScale = 0.8f;
+            const float starsSlideFactor = 0.3f;
+            const float starsMaxScale = 1f;
+            const float starsMinScale = 0.8f;
+
+            SpriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.LinearWrap, null, null);
+            SpriteBatch.Draw(_background,
+                drawRectangle: GraphicsDevice.Viewport.Bounds,
+                sourceRectangle: new Rectangle(
+                    (int)(camera.X * backgroundSlideFactor),
+                    (int)(camera.Y * backgroundSlideFactor),
+                    (int)(_stars.Width),
+                    (int)(_stars.Height)).Scale(1 / ScaleZoom(zoom, backgroundMaxScale, backgroundMinScale)),
+                    color: Color.White);
+            SpriteBatch.Draw(_stars,
+                drawRectangle: GraphicsDevice.Viewport.Bounds,
+                sourceRectangle: new Rectangle(
+                    (int)(camera.X * starsSlideFactor),
+                    (int)(camera.Y * starsSlideFactor),
+                    (int)(_stars.Width),
+                    (int)(_stars.Height)).Scale(1 / ScaleZoom(zoom, starsMaxScale, starsMinScale)),
+                    color: Color.White);
+            SpriteBatch.End();
+            return camera;
         }
 
         bool IsGameEnded()
@@ -129,25 +161,23 @@ namespace DefendUranus.Activities
             return false;
         }
 
-        Matrix GetCameraTransformation(GraphicsDevice graphicsDevice)
+        private float GetZoomFactor()
         {
             var dist = _ships.Last().Position - _ships.First().Position;
             var distLength = dist.Length();
 
-            Vector2 pos = (_ships.Last().Position + _ships.First().Position) / 2;
-
-            float zoom;
             if (distLength < MinZoomDistance)
-                zoom = MaxZoomFactor;
+                return MaxZoomFactor;
             else if (distLength > MaxZoomDistance)
-                zoom = MinZoomFactor;
-            else
-                zoom = XNATweener.Cubic.EaseOut(distLength - MinZoomDistance, MaxZoomFactor, MinZoomFactor - MaxZoomFactor, MaxZoomDistance - MinZoomDistance);
+                return MinZoomFactor;
 
-            return Matrix.CreateTranslation(new Vector3(-pos.X, -pos.Y, 0)) *
-                //Matrix.CreateRotationZ(Rotation) *
-                Matrix.CreateScale(new Vector3(zoom, zoom, 1)) *
-                Matrix.CreateTranslation(new Vector3(graphicsDevice.Viewport.Width * 0.5f, graphicsDevice.Viewport.Height * 0.5f, 0));
+            return XNATweener.Cubic.EaseOut(distLength - MinZoomDistance, MaxZoomFactor, MinZoomFactor - MaxZoomFactor, MaxZoomDistance - MinZoomDistance);
+        }
+
+        private float ScaleZoom(float zoom, float max, float min)
+        {
+            float status = (zoom - MinZoomFactor) / (MaxZoomFactor - MinZoomFactor);
+            return min + status * (max - min);
         }
 
         void UpdateCyclicSpace()

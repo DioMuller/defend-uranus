@@ -43,6 +43,7 @@
     <Compile Include="Entities\PhysicsEntity.cs" />
     <Compile Include="Entities\SteeringEntity.cs" />
     <Compile Include="Helpers\GameInput.cs" />
+    <Compile Include="Helpers\MonoGameExtensions.cs" />
     <Compile Include="Helpers\PlayerInput.cs" />
     <Compile Include="Helpers\WorldHelper.cs" />
     <Compile Include="Entities\Ship.cs" />
