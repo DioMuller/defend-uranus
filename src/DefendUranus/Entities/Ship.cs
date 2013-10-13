@@ -20,7 +20,6 @@ namespace DefendUranus.Entities
             Sprite.Animations.Add(new Animation("default", 0, 0, 0));
             Sprite.Origin = new Vector2(Sprite.FrameSize.X, Sprite.FrameSize.Y) / 2;
             Sprite.ChangeAnimation(0);
-            Sprite.Update(new GameTime(TimeSpan.Zero, TimeSpan.FromMilliseconds(1)));
 
             RotationForce = 3;
             MaxRotationSpeed = 3;

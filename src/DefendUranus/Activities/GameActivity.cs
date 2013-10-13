@@ -92,7 +92,6 @@ namespace DefendUranus.Activities
         #endregion
 
         #region Animations
-
         public async Task FloatAnimation(int duration, float start, float end, Action<float> valueStep, TweeningFunction easingFunction = null)
         {
             if (duration <= 0)
