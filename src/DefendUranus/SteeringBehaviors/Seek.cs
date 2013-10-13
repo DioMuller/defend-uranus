@@ -23,7 +23,7 @@ namespace DefendUranus.SteeringBehaviors
         {
             Vector2 desiredVelocity = Target.Position - Parent.Position;
             desiredVelocity.Normalize();
-            desiredVelocity *= Parent.MaximumVelocity;
+            desiredVelocity *= Parent.MaxSpeed;
 
             return desiredVelocity;
         }

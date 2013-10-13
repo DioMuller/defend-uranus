@@ -14,7 +14,7 @@ namespace DefendUranus.Entities
         public float ThrotleForce { get; set; }
         public float RotationForce { get; set; }
 
-        public Ship(string texturePath)
+        public Ship(string texturePath) : base()
         {
             Sprite = new Sprite(texturePath, new Point(32, 32), 0);
             Sprite.Animations.Add(new Animation("default", 0, 0, 0));

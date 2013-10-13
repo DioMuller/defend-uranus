@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using MonoGameLib.Core.Input;
 using DefendUranus.Entities;
 using DefendUranus.Helpers;
+using DefendUranus.SteeringBehaviors;
 #endregion
 
 namespace DefendUranus.Activities
@@ -55,8 +56,8 @@ namespace DefendUranus.Activities
             var p2Ship = setup.Player2Ship.BuildShip();
 
             // TODO: Set initial position based on ship size
-            p1Ship.Position = new Vector2(-10, 0);
-            p2Ship.Position = new Vector2(10, 0);
+            p1Ship.Position = new Vector2(-100, 0);
+            p2Ship.Position = new Vector2(100, 0);
 
             p1Ship.Behaviors.Add(new ShipInputBehavior(PlayerIndex.One, p1Ship));
             p2Ship.Behaviors.Add(new ShipInputBehavior(PlayerIndex.Two, p2Ship));
@@ -64,6 +65,29 @@ namespace DefendUranus.Activities
             _ships = new List<Ship> { p1Ship, p2Ship };
             _entities = new List<PhysicsEntity>(_ships);
             _duration = TimeSpan.Zero;
+
+            #region Test Entities
+            SpecialAttack behaviorTest = new SpecialAttack("Sprites/Avenger-PursuiterMissile.png");
+            Wander sb = new Wander(behaviorTest);
+            sb.Target = p1Ship;
+
+            // Flee
+            // sb.PanicDistance = 500f;
+            
+            // Wander
+            behaviorTest.Momentum = Vector2.One;
+            sb.Jitter = 1.25f;
+            sb.WanderDistance = 50f;
+            sb.WanderRadius = 90f;
+
+            behaviorTest.SteeringBehaviors.Add(sb);
+
+            behaviorTest.Mass = 1f;
+            behaviorTest.MaxSpeed = 10f;
+            behaviorTest.Position = new Vector2(0, 0);
+
+            _entities.Add(behaviorTest);
+            #endregion Test Entities
         }
         #endregion
 

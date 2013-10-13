@@ -83,12 +83,13 @@ namespace DefendUranus.Entities
         #endregion Properties
 
         #region Constructor
-        public PhysicsEntity()
+        public PhysicsEntity() : base()
         {
             Forces = new Stack<Vector2>();
             ConstantForces = new Dictionary<string,Vector2>();
 
             Friction = Vector2.Zero;
+            Momentum = Vector2.Zero;
         }
         #endregion Constructor
 
