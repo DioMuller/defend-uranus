@@ -21,23 +21,23 @@ namespace DefendUranus.SteeringBehaviors
         /// <summary>
         /// Wander behavior jitter value.
         /// </summary>
-        float Jitter { get; set; }
+        public float Jitter { get; set; }
 
         /// <summary>
         /// Wander target distance.
         /// </summary>
-        float WanderDistance { get; set; }
+        public float WanderDistance { get; set; }
 
         /// <summary>
         /// Wander circle radius.
         /// </summary>
-        float WanderRadius { get; set; }
+        public float WanderRadius { get; set; }
         #endregion Properties
         
         #region Constructor
         public Wander(SteeringEntity parent) : base(parent) 
         {
-            _target = (Parent.Direction * WanderDistance); 
+            _target = Vector2.Zero; //(Parent.Direction * WanderDistance); 
         }
         #endregion Constructor
 

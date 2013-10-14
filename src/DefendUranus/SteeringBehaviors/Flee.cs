@@ -31,7 +31,7 @@ namespace DefendUranus.SteeringBehaviors
             if( distance == 0.0f || distance < PanicDistance )
             {
                 desiredVelocity.Normalize();
-                desiredVelocity *= Parent.MaximumVelocity;
+                desiredVelocity *= Parent.MaxSpeed;
 
                 return desiredVelocity - Parent.Momentum;
             }

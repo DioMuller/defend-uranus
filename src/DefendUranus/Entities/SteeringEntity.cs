@@ -11,11 +11,6 @@ namespace DefendUranus.Entities
     {
         #region Properties
         /// <summary>
-        /// Entity maximum velocity.
-        /// </summary>
-        public float MaximumVelocity { get; set; }
-
-        /// <summary>
         /// Entity steering behaviors.
         /// </summary>
         public List<SteeringBehavior> SteeringBehaviors { get; private set; }

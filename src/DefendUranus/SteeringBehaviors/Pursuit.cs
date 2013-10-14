@@ -31,7 +31,7 @@ namespace DefendUranus.SteeringBehaviors
             }
             else
             {
-                float lookAheadTime = toEvader.Length() / (Parent.MaximumVelocity + Target.Speed );
+                float lookAheadTime = toEvader.Length() / (Parent.MaxSpeed + Target.Speed);
                 futurePosition = Target.Position + (Target.Momentum * lookAheadTime);
             }
             
@@ -40,7 +40,7 @@ namespace DefendUranus.SteeringBehaviors
             #region Seek
             Vector2 desiredVelocity = futurePosition - Parent.Position;
             desiredVelocity.Normalize();
-            desiredVelocity *= Parent.MaximumVelocity;
+            desiredVelocity *= Parent.MaxSpeed;
             #endregion Seek
 
             return desiredVelocity;
