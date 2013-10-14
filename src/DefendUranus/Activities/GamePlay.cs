@@ -67,26 +67,24 @@ namespace DefendUranus.Activities
             _duration = TimeSpan.Zero;
 
             #region Test Entities
-            SpecialAttack behaviorTest = new SpecialAttack("Sprites/Avenger-PursuiterMissile.png");
-            Wander sb = new Wander(behaviorTest);
-            sb.Target = p1Ship;
-
-            // Flee
-            // sb.PanicDistance = 500f;
-            
-            // Wander
-            behaviorTest.Momentum = Vector2.One;
-            sb.Jitter = 1.25f;
-            sb.WanderDistance = 50f;
-            sb.WanderRadius = 90f;
-
-            behaviorTest.SteeringBehaviors.Add(sb);
-
-            behaviorTest.Mass = 1f;
-            behaviorTest.MaxSpeed = 10f;
-            behaviorTest.Position = new Vector2(0, 0);
-
-            _entities.Add(behaviorTest);
+            var specialAttack = new SpecialAttack("Sprites/Avenger-PursuiterMissile.png")
+            {
+                Momentum = Vector2.One,
+                Mass = 1f,
+                MaxSpeed = 10f,
+                Position = new Vector2(0, 0)
+            };
+            var steeringBehavior = new Wander(specialAttack)
+            {
+                // Flee
+                // PanicDistance = 500f,
+                Target = p1Ship,
+                Jitter = 1.25f,
+                WanderDistance = 50f,
+                WanderRadius = 90f,
+            };
+            specialAttack.SteeringBehaviors.Add(steeringBehavior);
+            _entities.Add(specialAttack);
             #endregion Test Entities
         }
         #endregion
@@ -123,7 +121,7 @@ namespace DefendUranus.Activities
 
             GraphicsDevice.Clear(Color.Black);
 
-            camera = DrawStars(camera, zoom);
+            DrawStars(camera, zoom);
 
             SpriteBatch.Begin(camera, zoom, Game.GraphicsDevice.Viewport);
             foreach (var ent in _entities.ToList())
@@ -131,7 +129,7 @@ namespace DefendUranus.Activities
             SpriteBatch.End();
         }
 
-        private Vector2 DrawStars(Vector2 camera, float zoom)
+        void DrawStars(Vector2 camera, float zoom)
         {
             const float backgroundSlideFactor = 0.05f;
             const float backgroundMaxScale = 0.9f;
@@ -158,7 +156,6 @@ namespace DefendUranus.Activities
                     (int)(_stars.Height)).Scale(1 / ScaleZoom(zoom, starsMaxScale, starsMinScale)),
                     color: Color.White);
             SpriteBatch.End();
-            return camera;
         }
 
         bool IsGameEnded()
