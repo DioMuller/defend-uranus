@@ -42,6 +42,7 @@
     <Compile Include="Activities\TestActivity.cs" />
     <Compile Include="Entities\PhysicsEntity.cs" />
     <Compile Include="Entities\SteeringEntity.cs" />
+    <Compile Include="Helpers\CommonExtensions.cs" />
     <Compile Include="Helpers\GameInput.cs" />
     <Compile Include="Helpers\MonoGameExtensions.cs" />
     <Compile Include="Helpers\PlayerInput.cs" />
