@@ -15,7 +15,7 @@ namespace DefendUranus
         /// <summary>
         /// The entity that this behavior is attached to.
         /// </summary>
-        new public Ship Entity { get { return (Ship)base.Entity; } }
+        public Ship Ship { get { return (Ship)base.Entity; } }
 
         /// <summary>
         /// The Input controlling this behavior.
@@ -36,10 +36,10 @@ namespace DefendUranus
         {
             Input.Update();
 
-            Entity.Forces.Push(Vector2Extension.AngleToVector2(Entity.Rotation) * Input.Thrust * Entity.ThrotleForce);
-            Entity.ApplyRotation(Input.Rotate * Entity.RotationForce);
+            Ship.Rotate(Input.Rotate);
+            Ship.Accelerate(Input.Thrust);
 
-            // TODO: Apply a small negative force when firing.
+            // TODO: Ship.Fire (which shoots and applies a small negative force when firing).
         }
         #endregion
     }

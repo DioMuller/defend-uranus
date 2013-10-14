@@ -49,31 +49,6 @@ namespace DefendUranus.Activities
             //public bool SelectionConfirmed { get; set; }
             public IDictionary<ShipDescription, Vector2> IconScales { get; set; }
         }
-
-        /// <summary>
-        /// Description of the ship to be used in the GamePlay.
-        /// </summary>
-        public class ShipDescription
-        {
-            public ShipDescription(ContentManager content, string texturePath, float mass, string description)
-            {
-                Texture = content.Load<Texture2D>(texturePath);
-                TexturePath = texturePath;
-                Mass = mass;
-                Description = description;
-            }
-
-            // TODO: Change Texture to Sprite.
-            public Texture2D Texture { get; private set; }
-            public string TexturePath { get; set; }
-            public string Description { get; set; }
-            public float Mass { get; set; }
-
-            public Ship BuildShip()
-            {
-                return new Ship(TexturePath) { Mass = Mass };
-            }
-        }
         #endregion
 
         #region Attributes
@@ -286,4 +261,3 @@ namespace DefendUranus.Activities
         #endregion
     }
 }
-

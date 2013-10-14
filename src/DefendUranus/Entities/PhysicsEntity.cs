@@ -80,6 +80,11 @@ namespace DefendUranus.Entities
         /// Constant friction being applied on the body.
         /// </summary>
         public Vector2 Friction { get; set; }
+
+        /// <summary>
+        /// Constant friction being applied on the body's rotation.
+        /// </summary>
+        public float RotationFriction { get; set; }
         #endregion Properties
 
         #region Constructor
@@ -130,7 +135,7 @@ namespace DefendUranus.Entities
                 var angularAccelSecs = _angularForces * secs;
                 var sum = (AngularMomentum + angularAccelSecs / 2);
 
-                AngularMomentum *= (Vector2.One - Friction).Length() / Vector2.One.Length();
+                AngularMomentum *= 1 - RotationFriction;
                 var toRotate = sum * secs;
                 Rotation += toRotate;
                 AngularMomentum += angularAccelSecs;

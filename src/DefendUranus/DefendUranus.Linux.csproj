@@ -40,8 +40,11 @@
     <Compile Include="Activities\HowToPlay.cs" />
     <Compile Include="Activities\StartScreen.cs" />
     <Compile Include="Activities\TestActivity.cs" />
+    <Compile Include="Entities\ShipDescription.cs" />
+    <Compile Include="Entities\SpecialAttack.cs" />
     <Compile Include="Entities\PhysicsEntity.cs" />
     <Compile Include="Entities\SteeringEntity.cs" />
+    <Compile Include="Helpers\CommonExtensions.cs" />
     <Compile Include="Helpers\GameInput.cs" />
     <Compile Include="Helpers\MonoGameExtensions.cs" />
     <Compile Include="Helpers\PlayerInput.cs" />
