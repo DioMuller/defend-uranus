@@ -4,6 +4,7 @@ using MonoGameLib.Activities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using XNATweener;
 #endregion
@@ -92,7 +93,7 @@ namespace DefendUranus.Activities
         #endregion
 
         #region Animations
-        public async Task FloatAnimation(int duration, float start, float end, Action<float> valueStep, TweeningFunction easingFunction = null)
+        public async Task FloatAnimation(int duration, float startValue, float endValue, Action<float> valueStep, TweeningFunction easingFunction = null, CancellationToken ct = default(CancellationToken))
         {
             if (duration <= 0)
                 throw new ArgumentOutOfRangeException("duration", "Duration must be greater than zero");
@@ -103,15 +104,19 @@ namespace DefendUranus.Activities
             float curDuration = 0;
             do
             {
+                if (ct.IsCancellationRequested)
+                    return;
+
+                valueStep(GetValue(curDuration, duration, startValue, endValue, easingFunction));
+
                 var gt = await SyncDraw();
                 curDuration += (int)gt.ElapsedGameTime.TotalMilliseconds;
-
-                var curValue = curDuration / duration;
-                if (easingFunction != null)
-                    valueStep(easingFunction(curDuration, start, end - start, duration));
-                else
-                    valueStep(MathHelper.Lerp(start, end, MathHelper.Clamp(curValue, 0, 1)));
             } while (curDuration < duration);
+
+            if (ct.IsCancellationRequested)
+                return;
+
+            valueStep(GetValue(curDuration, duration, startValue, endValue, easingFunction));
         }
 
         public async Task FadeIn(int duration, Action<Color> colorStep)
@@ -134,6 +139,17 @@ namespace DefendUranus.Activities
             {
                 colorStep(new Color(Color.White, value));
             });
+        }
+        #endregion
+
+        #region Private
+        static float GetValue(float curDuration, int duration, float startValue, float endValue, TweeningFunction easing)
+        {
+            if (easing != null)
+                return easing(curDuration, startValue, endValue - startValue, duration);
+
+            var curValue = curDuration / duration;
+            return MathHelper.Lerp(startValue, endValue, MathHelper.Clamp(curValue, 0, 1));
         }
         #endregion
     }
