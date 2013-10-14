@@ -29,6 +29,13 @@ namespace DefendUranus.Activities
 
         const float MinZoomDistance = 150;
         const float MaxZoomDistance = 650;
+
+        const float BackgroundSlideFactor = 0.05f;
+        const float BackgroundMaxScale = 0.9f;
+        const float BackgroundMinScale = BackgroundMaxScale * 0.75f;
+        const float StarsSlideFactor = 0.4f;
+        const float StarsMaxScale = 1f;
+        const float StarsMinScale = StarsMaxScale * 0.6f;
         #endregion
 
         #region Nested
@@ -131,29 +138,22 @@ namespace DefendUranus.Activities
 
         void DrawStars(Vector2 camera, float zoom)
         {
-            const float backgroundSlideFactor = 0.05f;
-            const float backgroundMaxScale = 0.9f;
-            const float backgroundMinScale = 0.8f;
-            const float starsSlideFactor = 0.3f;
-            const float starsMaxScale = 1f;
-            const float starsMinScale = 0.8f;
-
             SpriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.LinearWrap, null, null);
             SpriteBatch.Draw(_background,
                 drawRectangle: GraphicsDevice.Viewport.Bounds,
                 sourceRectangle: new Rectangle(
-                    (int)(camera.X * backgroundSlideFactor),
-                    (int)(camera.Y * backgroundSlideFactor),
+                    (int)(camera.X * BackgroundSlideFactor),
+                    (int)(camera.Y * BackgroundSlideFactor),
                     (int)(_stars.Width),
-                    (int)(_stars.Height)).Scale(1 / ScaleZoom(zoom, backgroundMaxScale, backgroundMinScale)),
+                    (int)(_stars.Height)).Scale(1 / ScaleZoom(zoom, BackgroundMaxScale, BackgroundMinScale)),
                     color: Color.White);
             SpriteBatch.Draw(_stars,
                 drawRectangle: GraphicsDevice.Viewport.Bounds,
                 sourceRectangle: new Rectangle(
-                    (int)(camera.X * starsSlideFactor),
-                    (int)(camera.Y * starsSlideFactor),
+                    (int)(camera.X * StarsSlideFactor),
+                    (int)(camera.Y * StarsSlideFactor),
                     (int)(_stars.Width),
-                    (int)(_stars.Height)).Scale(1 / ScaleZoom(zoom, starsMaxScale, starsMinScale)),
+                    (int)(_stars.Height)).Scale(1 / ScaleZoom(zoom, StarsMaxScale, StarsMinScale)),
                     color: Color.White);
             SpriteBatch.End();
         }
