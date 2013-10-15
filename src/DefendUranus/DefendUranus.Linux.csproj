@@ -107,6 +107,7 @@
     <Folder Include="SteeringBehaviors\" />
     <Folder Include="Content\Sprites\" />
     <Folder Include="Entities\Behaviors\" />
+    <Folder Include="Content\Backgrounds\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\submodule\monogame-aux-lib\src\MonoGameLib.Core\MonoGameLib.Core.Linux.csproj">
@@ -148,6 +149,27 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Sprites\Meteoroid.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Sprites\Meteoroid-Alienform.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Sprites\Fatboy-FleeingFake.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Sprites\Explorer-WandererProbe.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Sprites\Avenger-PursuiterMissile.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Backgrounds\Background.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Backgrounds\Background2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Backgrounds\Uranus.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
