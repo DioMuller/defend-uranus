@@ -56,6 +56,11 @@ namespace DefendUranus.Activities
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Creates a new GamePlay based on the user setup.
+        /// </summary>
+        /// <param name="game">Current game.</param>
+        /// <param name="setup">Setup configuration.</param>
         public GamePlay(MainGame game, GamePlaySetup.Result setup)
             : base(game)
         {
@@ -97,6 +102,9 @@ namespace DefendUranus.Activities
         #endregion
 
         #region Activity Life-Cycle
+        /// <summary>
+        /// Prepares the activity to be activated.
+        /// </summary>
         protected override void Activating()
         {
             base.Activating();
@@ -107,6 +115,12 @@ namespace DefendUranus.Activities
         #endregion
 
         #region Game Loop
+        #region Update
+        /// <summary>
+        /// Update the current activity's state.
+        /// This method is invoked for each game loop.
+        /// </summary>
+        /// <param name="gameTime">Current game time.</param>
         protected override void Update(GameTime gameTime)
         {
             _duration += gameTime.ElapsedGameTime;
@@ -121,43 +135,10 @@ namespace DefendUranus.Activities
             UpdateCyclicSpace();
         }
 
-        protected override void Draw(GameTime gameTime)
-        {
-            Vector2 camera = (_ships.Last().Position + _ships.First().Position) / 2;
-            float zoom = GetZoomFactor();
-
-            GraphicsDevice.Clear(Color.Black);
-
-            DrawStars(camera, zoom);
-
-            SpriteBatch.Begin(camera, zoom, Game.GraphicsDevice.Viewport);
-            foreach (var ent in _entities.ToList())
-                ent.Draw(gameTime, SpriteBatch);
-            SpriteBatch.End();
-        }
-
-        void DrawStars(Vector2 camera, float zoom)
-        {
-            SpriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.LinearWrap, null, null);
-            SpriteBatch.Draw(_background,
-                drawRectangle: GraphicsDevice.Viewport.Bounds,
-                sourceRectangle: new Rectangle(
-                    (int)(camera.X * BackgroundSlideFactor),
-                    (int)(camera.Y * BackgroundSlideFactor),
-                    (int)(_stars.Width),
-                    (int)(_stars.Height)).Scale(1 / ScaleZoom(zoom, BackgroundMaxScale, BackgroundMinScale)),
-                    color: Color.White);
-            SpriteBatch.Draw(_stars,
-                drawRectangle: GraphicsDevice.Viewport.Bounds,
-                sourceRectangle: new Rectangle(
-                    (int)(camera.X * StarsSlideFactor),
-                    (int)(camera.Y * StarsSlideFactor),
-                    (int)(_stars.Width),
-                    (int)(_stars.Height)).Scale(1 / ScaleZoom(zoom, StarsMaxScale, StarsMinScale)),
-                    color: Color.White);
-            SpriteBatch.End();
-        }
-
+        /// <summary>
+        /// Check if the GamePlay is complete.
+        /// </summary>
+        /// <returns>True if the activity has exited.</returns>
         bool IsGameEnded()
         {
             // Check game abort
@@ -182,25 +163,9 @@ namespace DefendUranus.Activities
             return false;
         }
 
-        private float GetZoomFactor()
-        {
-            var dist = _ships.Last().Position - _ships.First().Position;
-            var distLength = dist.Length();
-
-            if (distLength < MinZoomDistance)
-                return MaxZoomFactor;
-            else if (distLength > MaxZoomDistance)
-                return MinZoomFactor;
-
-            return XNATweener.Cubic.EaseOut(distLength - MinZoomDistance, MaxZoomFactor, MinZoomFactor - MaxZoomFactor, MaxZoomDistance - MinZoomDistance);
-        }
-
-        private float ScaleZoom(float zoom, float max, float min)
-        {
-            float status = (zoom - MinZoomFactor) / (MaxZoomFactor - MinZoomFactor);
-            return min + status * (max - min);
-        }
-
+        /// <summary>
+        /// Make the ships loop if they get out of the screen.
+        /// </summary>
         void UpdateCyclicSpace()
         {
             var p1 = _ships[0];
@@ -222,6 +187,95 @@ namespace DefendUranus.Activities
             }
         }
         #endregion
-    }
 
+        #region Draw
+        /// <summary>
+        /// Draw the current activity to the screen.
+        /// </summary>
+        /// <param name="gameTime">Current game time.</param>
+        protected override void Draw(GameTime gameTime)
+        {
+            Vector2 camera = (_ships.Last().Position + _ships.First().Position) / 2;
+            float zoom = GetZoomFactor();
+
+            GraphicsDevice.Clear(Color.Black);
+
+            DrawStars(camera, zoom);
+            DrawEntities(gameTime, camera, zoom);
+        }
+
+        /// <summary>
+        /// Draw all the entities to the screen.
+        /// </summary>
+        /// <param name="gameTime">Current game time.</param>
+        /// <param name="camera">Current camera position.</param>
+        /// <param name="zoom">Current zoom level.</param>
+        void DrawEntities(GameTime gameTime, Vector2 camera, float zoom)
+        {
+            SpriteBatch.Begin(camera, zoom, Game.GraphicsDevice.Viewport);
+            foreach (var ent in _entities.ToList())
+                ent.Draw(gameTime, SpriteBatch);
+            SpriteBatch.End();
+        }
+
+        /// <summary>
+        /// Draw the stars background, based on the camera position.
+        /// </summary>
+        /// <param name="camera">Current camera position.</param>
+        /// <param name="zoom">Current zoom level.</param>
+        void DrawStars(Vector2 camera, float zoom)
+        {
+            SpriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.LinearWrap, null, null);
+            SpriteBatch.Draw(_background,
+                drawRectangle: GraphicsDevice.Viewport.Bounds,
+                sourceRectangle: new Rectangle(
+                    (int)(camera.X * BackgroundSlideFactor),
+                    (int)(camera.Y * BackgroundSlideFactor),
+                    (int)(_stars.Width),
+                    (int)(_stars.Height)).Scale(1 / ScaleZoom(zoom, BackgroundMaxScale, BackgroundMinScale)),
+                    color: Color.White);
+            SpriteBatch.Draw(_stars,
+                drawRectangle: GraphicsDevice.Viewport.Bounds,
+                sourceRectangle: new Rectangle(
+                    (int)(camera.X * StarsSlideFactor),
+                    (int)(camera.Y * StarsSlideFactor),
+                    (int)(_stars.Width),
+                    (int)(_stars.Height)).Scale(1 / ScaleZoom(zoom, StarsMaxScale, StarsMinScale)),
+                    color: Color.White);
+            SpriteBatch.End();
+        }
+
+        /// <summary>
+        /// Gets the current zoom factor based on the ships distance.
+        /// </summary>
+        /// <returns>The zoom factor to be used by the game.</returns>
+        float GetZoomFactor()
+        {
+            var dist = _ships.Last().Position - _ships.First().Position;
+            var distLength = dist.Length();
+
+            if (distLength < MinZoomDistance)
+                return MaxZoomFactor;
+            else if (distLength > MaxZoomDistance)
+                return MinZoomFactor;
+
+            return XNATweener.Cubic.EaseOut(distLength - MinZoomDistance, MaxZoomFactor, MinZoomFactor - MaxZoomFactor, MaxZoomDistance - MinZoomDistance);
+        }
+
+        /// <summary>
+        /// Converts a zoom factor to another scale.
+        /// This is used to minimize the zoom applied to the stars.
+        /// </summary>
+        /// <param name="zoom">Current zoom level.</param>
+        /// <param name="max">Maximum zoom on the new scale.</param>
+        /// <param name="min">Minimum zoom on the new scale.</param>
+        /// <returns>The scaled zoom factor.</returns>
+        float ScaleZoom(float zoom, float max, float min)
+        {
+            float status = (zoom - MinZoomFactor) / (MaxZoomFactor - MinZoomFactor);
+            return min + status * (max - min);
+        }
+        #endregion
+        #endregion
+    }
 }
