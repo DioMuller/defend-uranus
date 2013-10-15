@@ -131,13 +131,13 @@ namespace DefendUranus.Helpers
         #region Get State
         InputState GetState()
         {
-            var gamePad1 = GamePad.GetState(PlayerIndex.One);
-            var gamePad2 = GamePad.GetState(PlayerIndex.Two);
+            var gamePad1 = GamePad.GetState(PlayerIndex.One, GamePadDeadZone.IndependentAxes);
+            var gamePad2 = GamePad.GetState(PlayerIndex.Two, GamePadDeadZone.IndependentAxes);
             var kbState = Keyboard.GetState();
 
             if (PlayerIndex == PlayerIndex.One)
             {
-                if (gamePad1.IsConnected && gamePad2.IsConnected)
+                if (gamePad1.IsConnected)
                     return GetState(gamePad1);
                 return GetState(kbState, PlayerIndex.One);
             }
@@ -145,20 +145,28 @@ namespace DefendUranus.Helpers
             if (gamePad2.IsConnected)
                 return GetState(gamePad2);
 
-            if (gamePad1.IsConnected)
-                return GetState(gamePad1);
-
             return GetState(kbState, PlayerIndex.Two);
         }
 
         InputState GetState(GamePadState state)
         {
+            const float analogToDigital = 0.4f;
+
+            var rotDir = state.ThumbSticks.Left.X > 0 ? 1 : -1;
+
             return new InputState
             {
-                Rotate = state.ThumbSticks.Left.X,
-                Thrust = MathHelper.Max(state.Triggers.Left, state.Triggers.Right),
+                Rotate = Math.Abs(state.ThumbSticks.Left.X) <= analogToDigital ? 0 : state.ThumbSticks.Left.X / 0.8f - 0.25f * rotDir,
+                Thrust = state.Triggers.Right - state.Triggers.Left,
                 UseSpecialPower = state.Buttons.X == ButtonState.Pressed,
-                FireMainWeapon = state.Buttons.B == ButtonState.Pressed
+                FireMainWeapon = state.Buttons.B == ButtonState.Pressed,
+
+                Confirm = state.IsButtonDown(Buttons.Start),
+                Cancel = state.IsButtonDown(Buttons.Back),
+                Up = state.IsButtonDown(Buttons.DPadUp) || state.ThumbSticks.Left.Y > analogToDigital,
+                Down = state.IsButtonDown(Buttons.DPadDown) || state.ThumbSticks.Left.Y < -analogToDigital,
+                Left = state.IsButtonDown(Buttons.DPadLeft) || state.ThumbSticks.Left.X < -analogToDigital,
+                Right = state.IsButtonDown(Buttons.DPadRight) || state.ThumbSticks.Left.X > analogToDigital,
             };
         }
 

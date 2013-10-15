@@ -149,7 +149,7 @@ namespace DefendUranus.Helpers
             var gamePad2 = GamePad.GetState(PlayerIndex.Two);
             var kbState = Keyboard.GetState();
 
-            if (gamePad1.IsConnected && gamePad2.IsConnected)
+            if (gamePad1.IsConnected)
                 return GetState(gamePad1);
             return GetState(kbState);
         }
@@ -158,9 +158,9 @@ namespace DefendUranus.Helpers
         {
             return new InputState
             {
-                Confirm = state.IsButtonDown(Buttons.A),
+                Confirm = state.IsButtonDown(Buttons.Start),
                 TogglePause = state.IsButtonDown(Buttons.Start),
-                Cancel = state.IsButtonDown(Buttons.B),
+                Cancel = state.IsButtonDown(Buttons.Back),
                 Help = state.IsButtonDown(Buttons.BigButton),
                 Up = state.IsButtonDown(Buttons.DPadUp) || state.ThumbSticks.Left.Y > 0.4,
                 Down = state.IsButtonDown(Buttons.DPadDown) || state.ThumbSticks.Left.Y < -0.4,
