@@ -53,6 +53,7 @@ namespace DefendUranus.Activities
         private List<Entities.PhysicsEntity> _entities;
         private List<Ship> _ships;
         private Texture2D _background, _stars;
+        private Color _drawColor;
         #endregion
 
         #region Constructors
@@ -103,6 +104,20 @@ namespace DefendUranus.Activities
 
         #region Activity Life-Cycle
         /// <summary>
+        /// Fade-in / Fade-out the screen before / after completion.
+        /// </summary>
+        /// <returns>A task that represents the activity execution.</returns>
+        protected async override Task<GamePlay.Result> RunActivity()
+        {
+            await FadeIn(100, c => _drawColor = c);
+
+            var result = await base.RunActivity();
+
+            await FadeOut(100, c => _drawColor = c);
+            return result;
+        }
+
+        /// <summary>
         /// Prepares the activity to be activated.
         /// </summary>
         protected override void Activating()
@@ -123,6 +138,8 @@ namespace DefendUranus.Activities
         /// <param name="gameTime">Current game time.</param>
         protected override void Update(GameTime gameTime)
         {
+            base.Update(gameTime);
+
             _duration += gameTime.ElapsedGameTime;
             _gameInput.Update();
 
@@ -195,6 +212,8 @@ namespace DefendUranus.Activities
         /// <param name="gameTime">Current game time.</param>
         protected override void Draw(GameTime gameTime)
         {
+            base.Draw(gameTime);
+
             Vector2 camera = (_ships.Last().Position + _ships.First().Position) / 2;
             float zoom = GetZoomFactor();
 
@@ -214,7 +233,7 @@ namespace DefendUranus.Activities
         {
             SpriteBatch.Begin(camera, zoom, Game.GraphicsDevice.Viewport);
             foreach (var ent in _entities.ToList())
-                ent.Draw(gameTime, SpriteBatch);
+                ent.Draw(gameTime, SpriteBatch, _drawColor);
             SpriteBatch.End();
         }
 
@@ -225,7 +244,7 @@ namespace DefendUranus.Activities
         /// <param name="zoom">Current zoom level.</param>
         void DrawStars(Vector2 camera, float zoom)
         {
-            SpriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.LinearWrap, null, null);
+            SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.LinearWrap, null, null);
             SpriteBatch.Draw(_background,
                 drawRectangle: GraphicsDevice.Viewport.Bounds,
                 sourceRectangle: new Rectangle(
@@ -233,7 +252,7 @@ namespace DefendUranus.Activities
                     (int)(camera.Y * BackgroundSlideFactor),
                     (int)(_stars.Width),
                     (int)(_stars.Height)).Scale(1 / ScaleZoom(zoom, BackgroundMaxScale, BackgroundMinScale)),
-                    color: Color.White);
+                    color: _drawColor);
             SpriteBatch.Draw(_stars,
                 drawRectangle: GraphicsDevice.Viewport.Bounds,
                 sourceRectangle: new Rectangle(
@@ -241,7 +260,7 @@ namespace DefendUranus.Activities
                     (int)(camera.Y * StarsSlideFactor),
                     (int)(_stars.Width),
                     (int)(_stars.Height)).Scale(1 / ScaleZoom(zoom, StarsMaxScale, StarsMinScale)),
-                    color: Color.White);
+                    color: _drawColor);
             SpriteBatch.End();
         }
 

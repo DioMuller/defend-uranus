@@ -32,6 +32,8 @@ namespace DefendUranus.Activities
         #region Game Loop
         protected override void Update(GameTime gameTime)
         {
+            base.Update(gameTime);
+
             _gameInput.Update();
             if (_gameInput.Cancel)
                 Exit(false);
@@ -39,6 +41,8 @@ namespace DefendUranus.Activities
 
         protected override void Draw(GameTime gameTime)
         {
+            base.Draw(gameTime);
+
             GraphicsDevice.Clear(Color.Black);
 
             //SpriteBatch.Begin();

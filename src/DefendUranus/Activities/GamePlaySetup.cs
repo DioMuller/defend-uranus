@@ -54,6 +54,7 @@ namespace DefendUranus.Activities
         #region Attributes
         readonly public List<ShipDescription> _ships;
         readonly int _spacing;
+        Color _drawColor;
 
         Result _result;
         PlayerSelectionInfo _p1Info, _p2Info;
@@ -78,6 +79,23 @@ namespace DefendUranus.Activities
         #endregion
 
         #region Activity Life-Cycle
+        /// <summary>
+        /// Fade-in / Fade-out the screen before / after completion.
+        /// </summary>
+        /// <returns>A task that represents the activity execution.</returns>
+        protected async override Task<GamePlaySetup.Result> RunActivity()
+        {
+            await FadeIn(100, c => _drawColor = c);
+
+            var result = await base.RunActivity();
+
+            await FadeOut(100, c => _drawColor = c);
+            return result;
+        }
+
+        /// <summary>
+        /// Prepares the activity to be activated.
+        /// </summary>
         protected override void Activating()
         {
             base.Activating();
@@ -96,6 +114,8 @@ namespace DefendUranus.Activities
         /// <param name="gameTime">Current game time.</param>
         protected override void Update(GameTime gameTime)
         {
+            base.Update(gameTime);
+
             UpdateInputs();
 
             if (IsSetupComplete())
@@ -103,8 +123,6 @@ namespace DefendUranus.Activities
 
             CheckPlayerInput(_p1Info, _p1Input);
             CheckPlayerInput(_p2Info, _p2Input);
-
-            base.Update(gameTime);
         }
 
         /// <summary>
@@ -165,7 +183,7 @@ namespace DefendUranus.Activities
             base.Draw(gameTime);
             GraphicsDevice.Clear(Color.DarkGreen);
 
-            SpriteBatch.Begin();
+            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);
             DrawPlayerSelection(gameTime, _result.Player1Selection, _p1Info, 200);
             DrawPlayerSelection(gameTime, _result.Player2Selection, _p2Info, 400);
             SpriteBatch.End();
@@ -192,7 +210,7 @@ namespace DefendUranus.Activities
                     position: new Vector2(x + info.DrawShift, height),
                     scale: info.IconScales[ship],
                     origin: new Vector2(ship.Texture.Width / 2, ship.Texture.Height / 2),
-                    color: Color.White);
+                    color: _drawColor);
             }
         }
         #endregion
