@@ -12,7 +12,19 @@ namespace DefendUranus.Entities
     public class PhysicsEntity : Entity
     {
         #region Attributes
-        float _angularForces;
+        /// <summary>
+        /// Angular forces applied once on the body.
+        /// </summary>
+        float _angularForce;
+        /// <summary>
+        /// Forces/Accelerations that are constantly being applied to the body.
+        /// </summary>
+        Vector2 _acceleration;
+        /// <summary>
+        /// Forces that will be applied only once to the body.
+        /// These forces are not affected by game time.
+        /// </summary>
+        Vector2 _instantaneousForce;
         #endregion
 
         #region Properties
@@ -37,6 +49,9 @@ namespace DefendUranus.Entities
             }
         }
 
+        /// <summary>
+        /// Computes the actual speed of the entity.
+        /// </summary>
         public float Speed
         {
             get
@@ -55,16 +70,6 @@ namespace DefendUranus.Entities
         /// Limit the entity maximum rotation speed.
         /// </summary>
         public float MaxRotationSpeed { get; set; }
-
-        /// <summary>
-        /// Constant forces applied on the body.
-        /// </summary>
-        public Dictionary<string, Vector2> ConstantForces { get; set; }
-
-        /// <summary>
-        /// Forces applied once on the body.
-        /// </summary>
-        public Stack<Vector2> Forces { get; set; }
 
         /// <summary>
         /// Body Mass.
@@ -90,9 +95,6 @@ namespace DefendUranus.Entities
         #region Constructor
         public PhysicsEntity() : base()
         {
-            Forces = new Stack<Vector2>();
-            ConstantForces = new Dictionary<string,Vector2>();
-
             Friction = Vector2.Zero;
             Momentum = Vector2.Zero;
         }
@@ -102,37 +104,23 @@ namespace DefendUranus.Entities
         /// <summary>
         /// Updates the Physics of the entity.
         /// </summary>
-        /// <param name="gameTime"></param>
+        /// <param name="gameTime">How much time have passed since the last update.</param>
         public override void Update(GameTime gameTime)
         {
-            Vector2 forces = Vector2.Zero;
-            Vector2 instantForces = Vector2.Zero;
             float secs = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            #region Calculate Forces
-            //Constant forces
-            foreach (Vector2 force in ConstantForces.Values)
-            {
-                forces += force;
-            }
+            Vector2 accelSecs = _acceleration * secs;
 
-            //Forces applied once
-            while (Forces.Count > 0)
-            {
-                instantForces += (Forces.Pop() / Mass);
-            }
-            #endregion Calculate Forces
-
-            Vector2 acceleration = (forces / Mass);
-            Vector2 accelSecs = acceleration * secs;
-
-            Momentum *= (Vector2.One - Friction);
+            Momentum += _instantaneousForce;
+            Momentum *= Vector2.One - Friction;
             Position += WorldHelper.MetersToPixels((Momentum + accelSecs / 2) * secs);
-            Momentum += (accelSecs + instantForces);
+            Momentum += accelSecs;
 
-            if (!RotateToMomentum)
+            if(RotateToMomentum)
+                Rotation = Momentum.GetAngle();
+            else
             {
-                var angularAccelSecs = _angularForces * secs;
+                var angularAccelSecs = _angularForce * secs;
                 var sum = (AngularMomentum + angularAccelSecs / 2);
 
                 AngularMomentum *= 1 - RotationFriction;
@@ -140,11 +128,10 @@ namespace DefendUranus.Entities
                 Rotation += toRotate;
                 AngularMomentum += angularAccelSecs;
 
-                _angularForces = 0;
+                _angularForce = 0;
             }
 
-            if (RotateToMomentum)
-                Rotation = Momentum.GetAngle();
+            _instantaneousForce = _acceleration = Vector2.Zero;
 
             AngularMomentum = MathHelper.Clamp(AngularMomentum, -MaxRotationSpeed, MaxRotationSpeed);
             if (Speed > MaxSpeed)
@@ -153,9 +140,44 @@ namespace DefendUranus.Entities
             base.Update(gameTime);
         }
 
+        /// <summary>
+        /// Apply a rotation force to the body.
+        /// </summary>
+        /// <param name="force">How much force is being applied.</param>
         public void ApplyRotation(float force)
         {
-            _angularForces += force / Mass;
+#if DEBUG
+            if (RotateToMomentum)
+                throw new InvalidOperationException("This entity is set to RotateToMomentum and manual rotation is disabled.");
+#endif
+
+            _angularForce += force / Mass;
+        }
+
+        /// <summary>
+        /// Apply a force to the body.
+        /// </summary>
+        /// <param name="force">How much force to be applied.</param>
+        /// <param name="instantaneous">
+        /// Indicates if this force will be applied only once to this body.
+        /// Leave it to False if this force is being applied on every game loop.
+        /// </param>
+        public void ApplyForce(Vector2 force, bool instantaneous = false)
+        {
+            if (instantaneous)
+                _instantaneousForce += force / Mass;
+            else
+                _acceleration += force / Mass;
+        }
+
+        /// <summary>
+        /// Apply an acceleration to this body.
+        /// The acceleration is applied regardless of the body's mass.
+        /// </summary>
+        /// <param name="acceleration"></param>
+        public void ApplyAcceleration(Vector2 acceleration)
+        {
+            _acceleration += acceleration;
         }
         #endregion Methods
     }

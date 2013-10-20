@@ -30,14 +30,9 @@ namespace DefendUranus.Entities
         /// <param name="gameTime">Current game time.</param>
         public override void Update(GameTime gameTime)
         {
-            Vector2 steering = Vector2.Zero;
-
             foreach( SteeringBehavior sb in SteeringBehaviors )
-            {
-                steering += sb.Calculate(gameTime);
-            }
+                ApplyForce(sb.Calculate(gameTime));
 
-            ConstantForces["Steering"] = steering;
             base.Update(gameTime);
         }
         #endregion Methods

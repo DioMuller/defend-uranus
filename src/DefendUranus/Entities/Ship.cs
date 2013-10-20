@@ -55,7 +55,7 @@ namespace DefendUranus.Entities
 
         public void Accelerate(float thrust)
         {
-            Forces.Push(Vector2Extension.AngleToVector2(Rotation) * thrust * ThrotleForce);
+            ApplyForce(Vector2Extension.AngleToVector2(Rotation) * thrust * ThrotleForce, instantaneous: true);
         }
     }
 }
