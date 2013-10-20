@@ -40,7 +40,7 @@ namespace DefendUranus.Entities
             RotationForce = 10;
             MaxRotationSpeed = 3;
             MaxSpeed = 10;
-            ThrotleForce = 1;
+            ThrotleForce = 20;
         }
 
         public void Rotate(float force)
@@ -55,7 +55,7 @@ namespace DefendUranus.Entities
 
         public void Accelerate(float thrust)
         {
-            ApplyForce(Vector2Extension.AngleToVector2(Rotation) * thrust * ThrotleForce, instantaneous: true);
+            ApplyForce(Vector2Extension.AngleToVector2(Rotation) * thrust * ThrotleForce);
         }
     }
 }
