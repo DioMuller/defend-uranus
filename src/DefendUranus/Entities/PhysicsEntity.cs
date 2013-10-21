@@ -90,6 +90,11 @@ namespace DefendUranus.Entities
         /// Constant friction being applied on the body's rotation.
         /// </summary>
         public float RotationFriction { get; set; }
+
+        /// <summary>
+        /// How much this entity can bounce on collision.
+        /// </summary>
+        public float Restitution { get; set; }
         #endregion Properties
 
         #region Constructor

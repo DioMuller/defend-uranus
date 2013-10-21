@@ -146,10 +146,30 @@ namespace DefendUranus.Activities
             if (IsGameEnded())
                 return;
 
-            foreach (var ent in _entities.ToList())
+            UpdateEntities(gameTime);
+            UpdateCyclicSpace();
+        }
+
+        /// <summary>
+        /// Update all the entities and handle collisions.
+        /// </summary>
+        /// <param name="gameTime"></param>
+        void UpdateEntities(GameTime gameTime)
+        {
+            var upEnt = _entities.ToList();
+            for (int i = 0; i < upEnt.Count; i++)
+            {
+                var ent = upEnt[i];
                 ent.Update(gameTime);
 
-            UpdateCyclicSpace();
+                // Handle collision
+                for (int j = i + 1; j < upEnt.Count; j++)
+                {
+                    var cEnt = upEnt[j];
+                    if (ent.RotatedCollisionArea.Intersects(cEnt.RotatedCollisionArea))
+                        ResolveCollision(ent, cEnt);
+                }
+            }
         }
 
         /// <summary>
@@ -295,6 +315,41 @@ namespace DefendUranus.Activities
             return min + status * (max - min);
         }
         #endregion
+        #endregion
+
+        #region Private
+        /// <summary>
+        /// Transfers energy from one entity to another.
+        /// </summary>
+        /// <param name="a">Entity A</param>
+        /// <param name="b">Entity B</param>
+        static void ResolveCollision(PhysicsEntity a, PhysicsEntity b)
+        {
+            var normal = a.Position - b.Position;
+            normal.Normalize();
+
+            // Calculate relative velocity
+            Vector2 rv = b.Momentum - a.Momentum;
+
+            // Calculate relative velocity in terms of the normal direction
+            float velAlongNormal = Vector2.Dot(rv, normal);
+
+            // Do not resolve if velocities are separating
+            if (velAlongNormal < 0)
+                return;
+
+            // Calculate restitution (bounciness)
+            float e = MathHelper.Min(a.Restitution, b.Restitution);
+
+            // Calculate impulse scalar
+            float j = -(1 + e) * velAlongNormal;
+            j /= 1 / a.Mass + 1 / b.Mass;
+
+            // Apply impulse
+            Vector2 impulse = j * normal;
+            a.ApplyForce(-impulse, instantaneous: true);
+            b.ApplyForce(impulse, instantaneous: true);
+        }
         #endregion
     }
 }

@@ -41,6 +41,7 @@ namespace DefendUranus.Entities
             MaxRotationSpeed = 3;
             MaxSpeed = 10;
             ThrotleForce = 20;
+            Restitution = 0.5f;
         }
 
         public void Rotate(float force)
