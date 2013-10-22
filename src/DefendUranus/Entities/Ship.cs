@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DefendUranus.Entities
 {
@@ -14,11 +16,11 @@ namespace DefendUranus.Entities
     {
         #region Constants
         TimeSpan MainWeaponDelay = TimeSpan.FromMilliseconds(100);
+        TimeSpan MainWeaponRecoilDelay = TimeSpan.FromMilliseconds(300);
         #endregion
 
         #region Attributes
         GamePlay _gamePlay;
-        TimeSpan _lastShot;
         #endregion
 
         #region Properties
@@ -62,29 +64,39 @@ namespace DefendUranus.Entities
             ApplyRotation(force * RotationForce);
         }
 
-        public void Fire(GameTime gameTime)
+        public async Task FireMainWeapon(CancellationToken cancellation)
         {
-            if (gameTime.TotalGameTime < _lastShot + MainWeaponDelay)
-                return;
-
-            _lastShot = gameTime.TotalGameTime;
-
-            var direction = Vector2Extension.AngleToVector2(Rotation);
-
-            var laser = new PhysicsEntity("Sprites/Laser")
+            while (!cancellation.IsCancellationRequested /*&& tem tiro*/)
             {
-                Position = Position + direction * 12,
-                Mass = 1,
-                MaxSpeed = 100,
-                RotateToMomentum = true
-            };
-            laser.ApplyForce(direction * laser.MaxSpeed, instantaneous: true);
-            _gamePlay.AddEntity(laser);
+                FireLaser();
+                // tiro --
+                await TaskEx.Delay(MainWeaponDelay);
+            }
+            await TaskEx.Delay(MainWeaponRecoilDelay);
         }
 
         public void Accelerate(float thrust)
         {
             ApplyForce(Vector2Extension.AngleToVector2(Rotation) * thrust * ThrotleForce);
         }
+
+        #region Private
+        void FireLaser()
+        {
+            var direction = Vector2Extension.AngleToVector2(Rotation);
+
+            var laser = new PhysicsEntity("Sprites/Laser")
+            {
+                Position = Position + direction,
+                Momentum = Momentum,
+                Mass = 1,
+                MaxSpeed = 50,
+                RotateToMomentum = true
+            };
+            laser.ApplyForce(direction * laser.MaxSpeed, instantaneous: true);
+            ApplyForce(direction * laser.MaxSpeed * -0.001f, instantaneous: true);
+            _gamePlay.AddEntity(laser);
+        }
+        #endregion
     }
 }

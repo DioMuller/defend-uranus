@@ -176,7 +176,8 @@ namespace DefendUranus.Activities
                 for (int j = i + 1; j < upEnt.Count; j++)
                 {
                     var cEnt = upEnt[j];
-                    if (ent.RotatedCollisionArea.Intersects(cEnt.RotatedCollisionArea))
+                    var dist = ent.Position - cEnt.Position;
+                    if (dist.Length() < ent.Size.Y / 2 + cEnt.Size.Y / 2)
                         ResolveCollision(ent, cEnt);
                 }
             }

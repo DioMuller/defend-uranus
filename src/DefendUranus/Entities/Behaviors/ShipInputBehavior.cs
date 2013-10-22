@@ -6,11 +6,17 @@ using Microsoft.Xna.Framework.Input;
 using DefendUranus.Entities;
 using MonoGameLib.Core.Extensions;
 using DefendUranus.Helpers;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DefendUranus
 {
     class ShipInputBehavior : Behavior
     {
+        #region Attributes
+        readonly AsyncOperation _mainWeapon;
+        #endregion
+
         #region Properties
         /// <summary>
         /// The entity that this behavior is attached to.
@@ -28,10 +34,16 @@ namespace DefendUranus
             : base(parent)
         {
             Input = new PlayerInput(playerIndex);
+            _mainWeapon = new AsyncOperation(Ship.FireMainWeapon);
         }
         #endregion
 
         #region Game Loop
+        /// <summary>
+        /// Controls the entity associated with this behavior.
+        /// This method is invoked for each game loop.
+        /// </summary>
+        /// <param name="gameTime">Current game time.</param>
         public override void Update(GameTime gameTime)
         {
             Input.Update();
@@ -39,10 +51,7 @@ namespace DefendUranus
             Ship.Rotate(Input.Rotate);
             Ship.Accelerate(Input.Thrust);
 
-            if(Input.FireMainWeapon)
-                Ship.Fire(gameTime);
-
-            // TODO: Ship.Fire (which shoots and applies a small negative force when firing).
+            _mainWeapon.IsActive = Input.FireMainWeapon;
         }
         #endregion
     }
