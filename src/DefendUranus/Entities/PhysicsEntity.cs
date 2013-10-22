@@ -6,6 +6,7 @@ using DefendUranus.Helpers;
 using Microsoft.Xna.Framework;
 using MonoGameLib.Core.Entities;
 using MonoGameLib.Core.Extensions;
+using MonoGameLib.Core.Sprites;
 
 namespace DefendUranus.Entities
 {
@@ -97,11 +98,17 @@ namespace DefendUranus.Entities
         public float Restitution { get; set; }
         #endregion Properties
 
-        #region Constructor
-        public PhysicsEntity() : base()
+        #region Constructors
+        public PhysicsEntity()
         {
-            Friction = Vector2.Zero;
-            Momentum = Vector2.Zero;
+        }
+
+        public PhysicsEntity(string texturePath)
+        {
+            Sprite = new Sprite(texturePath, default(Point), 0);
+            Sprite.Animations.Add(new Animation("default", 0, 0, 0));
+            Sprite.Origin = new Vector2(Sprite.FrameSize.X, Sprite.FrameSize.Y) / 2;
+            Sprite.ChangeAnimation(0);
         }
         #endregion Constructor
 

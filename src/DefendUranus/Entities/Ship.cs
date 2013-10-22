@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using DefendUranus.Activities;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameLib.Core.Extensions;
 using MonoGameLib.Core.Sprites;
@@ -9,8 +10,17 @@ using System.Text;
 
 namespace DefendUranus.Entities
 {
-    public class Ship : PhysicsEntity
+    class Ship : PhysicsEntity
     {
+        #region Constants
+        TimeSpan MainWeaponDelay = TimeSpan.FromMilliseconds(100);
+        #endregion
+
+        #region Attributes
+        GamePlay _gamePlay;
+        TimeSpan _lastShot;
+        #endregion
+
         #region Properties
         /// <summary>
         /// How much force is applied to the ship's engine.
@@ -29,12 +39,10 @@ namespace DefendUranus.Entities
         public float RotationStabilizer { get; set; }
         #endregion
 
-        public Ship(string texturePath) : base()
+        public Ship(GamePlay gamePlay, string texturePath)
+            : base(texturePath)
         {
-            Sprite = new Sprite(texturePath, new Point(32, 32), 0);
-            Sprite.Animations.Add(new Animation("default", 0, 0, 0));
-            Sprite.Origin = new Vector2(Sprite.FrameSize.X, Sprite.FrameSize.Y) / 2;
-            Sprite.ChangeAnimation(0);
+            _gamePlay = gamePlay;
 
             RotationFriction = 0.1f;
             RotationForce = 10;
@@ -52,6 +60,26 @@ namespace DefendUranus.Entities
                 RotationFriction = RotationStabilizer;
 
             ApplyRotation(force * RotationForce);
+        }
+
+        public void Fire(GameTime gameTime)
+        {
+            if (gameTime.TotalGameTime < _lastShot + MainWeaponDelay)
+                return;
+
+            _lastShot = gameTime.TotalGameTime;
+
+            var direction = Vector2Extension.AngleToVector2(Rotation);
+
+            var laser = new PhysicsEntity("Sprites/Laser")
+            {
+                Position = Position + direction * 12,
+                Mass = 1,
+                MaxSpeed = 100,
+                RotateToMomentum = true
+            };
+            laser.ApplyForce(direction * laser.MaxSpeed, instantaneous: true);
+            _gamePlay.AddEntity(laser);
         }
 
         public void Accelerate(float thrust)

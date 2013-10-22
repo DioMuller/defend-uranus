@@ -9,7 +9,7 @@ using DefendUranus.Helpers;
 
 namespace DefendUranus
 {
-    public class ShipInputBehavior : Behavior
+    class ShipInputBehavior : Behavior
     {
         #region Properties
         /// <summary>
@@ -38,6 +38,9 @@ namespace DefendUranus
 
             Ship.Rotate(Input.Rotate);
             Ship.Accelerate(Input.Thrust);
+
+            if(Input.FireMainWeapon)
+                Ship.Fire(gameTime);
 
             // TODO: Ship.Fire (which shoots and applies a small negative force when firing).
         }

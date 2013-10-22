@@ -65,8 +65,8 @@ namespace DefendUranus.Activities
         public GamePlay(MainGame game, GamePlaySetup.Result setup)
             : base(game)
         {
-            var p1Ship = setup.Player1Selection.BuildShip();
-            var p2Ship = setup.Player2Selection.BuildShip();
+            var p1Ship = setup.Player1Selection.BuildShip(this);
+            var p2Ship = setup.Player2Selection.BuildShip(this);
 
             // TODO: Set initial position based on ship size
             p1Ship.Position = new Vector2(-100, 0);
@@ -156,10 +156,20 @@ namespace DefendUranus.Activities
         /// <param name="gameTime"></param>
         void UpdateEntities(GameTime gameTime)
         {
+            const int maxDistanceSqr = 1000000;
+
+            Vector2 camera = (_ships.Last().Position + _ships.First().Position) / 2;
+
             var upEnt = _entities.ToList();
             for (int i = 0; i < upEnt.Count; i++)
             {
                 var ent = upEnt[i];
+                if ((ent.Position - camera).LengthSquared() > maxDistanceSqr)
+                {
+                    _entities.Remove(ent);
+                    continue;
+                }
+
                 ent.Update(gameTime);
 
                 // Handle collision
@@ -349,6 +359,13 @@ namespace DefendUranus.Activities
             Vector2 impulse = j * normal;
             a.ApplyForce(-impulse, instantaneous: true);
             b.ApplyForce(impulse, instantaneous: true);
+        }
+        #endregion
+
+        #region Public
+        public void AddEntity(PhysicsEntity entity)
+        {
+            _entities.Add(entity);
         }
         #endregion
     }

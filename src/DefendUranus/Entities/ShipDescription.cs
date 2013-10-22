@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using DefendUranus.Activities;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace DefendUranus.Entities
     /// <summary>
     /// Description of the ship to be used in the GamePlay.
     /// </summary>
-    public class ShipDescription
+    class ShipDescription
     {
         #region Properties
         // TODO: Change Texture to Sprite.
@@ -57,9 +58,9 @@ namespace DefendUranus.Entities
         /// Build the ship based on this description.
         /// </summary>
         /// <returns></returns>
-        public Ship BuildShip()
+        public Ship BuildShip(GamePlay gamePlay)
         {
-            return new Ship(TexturePath)
+            return new Ship(gamePlay, TexturePath)
             {
                 Mass = Mass,
                 MaxSpeed = MaxSpeed,

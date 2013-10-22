@@ -156,6 +156,9 @@
     <Content Include="Content\Sprites\Fatboy.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\Sprites\Laser.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Sprites\Meteoroid-Alienform.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
