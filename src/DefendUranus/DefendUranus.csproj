@@ -40,10 +40,17 @@
     <Compile Include="Activities\HowToPlay.cs" />
     <Compile Include="Activities\StartScreen.cs" />
     <Compile Include="Activities\TestActivity.cs" />
+    <Compile Include="Entities\Container.cs" />
+    <Compile Include="Entities\GamePlayEntity.cs" />
+    <Compile Include="Entities\Laser.cs" />
     <Compile Include="Entities\ShipDescription.cs" />
     <Compile Include="Entities\SpecialAttack.cs" />
     <Compile Include="Entities\PhysicsEntity.cs" />
     <Compile Include="Entities\SteeringEntity.cs" />
+    <Compile Include="Events\EntityCollisionEvent.cs" />
+    <Compile Include="Events\EntityEvent.cs" />
+    <Compile Include="Events\GameEvent.cs" />
+    <Compile Include="Events\GamePlayEvent.cs" />
     <Compile Include="Helpers\AsyncOperation.cs" />
     <Compile Include="Helpers\CommonExtensions.cs" />
     <Compile Include="Helpers\Easing.cs" />

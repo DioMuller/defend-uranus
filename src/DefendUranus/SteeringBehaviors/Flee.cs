@@ -10,7 +10,7 @@ namespace DefendUranus.SteeringBehaviors
     /// <summary>
     /// Behavior: Flees a target if in panic radius.
     /// </summary>
-    public class Flee : SteeringBehavior
+    class Flee : SteeringBehavior
     {
         /// <summary>
         /// Panic Distance.

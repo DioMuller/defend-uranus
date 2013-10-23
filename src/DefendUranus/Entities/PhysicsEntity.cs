@@ -105,6 +105,9 @@ namespace DefendUranus.Entities
 
         public PhysicsEntity(string texturePath)
         {
+            if (texturePath == null)
+                return;
+
             Sprite = new Sprite(texturePath, default(Point), 0);
             Sprite.Animations.Add(new Animation("default", 0, 0, 0));
             Sprite.Origin = new Vector2(Sprite.FrameSize.X, Sprite.FrameSize.Y) / 2;

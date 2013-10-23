@@ -50,7 +50,7 @@ namespace DefendUranus.Activities
         #region Attributes
         private GameInput _gameInput;
         private TimeSpan _duration;
-        private List<Entities.PhysicsEntity> _entities;
+        private List<GamePlayEntity> _entities;
         private List<Ship> _ships;
         private Texture2D _background, _stars;
         private Color _drawColor;
@@ -76,11 +76,11 @@ namespace DefendUranus.Activities
             p2Ship.Behaviors.Add(new ShipInputBehavior(PlayerIndex.Two, p2Ship));
 
             _ships = new List<Ship> { p1Ship, p2Ship };
-            _entities = new List<PhysicsEntity>(_ships);
+            _entities = new List<GamePlayEntity>(_ships);
             _duration = TimeSpan.Zero;
 
             #region Test Entities
-            var specialAttack = new SpecialAttack("Sprites/Avenger-PursuiterMissile.png")
+            var specialAttack = new SpecialAttack(this, "Sprites/Avenger-PursuiterMissile.png")
             {
                 Momentum = Vector2.One,
                 Mass = 1f,
@@ -97,7 +97,7 @@ namespace DefendUranus.Activities
                 WanderRadius = 90f,
             };
             specialAttack.SteeringBehaviors.Add(steeringBehavior);
-            _entities.Add(specialAttack);
+            AddEntity(specialAttack);
             #endregion Test Entities
         }
         #endregion
@@ -166,7 +166,7 @@ namespace DefendUranus.Activities
                 var ent = upEnt[i];
                 if ((ent.Position - camera).LengthSquared() > maxDistanceSqr)
                 {
-                    _entities.Remove(ent);
+                    RemoveEntity(ent);
                     continue;
                 }
 
@@ -178,7 +178,7 @@ namespace DefendUranus.Activities
                     var cEnt = upEnt[j];
                     var dist = ent.Position - cEnt.Position;
                     if (dist.Length() < ent.Size.Y / 2 + cEnt.Size.Y / 2)
-                        ResolveCollision(ent, cEnt);
+                        ResolveCollision(ent, cEnt, gameTime);
                 }
             }
         }
@@ -334,7 +334,7 @@ namespace DefendUranus.Activities
         /// </summary>
         /// <param name="a">Entity A</param>
         /// <param name="b">Entity B</param>
-        static void ResolveCollision(PhysicsEntity a, PhysicsEntity b)
+        void ResolveCollision(GamePlayEntity a, GamePlayEntity b, GameTime gameTime)
         {
             var normal = a.Position - b.Position;
             normal.Normalize();
@@ -360,13 +360,21 @@ namespace DefendUranus.Activities
             Vector2 impulse = j * normal;
             a.ApplyForce(-impulse, instantaneous: true);
             b.ApplyForce(impulse, instantaneous: true);
+
+            a.RaiseCollision(b, gameTime, this);
+            b.RaiseCollision(a, gameTime, this);
         }
         #endregion
 
         #region Public
-        public void AddEntity(PhysicsEntity entity)
+        public void AddEntity(GamePlayEntity entity)
         {
             _entities.Add(entity);
+        }
+
+        public void RemoveEntity(GamePlayEntity entity)
+        {
+            _entities.Remove(entity);
         }
         #endregion
     }

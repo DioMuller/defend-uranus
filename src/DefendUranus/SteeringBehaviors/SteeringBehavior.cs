@@ -11,7 +11,7 @@ namespace DefendUranus.SteeringBehaviors
     /// <summary>
     /// Steering behavior base class.
     /// </summary>
-    public abstract class SteeringBehavior
+    abstract class SteeringBehavior
     {
         #region Properties
         /// <summary>

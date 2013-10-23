@@ -11,7 +11,7 @@ namespace DefendUranus.SteeringBehaviors
     /// <summary>
     /// Behavior: Seeks a target.
     /// </summary>
-    public class Seek : SteeringBehavior
+    class Seek : SteeringBehavior
     {
         public Seek(SteeringEntity parent) : base(parent) { }
 

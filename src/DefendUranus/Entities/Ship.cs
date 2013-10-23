@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DefendUranus.Entities
 {
-    class Ship : PhysicsEntity
+    class Ship : GamePlayEntity
     {
         #region Constants
         readonly TimeSpan MainWeaponDelay = TimeSpan.FromMilliseconds(100);
@@ -17,7 +17,6 @@ namespace DefendUranus.Entities
         #endregion
 
         #region Attributes
-        GamePlay _gamePlay;
         float _mainWeaponAmmo = MainWeaponMaxAmmo;
         TimeSpan _mainWeaponRegen;
         #endregion
@@ -45,11 +44,10 @@ namespace DefendUranus.Entities
         public AsyncOperation MainWeapon { get; set; }
         #endregion
 
-        public Ship(GamePlay gamePlay, string texturePath)
-            : base(texturePath)
+        public Ship(GamePlay level, string texturePath)
+            : base(level, texturePath)
         {
-            _gamePlay = gamePlay;
-
+            Health = new Container(100);
             RotationFriction = 0.1f;
             RotationForce = 10;
             MaxRotationSpeed = 3;
@@ -75,11 +73,15 @@ namespace DefendUranus.Entities
             ApplyForce(Vector2Extension.AngleToVector2(Rotation) * thrust * ThrotleForce);
         }
 
+        #region Game Loop
+        #region Update
         public override void Update(GameTime gameTime)
         {
             AutoRefillMainWeapon(gameTime);
             base.Update(gameTime);
         }
+        #endregion
+        #endregion
 
         #region Private
         #region Main Weapon
@@ -98,17 +100,9 @@ namespace DefendUranus.Entities
         {
             var direction = Vector2Extension.AngleToVector2(Rotation);
 
-            var laser = new PhysicsEntity("Sprites/Laser")
-            {
-                Position = Position + direction,
-                Momentum = Momentum,
-                Mass = 1,
-                MaxSpeed = 50,
-                RotateToMomentum = true
-            };
-            laser.ApplyForce(direction * laser.MaxSpeed, instantaneous: true);
+            var laser = new Laser(this, Momentum, Position, direction);
             ApplyForce(direction * laser.MaxSpeed * -0.001f, instantaneous: true);
-            _gamePlay.AddEntity(laser);
+            Level.AddEntity(laser);
         }
 
         void AutoRefillMainWeapon(GameTime gameTime)

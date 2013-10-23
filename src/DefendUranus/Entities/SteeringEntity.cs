@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using DefendUranus.SteeringBehaviors;
 using Microsoft.Xna.Framework;
+using DefendUranus.Activities;
 
 namespace DefendUranus.Entities
 {
-    public class SteeringEntity : PhysicsEntity
+    class SteeringEntity : GamePlayEntity
     {
         #region Properties
         /// <summary>
@@ -17,9 +18,11 @@ namespace DefendUranus.Entities
         #endregion Properties
 
         #region Constructor
-        public SteeringEntity() : base()
+        public SteeringEntity(GamePlay level)
+            : base(level)
         {
             SteeringBehaviors = new List<SteeringBehavior>();
+            Health = new Container(1);
         }
         #endregion Constructor
 

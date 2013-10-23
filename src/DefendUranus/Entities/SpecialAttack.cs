@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MonoGameLib.Core.Sprites;
+using DefendUranus.Activities;
 
 namespace DefendUranus.Entities
 {
     class SpecialAttack : SteeringEntity
     {
-        public SpecialAttack(string texturePath) : base()
+        public SpecialAttack(GamePlay level, string texturePath)
+            : base(level)
         {
             Sprite = new Sprite(texturePath, new Point(16, 16), 0);
             Sprite.Animations.Add(new Animation("default", 0, 0, 0));
