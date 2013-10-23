@@ -1,12 +1,8 @@
 ﻿using DefendUranus.Activities;
+using DefendUranus.Helpers;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using MonoGameLib.Core.Extensions;
-using MonoGameLib.Core.Sprites;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,12 +11,15 @@ namespace DefendUranus.Entities
     class Ship : PhysicsEntity
     {
         #region Constants
-        TimeSpan MainWeaponDelay = TimeSpan.FromMilliseconds(100);
-        TimeSpan MainWeaponRecoilDelay = TimeSpan.FromMilliseconds(300);
+        readonly TimeSpan MainWeaponDelay = TimeSpan.FromMilliseconds(100);
+        readonly TimeSpan MainWeaponRegenTime = TimeSpan.FromSeconds(2);
+        const float MainWeaponMaxAmmo = 20;
         #endregion
 
         #region Attributes
         GamePlay _gamePlay;
+        float _mainWeaponAmmo = MainWeaponMaxAmmo;
+        TimeSpan _mainWeaponRegen;
         #endregion
 
         #region Properties
@@ -39,6 +38,11 @@ namespace DefendUranus.Entities
         /// When set to 1, the ship can stop rotating immediately.
         /// </summary>
         public float RotationStabilizer { get; set; }
+
+        /// <summary>
+        /// Controls the MainWeapon usage.
+        /// </summary>
+        public AsyncOperation MainWeapon { get; set; }
         #endregion
 
         public Ship(GamePlay gamePlay, string texturePath)
@@ -52,6 +56,8 @@ namespace DefendUranus.Entities
             MaxSpeed = 10;
             ThrotleForce = 20;
             Restitution = 0.5f;
+
+            MainWeapon = new AsyncOperation(FireMainWeapon);
         }
 
         public void Rotate(float force)
@@ -64,23 +70,30 @@ namespace DefendUranus.Entities
             ApplyRotation(force * RotationForce);
         }
 
-        public async Task FireMainWeapon(CancellationToken cancellation)
-        {
-            while (!cancellation.IsCancellationRequested /*&& tem tiro*/)
-            {
-                FireLaser();
-                // tiro --
-                await TaskEx.Delay(MainWeaponDelay);
-            }
-            await TaskEx.Delay(MainWeaponRecoilDelay);
-        }
-
         public void Accelerate(float thrust)
         {
             ApplyForce(Vector2Extension.AngleToVector2(Rotation) * thrust * ThrotleForce);
         }
 
+        public override void Update(GameTime gameTime)
+        {
+            AutoRefillMainWeapon(gameTime);
+            base.Update(gameTime);
+        }
+
         #region Private
+        #region Main Weapon
+        async Task FireMainWeapon(CancellationToken cancellation)
+        {
+            while (!cancellation.IsCancellationRequested && _mainWeaponAmmo >= 1)
+            {
+                FireLaser();
+                _mainWeaponAmmo--;
+                await TaskEx.Delay(MainWeaponDelay);
+            }
+            _mainWeaponRegen = Easing.Quadratic.ReverseIn(_mainWeaponAmmo, 0, MainWeaponMaxAmmo, MainWeaponRegenTime);
+        }
+
         void FireLaser()
         {
             var direction = Vector2Extension.AngleToVector2(Rotation);
@@ -97,6 +110,16 @@ namespace DefendUranus.Entities
             ApplyForce(direction * laser.MaxSpeed * -0.001f, instantaneous: true);
             _gamePlay.AddEntity(laser);
         }
+
+        void AutoRefillMainWeapon(GameTime gameTime)
+        {
+            if (MainWeapon.IsActive || _mainWeaponAmmo >= MainWeaponMaxAmmo)
+                return;
+
+            _mainWeaponRegen += gameTime.ElapsedGameTime;
+            _mainWeaponAmmo = Easing.Quadratic.In(_mainWeaponRegen, 0, MainWeaponMaxAmmo, MainWeaponRegenTime);
+        }
+        #endregion
         #endregion
     }
 }

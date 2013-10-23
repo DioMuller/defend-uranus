@@ -13,10 +13,6 @@ namespace DefendUranus
 {
     class ShipInputBehavior : Behavior
     {
-        #region Attributes
-        readonly AsyncOperation _mainWeapon;
-        #endregion
-
         #region Properties
         /// <summary>
         /// The entity that this behavior is attached to.
@@ -34,7 +30,6 @@ namespace DefendUranus
             : base(parent)
         {
             Input = new PlayerInput(playerIndex);
-            _mainWeapon = new AsyncOperation(Ship.FireMainWeapon);
         }
         #endregion
 
@@ -51,7 +46,7 @@ namespace DefendUranus
             Ship.Rotate(Input.Rotate);
             Ship.Accelerate(Input.Thrust);
 
-            _mainWeapon.IsActive = Input.FireMainWeapon;
+            Ship.MainWeapon.IsActive = Input.FireMainWeapon;
         }
         #endregion
     }
