@@ -13,11 +13,11 @@ namespace DefendUranus.Entities
         #region Constants
         readonly TimeSpan MainWeaponDelay = TimeSpan.FromMilliseconds(100);
         readonly TimeSpan MainWeaponRegenTime = TimeSpan.FromSeconds(2);
-        const float MainWeaponMaxAmmo = 20;
+        const int MainWeaponMaxAmmo = 20;
         #endregion
 
         #region Attributes
-        float _mainWeaponAmmo = MainWeaponMaxAmmo;
+        Container _mainWeaponAmmo;
         TimeSpan _mainWeaponRegen;
         #endregion
 
@@ -44,6 +44,7 @@ namespace DefendUranus.Entities
         public AsyncOperation MainWeapon { get; set; }
         #endregion
 
+        #region Constructors
         public Ship(GamePlay level, string texturePath)
             : base(level, texturePath)
         {
@@ -56,8 +57,11 @@ namespace DefendUranus.Entities
             Restitution = 0.5f;
 
             MainWeapon = new AsyncOperation(FireMainWeapon);
+            _mainWeaponAmmo = new Container(MainWeaponMaxAmmo);
         }
+        #endregion
 
+        #region Actions
         public void Rotate(float force)
         {
             if (Math.Abs(force) > 0.1f)
@@ -73,24 +77,15 @@ namespace DefendUranus.Entities
             ApplyForce(Vector2Extension.AngleToVector2(Rotation) * thrust * ThrotleForce);
         }
 
-        #region Game Loop
-        #region Update
-        public override void Update(GameTime gameTime)
-        {
-            AutoRefillMainWeapon(gameTime);
-            base.Update(gameTime);
-        }
-        #endregion
-        #endregion
-
-        #region Private
-        #region Main Weapon
         async Task FireMainWeapon(CancellationToken cancellation)
         {
-            while (!cancellation.IsCancellationRequested && _mainWeaponAmmo >= 1)
+            if (_mainWeaponAmmo.IsEmpty)
+                return;
+
+            while (!cancellation.IsCancellationRequested && !_mainWeaponAmmo.IsEmpty)
             {
                 FireLaser();
-                _mainWeaponAmmo--;
+                _mainWeaponAmmo.Quantity--;
                 await TaskEx.Delay(MainWeaponDelay);
             }
             _mainWeaponRegen = Easing.Quadratic.ReverseIn(_mainWeaponAmmo, 0, MainWeaponMaxAmmo, MainWeaponRegenTime);
@@ -104,6 +99,15 @@ namespace DefendUranus.Entities
             ApplyForce(direction * laser.MaxSpeed * -0.001f, instantaneous: true);
             Level.AddEntity(laser);
         }
+        #endregion
+
+        #region Game Loop
+        #region Update
+        public override void Update(GameTime gameTime)
+        {
+            AutoRefillMainWeapon(gameTime);
+            base.Update(gameTime);
+        }
 
         void AutoRefillMainWeapon(GameTime gameTime)
         {
@@ -111,7 +115,7 @@ namespace DefendUranus.Entities
                 return;
 
             _mainWeaponRegen += gameTime.ElapsedGameTime;
-            _mainWeaponAmmo = Easing.Quadratic.In(_mainWeaponRegen, 0, MainWeaponMaxAmmo, MainWeaponRegenTime);
+            _mainWeaponAmmo.Quantity = (int)Easing.Quadratic.In(_mainWeaponRegen, 0, MainWeaponMaxAmmo, MainWeaponRegenTime);
         }
         #endregion
         #endregion
