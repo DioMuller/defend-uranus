@@ -272,24 +272,24 @@ namespace DefendUranus.Activities
         IEnumerable<ShipDescription> LoadShips()
         {
             // TODO: Load ships from XML
-            yield return new ShipDescription(Content, "Sprites/Avenger", 2, "Earth Avenger", ship => DeployAttack(ship, WanderAttack));
+            yield return new ShipDescription(Content, "Sprites/Avenger", 2, "Earth Avenger", ship => DeployAttack(ship, PursuiterMissile));
             yield return new ShipDescription(Content, "Sprites/Explorer", 1, "Uranus Explorer", ship => DeployAttack(ship, WanderAttack));
-            yield return new ShipDescription(Content, "Sprites/Fatboy", 4, "Big Fatboy", ship => DeployAttack(ship, WanderAttack));
+            yield return new ShipDescription(Content, "Sprites/Fatboy", 4, "Big Fatboy", ship => DeployAttack(ship, FleeingFake));
             yield return new ShipDescription(Content, "Sprites/Meteoroid", 3, "Meteoroid Destroyer", ship => DeployAttack(ship, WanderAttack));
         }
 
+        #region Special Attacks
         SpecialAttack WanderAttack(Ship target)
         {
-            var specialAttack = new SpecialAttack(target.Level, "Sprites/Avenger-PursuiterMissile.png")
+            var specialAttack = new SpecialAttack(target.Level, "Sprites/Explorer-WandererProbe.png")
             {
+                RotateToMomentum = true,
                 Momentum = Vector2.One,
                 Mass = 1f,
                 MaxSpeed = 10f,
             };
             var steeringBehavior = new Wander(specialAttack)
             {
-                // Flee
-                // PanicDistance = 500f,
                 Target = target,
                 Jitter = 1.25f,
                 WanderDistance = 50f,
@@ -300,6 +300,46 @@ namespace DefendUranus.Activities
 
             return specialAttack;
         }
+
+        SpecialAttack PursuiterMissile(Ship target)
+        {
+            var specialAttack = new SpecialAttack(target.Level, "Sprites/Avenger-PursuiterMissile.png")
+            {
+                RotateToMomentum = true,
+                Momentum = Vector2.One,
+                Mass = 1f,
+                MaxSpeed = 10f,
+            };
+            var steeringBehavior = new Pursuit(specialAttack)
+            {
+                Target = target,
+            };
+
+            specialAttack.SteeringBehaviors.Add(steeringBehavior);
+
+            return specialAttack;
+        }
+
+        SpecialAttack FleeingFake(Ship target)
+        {
+            var specialAttack = new SpecialAttack(target.Level, "Sprites/Avenger-PursuiterMissile.png")
+            {
+                RotateToMomentum = true,
+                Momentum = Vector2.One,
+                Mass = 1f,
+                MaxSpeed = 10f,
+            };
+            var steeringBehavior = new Flee(specialAttack)
+            {
+                PanicDistance = 500f,
+                Target = target,
+            };
+
+            specialAttack.SteeringBehaviors.Add(steeringBehavior);
+
+            return specialAttack;
+        }
+        #endregion
         #endregion
 
         #region Helpers
