@@ -25,9 +25,9 @@ namespace DefendUranus.Helpers
             /// </summary>
             public bool FireMainWeapon;
             /// <summary>
-            /// Indicates whether the special power button was pressed.
+            /// Indicates whether the special weapon button is active.
             /// </summary>
-            public bool UseSpecialPower;
+            public bool FireSpecialWeapon;
             /// <summary>
             /// The user have confirmed a menu option.
             /// </summary>
@@ -79,14 +79,8 @@ namespace DefendUranus.Helpers
         public float Thrust { get { return State.Thrust; } }
         public float Rotate { get { return State.Rotate; } }
         public bool FireMainWeapon { get { return State.FireMainWeapon; } }
-        public bool UseSpecialPower
-        {
-            get
-            {
-                return _lastState != null &&
-                    !_lastState.Value.UseSpecialPower && _state.Value.UseSpecialPower;
-            }
-        }
+        public bool FireSpecialWeapon { get { return State.FireSpecialWeapon; } }
+
         public bool Confirm
         {
             get { return _lastState != null && !_lastState.Value.Confirm && _state.Value.Confirm; }
@@ -158,8 +152,8 @@ namespace DefendUranus.Helpers
             {
                 Rotate = Math.Abs(state.ThumbSticks.Left.X) <= analogToDigital ? 0 : state.ThumbSticks.Left.X / 0.8f - 0.25f * rotDir,
                 Thrust = state.Triggers.Right - state.Triggers.Left,
-                UseSpecialPower = state.Buttons.X == ButtonState.Pressed,
                 FireMainWeapon = state.Buttons.B == ButtonState.Pressed,
+                FireSpecialWeapon = state.Buttons.X == ButtonState.Pressed,
 
                 Confirm = state.IsButtonDown(Buttons.Start),
                 Cancel = state.IsButtonDown(Buttons.Back),
@@ -181,7 +175,7 @@ namespace DefendUranus.Helpers
                     Thrust = (state.IsKeyDown(Keys.Up) ? 1 : 0) +
                                 (state.IsKeyDown(Keys.Down) ? -1 : 0),
                     FireMainWeapon = state.IsKeyDown(Keys.RightShift),
-                    UseSpecialPower = state.IsKeyDown(Keys.Enter),
+                    FireSpecialWeapon = state.IsKeyDown(Keys.Enter),
 
                     Confirm = state.IsKeyDown(Keys.Enter),
                     Cancel = state.IsKeyDown(Keys.RightShift),
@@ -199,7 +193,7 @@ namespace DefendUranus.Helpers
                 Thrust = (state.IsKeyDown(Keys.W) ? 1 : 0) +
                          (state.IsKeyDown(Keys.S) ? -1 : 0),
                 FireMainWeapon = state.IsKeyDown(Keys.E),
-                UseSpecialPower = state.IsKeyDown(Keys.R),
+                FireSpecialWeapon = state.IsKeyDown(Keys.R),
 
                 Confirm = state.IsKeyDown(Keys.R),
                 Cancel = state.IsKeyDown(Keys.E),

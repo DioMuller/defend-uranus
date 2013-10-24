@@ -11,6 +11,8 @@ using XNATweener;
 using DefendUranus.Entities;
 using Microsoft.Xna.Framework.Content;
 using DefendUranus.Helpers;
+using DefendUranus.SteeringBehaviors;
+using MonoGameLib.Core.Extensions;
 #endregion
 
 namespace DefendUranus.Activities
@@ -270,10 +272,53 @@ namespace DefendUranus.Activities
         IEnumerable<ShipDescription> LoadShips()
         {
             // TODO: Load ships from XML
-            yield return new ShipDescription(Content, "Sprites/Avenger", 2, "Earth Avenger");
-            yield return new ShipDescription(Content, "Sprites/Explorer", 1, "Uranus Explorer");
-            yield return new ShipDescription(Content, "Sprites/Fatboy", 4, "Big Fatboy");
-            yield return new ShipDescription(Content, "Sprites/Meteoroid", 3, "Meteoroid Destroyer");
+            yield return new ShipDescription(Content, "Sprites/Avenger", 2, "Earth Avenger", ship => DeployAttack(ship, WanderAttack));
+            yield return new ShipDescription(Content, "Sprites/Explorer", 1, "Uranus Explorer", ship => DeployAttack(ship, WanderAttack));
+            yield return new ShipDescription(Content, "Sprites/Fatboy", 4, "Big Fatboy", ship => DeployAttack(ship, WanderAttack));
+            yield return new ShipDescription(Content, "Sprites/Meteoroid", 3, "Meteoroid Destroyer", ship => DeployAttack(ship, WanderAttack));
+        }
+
+        SpecialAttack WanderAttack(Ship target)
+        {
+            var specialAttack = new SpecialAttack(target.Level, "Sprites/Avenger-PursuiterMissile.png")
+            {
+                Momentum = Vector2.One,
+                Mass = 1f,
+                MaxSpeed = 10f,
+            };
+            var steeringBehavior = new Wander(specialAttack)
+            {
+                // Flee
+                // PanicDistance = 500f,
+                Target = target,
+                Jitter = 1.25f,
+                WanderDistance = 50f,
+                WanderRadius = 90f,
+            };
+
+            specialAttack.SteeringBehaviors.Add(steeringBehavior);
+
+            return specialAttack;
+        }
+        #endregion
+
+        #region Helpers
+        void DeployAttack(Ship ship, Func<Ship, SpecialAttack> createAttack)
+        {
+            var target = ship.Level.Entities.OfType<Ship>()
+                .Where(s => s != ship)
+                .OrderBy(s => (s.Position - ship.Position).LengthSquared())
+                .FirstOrDefault();
+
+            var direction = Vector2Extension.AngleToVector2(ship.Rotation);
+
+            var item = createAttack(target);
+            item.Position = ship.Position + direction * ship.Size / 2;
+
+            item.ApplyForce(direction * item.MaxSpeed, instantaneous: true);
+            ship.ApplyForce(direction * item.MaxSpeed * -0.01f, instantaneous: true);
+
+            ship.Level.AddEntity(item);
         }
         #endregion
         #endregion

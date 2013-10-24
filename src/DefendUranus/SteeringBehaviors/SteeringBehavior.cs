@@ -20,7 +20,7 @@ namespace DefendUranus.SteeringBehaviors
         public SteeringEntity Parent { get; private set; }
 
         /// <summary>
-        /// Desided target.
+        /// Desired target.
         /// </summary>
         public PhysicsEntity Target { get; set; }
         #endregion Properties

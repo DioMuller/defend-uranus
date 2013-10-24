@@ -3,6 +3,7 @@ using DefendUranus.Helpers;
 using Microsoft.Xna.Framework;
 using MonoGameLib.Core.Extensions;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,14 +12,19 @@ namespace DefendUranus.Entities
     class Ship : GamePlayEntity
     {
         #region Constants
+        /// <summary>
+        /// Time between main weapon shots.
+        /// </summary>
         readonly TimeSpan MainWeaponDelay = TimeSpan.FromMilliseconds(100);
-        readonly TimeSpan MainWeaponRegenTime = TimeSpan.FromSeconds(2);
-        const int MainWeaponMaxAmmo = 20;
+        /// <summary>
+        /// Time between special weapon shots.
+        /// </summary>
+        readonly TimeSpan SpecialWeaponDelay = TimeSpan.FromSeconds(1);
         #endregion
 
         #region Attributes
-        Container _mainWeaponAmmo;
-        TimeSpan _mainWeaponRegen;
+        AutoRegenContainer _mainWeaponAmmo = new AutoRegenContainer(20, TimeSpan.FromSeconds(2));
+        AutoRegenContainer _specialWeaponAmmo = new AutoRegenContainer(3, TimeSpan.FromSeconds(60));
         #endregion
 
         #region Properties
@@ -42,10 +48,20 @@ namespace DefendUranus.Entities
         /// Controls the MainWeapon usage.
         /// </summary>
         public AsyncOperation MainWeapon { get; set; }
+
+        /// <summary>
+        /// Controls the SpecialWeapon usage.
+        /// </summary>
+        public AsyncOperation SpecialWeapon { get; set; }
+
+        /// <summary>
+        /// The method that this ship will use as special attack.
+        /// </summary>
+        Action<Ship> SpecialAttack { get; set; }
         #endregion
 
         #region Constructors
-        public Ship(GamePlay level, string texturePath)
+        public Ship(GamePlay level, string texturePath, Action<Ship> specialAttack)
             : base(level, texturePath)
         {
             Health = new Container(100);
@@ -56,8 +72,10 @@ namespace DefendUranus.Entities
             ThrotleForce = 20;
             Restitution = 0.5f;
 
-            MainWeapon = new AsyncOperation(FireMainWeapon);
-            _mainWeaponAmmo = new Container(MainWeaponMaxAmmo);
+            MainWeapon = new AsyncOperation(c => FireWeapon(_mainWeaponAmmo, FireLaser, c));
+            SpecialWeapon = new AsyncOperation(c => FireWeapon(_specialWeaponAmmo, FireSpecialWeapon, c));
+
+            SpecialAttack = specialAttack;
         }
         #endregion
 
@@ -76,48 +94,58 @@ namespace DefendUranus.Entities
         {
             ApplyForce(Vector2Extension.AngleToVector2(Rotation) * thrust * ThrotleForce);
         }
-
-        async Task FireMainWeapon(CancellationToken cancellation)
-        {
-            if (_mainWeaponAmmo.IsEmpty)
-                return;
-
-            while (!cancellation.IsCancellationRequested && !_mainWeaponAmmo.IsEmpty)
-            {
-                FireLaser();
-                _mainWeaponAmmo.Quantity--;
-                await TaskEx.Delay(MainWeaponDelay);
-            }
-            _mainWeaponRegen = Easing.Quadratic.ReverseIn(_mainWeaponAmmo, 0, MainWeaponMaxAmmo, MainWeaponRegenTime);
-        }
-
-        void FireLaser()
-        {
-            var direction = Vector2Extension.AngleToVector2(Rotation);
-
-            var laser = new Laser(this, Momentum, Position, direction);
-            ApplyForce(direction * laser.MaxSpeed * -0.001f, instantaneous: true);
-            Level.AddEntity(laser);
-        }
         #endregion
 
         #region Game Loop
         #region Update
         public override void Update(GameTime gameTime)
         {
-            AutoRefillMainWeapon(gameTime);
+            _mainWeaponAmmo.Update(gameTime);
+            _specialWeaponAmmo.Update(gameTime);
             base.Update(gameTime);
         }
+        #endregion
+        #endregion
 
-        void AutoRefillMainWeapon(GameTime gameTime)
+        #region Private
+        async Task FireWeapon(AutoRegenContainer container, Func<CancellationToken, Task> fire, CancellationToken cancellation)
         {
-            if (MainWeapon.IsActive || _mainWeaponAmmo >= MainWeaponMaxAmmo)
+            if (container.IsEmpty)
                 return;
 
-            _mainWeaponRegen += gameTime.ElapsedGameTime;
-            _mainWeaponAmmo.Quantity = (int)Easing.Quadratic.In(_mainWeaponRegen, 0, MainWeaponMaxAmmo, MainWeaponRegenTime);
+            container.Regenerate = false;
+            while (!cancellation.IsCancellationRequested && !container.IsEmpty)
+            {
+                container.Quantity--;
+                await fire(cancellation);
+            }
+            container.Regenerate = true;
         }
-        #endregion
+
+        async Task FireLaser(CancellationToken cancellation)
+        {
+            var direction = Vector2Extension.AngleToVector2(Rotation);
+
+            var laser = new Laser(this, Momentum, Position, direction);
+
+            laser.ApplyForce(direction * laser.MaxSpeed, instantaneous: true);
+            ApplyForce(direction * laser.MaxSpeed * -0.001f, instantaneous: true);
+
+            Level.AddEntity(laser);
+
+            await TaskEx.Delay(MainWeaponDelay);
+        }
+
+        async Task FireSpecialWeapon(CancellationToken cancellation)
+        {
+            var target = Level.Entities.OfType<Ship>()
+                .Where(s => s != this)
+                .OrderBy(s => (s.Position - Position).LengthSquared())
+                .FirstOrDefault();
+
+            SpecialAttack(this);
+            await TaskEx.Delay(SpecialWeaponDelay);
+        }
         #endregion
     }
 }

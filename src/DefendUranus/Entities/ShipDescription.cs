@@ -38,10 +38,15 @@ namespace DefendUranus.Entities
         /// When set to 1, the ship can stop rotating immediately.
         /// </summary>
         public float RotationStabilizer { get; set; }
+
+        /// <summary>
+        /// The method that this ship will use as special attack.
+        /// </summary>
+        public Action<Ship> SpecialAttack { get; set; }
         #endregion
 
         #region Constructors
-        public ShipDescription(ContentManager content, string texturePath, float mass, string description)
+        public ShipDescription(ContentManager content, string texturePath, float mass, string description, Action<Ship> specialAttack)
         {
             Texture = content.Load<Texture2D>(texturePath);
             TexturePath = texturePath;
@@ -50,6 +55,8 @@ namespace DefendUranus.Entities
 
             MaxSpeed = 10;
             RotationStabilizer = 0.1f;
+
+            SpecialAttack = specialAttack;
         }
         #endregion
 
@@ -60,7 +67,7 @@ namespace DefendUranus.Entities
         /// <returns></returns>
         public Ship BuildShip(GamePlay gamePlay)
         {
-            return new Ship(gamePlay, TexturePath)
+            return new Ship(gamePlay, TexturePath, SpecialAttack)
             {
                 Mass = Mass,
                 MaxSpeed = MaxSpeed,

@@ -47,6 +47,7 @@ namespace DefendUranus
             Ship.Accelerate(Input.Thrust);
 
             Ship.MainWeapon.IsActive = Input.FireMainWeapon;
+            Ship.SpecialWeapon.IsActive = Input.FireSpecialWeapon;
         }
         #endregion
     }

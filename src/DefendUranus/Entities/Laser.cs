@@ -25,8 +25,6 @@ namespace DefendUranus.Entities
             MaxSpeed = 50;
             RotateToMomentum = true;
 
-            ApplyForce(direction * MaxSpeed, instantaneous: true);
-
             Collided += Laser_Collided;
         }
 

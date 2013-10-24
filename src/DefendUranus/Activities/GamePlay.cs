@@ -56,6 +56,13 @@ namespace DefendUranus.Activities
         private Color _drawColor;
         #endregion
 
+        #region Properties
+        /// <summary>
+        /// All the entities contained in this level.
+        /// </summary>
+        public IEnumerable<GamePlayEntity> Entities { get { return _entities; } }
+        #endregion
+
         #region Constructors
         /// <summary>
         /// Creates a new GamePlay based on the user setup.
@@ -78,27 +85,6 @@ namespace DefendUranus.Activities
             _ships = new List<Ship> { p1Ship, p2Ship };
             _entities = new List<GamePlayEntity>(_ships);
             _duration = TimeSpan.Zero;
-
-            #region Test Entities
-            var specialAttack = new SpecialAttack(this, "Sprites/Avenger-PursuiterMissile.png")
-            {
-                Momentum = Vector2.One,
-                Mass = 1f,
-                MaxSpeed = 10f,
-                Position = new Vector2(0, 0)
-            };
-            var steeringBehavior = new Wander(specialAttack)
-            {
-                // Flee
-                // PanicDistance = 500f,
-                Target = p1Ship,
-                Jitter = 1.25f,
-                WanderDistance = 50f,
-                WanderRadius = 90f,
-            };
-            specialAttack.SteeringBehaviors.Add(steeringBehavior);
-            AddEntity(specialAttack);
-            #endregion Test Entities
         }
         #endregion
 
@@ -264,7 +250,7 @@ namespace DefendUranus.Activities
         {
             SpriteBatch.Begin(camera, zoom, Game.GraphicsDevice.Viewport);
             foreach (var ent in _entities.ToList())
-                ent.Draw(gameTime, SpriteBatch, _drawColor);
+                ent.Draw(gameTime, SpriteBatch, new Color(ent.Color, _drawColor.A));
             SpriteBatch.End();
         }
 
