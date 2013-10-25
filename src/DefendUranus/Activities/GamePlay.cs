@@ -342,10 +342,29 @@ namespace DefendUranus.Activities
             float j = -(1 + e) * velAlongNormal;
             j /= 1 / a.Mass + 1 / b.Mass;
 
-            // Apply impulse
+            #region Apply impulse
             Vector2 impulse = j * normal;
             a.ApplyForce(-impulse, instantaneous: true);
             b.ApplyForce(impulse, instantaneous: true);
+            #endregion
+
+            #region Apply Rotation
+            var collisionPlane = new Vector2(-normal.Y, normal.X);
+            if (a.Momentum != Vector2.Zero)
+            {
+                var angle = Vector2.Dot(a.Momentum, collisionPlane);
+
+                if (!b.RotateToMomentum)
+                    b.ApplyRotation(angle * (float)Math.Abs(j), instantaneous: true);
+            }
+            if (b.Momentum != Vector2.Zero)
+            {
+                var angle = -Vector2.Dot(b.Momentum, collisionPlane);
+
+                if (!a.RotateToMomentum)
+                    a.ApplyRotation(angle * (float)Math.Abs(j), instantaneous: true);
+            }
+            #endregion
 
             a.RaiseCollision(b, gameTime, this);
             b.RaiseCollision(a, gameTime, this);

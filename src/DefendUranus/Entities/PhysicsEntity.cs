@@ -14,9 +14,14 @@ namespace DefendUranus.Entities
     {
         #region Attributes
         /// <summary>
-        /// Angular forces applied once on the body.
+        /// Angular forces that are constantly being applied to the body.
         /// </summary>
         float _angularForce;
+        /// <summary>
+        /// Angular forces that will be applied only once to the body.
+        /// These forces are not affected by game time.
+        /// </summary>
+        float _instantaneousAngularForce;
         /// <summary>
         /// Forces/Accelerations that are constantly being applied to the body.
         /// </summary>
@@ -131,22 +136,25 @@ namespace DefendUranus.Entities
             Position += WorldHelper.MetersToPixels((Momentum + accelSecs / 2) * secs);
             Momentum += accelSecs;
 
-            if(RotateToMomentum)
+            if (RotateToMomentum)
                 Rotation = Momentum.GetAngle();
             else
             {
                 var angularAccelSecs = _angularForce * secs;
-                var sum = (AngularMomentum + angularAccelSecs / 2);
 
+                AngularMomentum += _instantaneousAngularForce;
                 AngularMomentum *= 1 - RotationFriction;
-                var toRotate = sum * secs;
-                Rotation += toRotate;
+
+                AngularMomentum = MathHelper.Clamp(AngularMomentum, -MaxRotationSpeed, MaxRotationSpeed);
+
+                Rotation += (AngularMomentum + angularAccelSecs / 2) * secs;
                 AngularMomentum += angularAccelSecs;
 
-                _angularForce = 0;
+                _instantaneousAngularForce = _angularForce = 0;
             }
 
             _instantaneousForce = _acceleration = Vector2.Zero;
+
 
             AngularMomentum = MathHelper.Clamp(AngularMomentum, -MaxRotationSpeed, MaxRotationSpeed);
             if (Speed > MaxSpeed)
@@ -159,14 +167,21 @@ namespace DefendUranus.Entities
         /// Apply a rotation force to the body.
         /// </summary>
         /// <param name="force">How much force is being applied.</param>
-        public void ApplyRotation(float force)
+        /// <param name="instantaneous">
+        /// Indicates if this force will be applied only once to this body.
+        /// Leave it to False if this force is being applied on every game loop.
+        /// </param>
+        public void ApplyRotation(float force, bool instantaneous = false)
         {
 #if DEBUG
             if (RotateToMomentum)
                 throw new InvalidOperationException("This entity is set to RotateToMomentum and manual rotation is disabled.");
 #endif
 
-            _angularForce += force / Mass;
+            if (instantaneous)
+                _instantaneousAngularForce += force / Mass;
+            else
+                _angularForce += force / Mass;
         }
 
         /// <summary>
