@@ -35,6 +35,27 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-Linux|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Linux\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;LINUX</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release-Linux|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Linux\Release\</OutputPath>
+    <DefineConstants>TRACE;LINUX</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Activities\GameActivity.cs" />
     <Compile Include="Activities\HowToPlay.cs" />
@@ -76,22 +97,44 @@
     <Compile Include="SteeringBehaviors\Wander.cs" />
     <Compile Include="Entities\Behaviors\ShipInputBehavior.cs" />
   </ItemGroup>
+  <Choose>
+    <When Condition=" '$(Configuration)' == 'Debug-Linux' Or '$(Configuration)' == 'Release-Linux' ">
+      <ItemGroup>
+        <Reference Include="Lidgren.Network">
+          <HintPath>..\..\submodule\monogame-aux-lib\references\Linux\MonoGame\3.2\Lidgren.Network.dll</HintPath>
+        </Reference>
+        <Reference Include="MonoGame.Framework">
+          <HintPath>..\..\submodule\monogame-aux-lib\references\Linux\MonoGame\3.2\MonoGame.Framework.dll</HintPath>
+        </Reference>
+        <Reference Include="OpenTK">
+          <HintPath>..\..\submodule\monogame-aux-lib\references\Linux\MonoGame\3.2\OpenTK.dll</HintPath>
+        </Reference>
+        <Reference Include="Tao.Sdl">
+          <HintPath>..\..\submodule\monogame-aux-lib\references\Linux\MonoGame\3.2\Tao.Sdl.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <Reference Include="Lidgren.Network">
+          <HintPath>..\..\submodule\monogame-aux-lib\references\WinGL\MonoGame\3.2\Lidgren.Network.dll</HintPath>
+        </Reference>
+        <Reference Include="MonoGame.Framework">
+          <HintPath>..\..\submodule\monogame-aux-lib\references\WinGL\MonoGame\3.2\MonoGame.Framework.dll</HintPath>
+        </Reference>
+        <Reference Include="OpenTK">
+          <HintPath>..\..\submodule\monogame-aux-lib\references\WinGL\MonoGame\3.2\OpenTK.dll</HintPath>
+        </Reference>
+        <Reference Include="Tao.Sdl">
+          <HintPath>..\..\submodule\monogame-aux-lib\references\WinGL\MonoGame\3.2\Tao.Sdl.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
   <ItemGroup>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="Lidgren.Network">
-      <HintPath>..\..\submodule\monogame-aux-lib\references\WinGL\MonoGame\3.2\Lidgren.Network.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoGame.Framework">
-      <HintPath>..\..\submodule\monogame-aux-lib\references\WinGL\MonoGame\3.2\MonoGame.Framework.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK">
-      <HintPath>..\..\submodule\monogame-aux-lib\references\WinGL\MonoGame\3.2\OpenTK.dll</HintPath>
-    </Reference>
-    <Reference Include="Tao.Sdl">
-      <HintPath>..\..\submodule\monogame-aux-lib\references\WinGL\MonoGame\3.2\Tao.Sdl.dll</HintPath>
-    </Reference>
     <Reference Include="XNATweener">
       <HintPath>..\references\XNATweener.dll</HintPath>
     </Reference>
@@ -189,7 +232,7 @@
   <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\submodule\monogame-aux-lib\src\MonoGameLib.Activities\MonoGameLib.Activities.csproj">
-      <Project>{b63836a7-fc4d-4c6b-86f7-abeab15788b3}</Project>
+      <Project>{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}</Project>
       <Name>MonoGameLib.Activities</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\submodule\monogame-aux-lib\src\MonoGameLib.Core\MonoGameLib.Core.csproj">
