@@ -81,19 +81,6 @@ namespace DefendUranus.Activities
 
         #region Activity Life-Cycle
         /// <summary>
-        /// Fade-in / Fade-out the screen before / after completion.
-        /// </summary>
-        /// <returns>A task that represents the activity execution.</returns>
-        protected async override Task<GamePlaySetup.Result> RunActivity()
-        {
-            await FadeIn(100);
-            var result = await base.RunActivity();
-            await FadeOut(100);
-
-            return result;
-        }
-
-        /// <summary>
         /// Prepares the activity to be activated.
         /// </summary>
         protected override void Activating()
@@ -114,8 +101,6 @@ namespace DefendUranus.Activities
         /// <param name="gameTime">Current game time.</param>
         protected override void Update(GameTime gameTime)
         {
-            base.Update(gameTime);
-
             UpdateInputs();
 
             if (IsSetupComplete())
@@ -180,7 +165,6 @@ namespace DefendUranus.Activities
         /// <param name="gameTime">Current game time.</param>
         protected override void Draw(GameTime gameTime)
         {
-            base.Draw(gameTime);
             GraphicsDevice.Clear(Color.DarkGreen);
 
             SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);

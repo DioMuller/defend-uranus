@@ -89,19 +89,6 @@ namespace DefendUranus.Activities
 
         #region Activity Life-Cycle
         /// <summary>
-        /// Fade-in / Fade-out the screen before / after completion.
-        /// </summary>
-        /// <returns>A task that represents the activity execution.</returns>
-        protected async override Task<GamePlay.Result> RunActivity()
-        {
-            await FadeIn(100);
-            var result = await base.RunActivity();
-            await FadeOut(100);
-
-            return result;
-        }
-
-        /// <summary>
         /// Prepares the activity to be activated.
         /// </summary>
         protected override void Activating()
@@ -122,8 +109,6 @@ namespace DefendUranus.Activities
         /// <param name="gameTime">Current game time.</param>
         protected override void Update(GameTime gameTime)
         {
-            base.Update(gameTime);
-
             _duration += gameTime.ElapsedGameTime;
             _gameInput.Update();
 
@@ -227,8 +212,6 @@ namespace DefendUranus.Activities
         /// <param name="gameTime">Current game time.</param>
         protected override void Draw(GameTime gameTime)
         {
-            base.Draw(gameTime);
-
             Vector2 camera = (_ships.Last().Position + _ships.First().Position) / 2;
             float zoom = GetZoomFactor();
 

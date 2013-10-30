@@ -46,16 +46,11 @@ namespace DefendUranus.Activities
             base.Deactivating();
         }
 
-        protected async override Task<StartScreen.Options> RunActivity()
+        protected override Task IntroductionAnimation()
         {
-            await TaskEx.WhenAll(
-                FadeIn(100),
-                FloatAnimation(100, 2, 1, v => _scale = new Vector2(v)));
-
-            var result = await base.RunActivity();
-
-            await FadeOut(100);
-            return result;
+            return TaskEx.WhenAll(
+                FloatAnimation(100, 2, 1, v => _scale = new Vector2(v)),
+                base.IntroductionAnimation());
         }
         #endregion
 
@@ -70,8 +65,6 @@ namespace DefendUranus.Activities
                 Exit(Options.HowToPlay);
             else if (_gameInput.Confirm)
                 Exit(Options.Play);
-
-            base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -81,8 +74,6 @@ namespace DefendUranus.Activities
             SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);
             SpriteBatch.Draw(_title, Vector2.Zero, scale: _scale);
             SpriteBatch.End();
-
-            base.Draw(gameTime);
         }
         #endregion
     }

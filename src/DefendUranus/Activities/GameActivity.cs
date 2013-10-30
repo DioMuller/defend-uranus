@@ -24,6 +24,7 @@ namespace DefendUranus.Activities
         CancellationTokenSource _fadeCancellation;
 
         TaskCompletionSource<GameTime> _syncDraw, _syncUpdate;
+        int _waitingDraw, _waitingUpdate;
         #endregion
 
         #region Properties
@@ -40,6 +41,38 @@ namespace DefendUranus.Activities
         #endregion
 
         #region Activity Life-Cycle
+
+        /// <summary>
+        /// Animation to run when the activity is starting.
+        /// </summary>
+        /// <returns>The animation task.</returns>
+        protected virtual Task IntroductionAnimation()
+        {
+            return FadeIn(100);
+        }
+
+        /// <summary>
+        /// Animation to run when the activity is complete.
+        /// </summary>
+        /// <returns>The animation task.</returns>
+        protected virtual Task ConclusionAnimation()
+        {
+            return FadeOut(100);
+        }
+
+        /// <summary>
+        /// Animate the screen before / after completion.
+        /// </summary>
+        /// <returns>A task that represents the activity execution.</returns>
+        protected async override Task<T> RunActivity()
+        {
+            await IntroductionAnimation();
+            var result = await base.RunActivity();
+            await ConclusionAnimation();
+
+            return result;
+        }
+
 #if DEBUG
         protected override void Activating()
         {
@@ -68,45 +101,63 @@ namespace DefendUranus.Activities
         #endregion
 
         #region Game Loop
-        protected override void Update(GameTime gameTime)
+        #endregion
+
+        #region Sync
+        /// <summary>
+        /// Wait asynchronously for the next Draw.
+        /// </summary>
+        /// <returns>A task that completes on PostDraw.</returns>
+        public async Task<GameTime> WaitDraw()
+        {
+            if (_waitingDraw++ == 0)
+                PostDraw += NotifyDrawCompleted;
+
+            if (_syncDraw == null)
+                _syncDraw = new TaskCompletionSource<GameTime>();
+            var res = await _syncDraw.Task;
+
+            if (--_waitingDraw == 0)
+                PostDraw -= NotifyDrawCompleted;
+
+            return res;
+        }
+
+        /// <summary>
+        /// Wait asynchronously for the next Update.
+        /// </summary>
+        /// <returns>A task that completes on PostUpdate.</returns>
+        public async Task<GameTime> WaitUpdate()
+        {
+            if (_waitingUpdate++ == 0)
+                PostUpdate += NotifyUpdateCompleted;
+
+            if (_syncUpdate == null)
+                _syncUpdate = new TaskCompletionSource<GameTime>();
+            var res = await _syncUpdate.Task;
+
+            if (--_waitingUpdate == 0)
+                PostUpdate -= NotifyUpdateCompleted;
+
+            return res;
+        }
+
+        void NotifyUpdateCompleted(object sender, GameLoopEventArgs e)
         {
             if (_syncUpdate != null)
             {
-                _syncUpdate.TrySetResult(gameTime);
+                _syncUpdate.TrySetResult(e.GameTime);
                 _syncUpdate = null;
             }
         }
 
-        protected override void Draw(GameTime gameTime)
+        void NotifyDrawCompleted(object sender, GameLoopEventArgs e)
         {
             if (_syncDraw != null)
             {
-                _syncDraw.TrySetResult(gameTime);
+                _syncDraw.TrySetResult(e.GameTime);
                 _syncDraw = null;
             }
-        }
-
-        void DrawFade(object sender, GameLoopEventArgs args)
-        {
-            SpriteBatch.Begin();
-            SpriteBatch.Draw(BlackTexture, drawRectangle: GraphicsDevice.Viewport.Bounds, color: new Color(Color.White, _screenOpacity));
-            SpriteBatch.End();
-        }
-        #endregion
-
-        #region Sync
-        public Task<GameTime> SyncDraw()
-        {
-            if (_syncDraw == null)
-                _syncDraw = new TaskCompletionSource<GameTime>();
-            return _syncDraw.Task;
-        }
-
-        public Task<GameTime> SyncUpdate()
-        {
-            if (_syncUpdate == null)
-                _syncUpdate = new TaskCompletionSource<GameTime>();
-            return _syncUpdate.Task;
         }
         #endregion
 
@@ -129,38 +180,45 @@ namespace DefendUranus.Activities
             do
             {
                 updateValue(curDuration);
-                var gt = await SyncDraw();
+                var gt = await WaitDraw();
                 curDuration += (int)gt.ElapsedGameTime.TotalMilliseconds;
             } while (curDuration < duration);
             updateValue(curDuration);
         }
 
-        async Task FadeTo(int completeDuration, float value)
+        async Task FadeTo(float value, int completeDuration)
         {
             var textureDesiredOpacity = 1 - value;
 
             if (_fadeCancellation != null)
                 _fadeCancellation.Cancel();
             else
-                PostDraw += DrawFade;
+                PostDraw += FadeScreen;
 
             _fadeCancellation = new CancellationTokenSource();
             var duration = (int)(Math.Abs(_screenOpacity - textureDesiredOpacity) * completeDuration);
             if (_screenOpacity != textureDesiredOpacity)
                 await FloatAnimation(duration, _screenOpacity, textureDesiredOpacity, v => _screenOpacity = v, cancellationToken: _fadeCancellation.Token);
 
-            PostDraw -= DrawFade;
+            PostDraw -= FadeScreen;
             _fadeCancellation = null;
         }
 
-        public Task FadeIn(int completeDuration)
+        public Task FadeIn(int completeDuration = 100)
         {
-            return FadeTo(completeDuration, 1);
+            return FadeTo(1, completeDuration);
         }
 
-        public Task FadeOut(int completeDuration)
+        public Task FadeOut(int completeDuration = 100)
         {
-            return FadeTo(completeDuration, 0);
+            return FadeTo(0, completeDuration);
+        }
+
+        void FadeScreen(object sender, GameLoopEventArgs args)
+        {
+            SpriteBatch.Begin();
+            SpriteBatch.Draw(BlackTexture, drawRectangle: GraphicsDevice.Viewport.Bounds, color: new Color(Color.White, _screenOpacity));
+            SpriteBatch.End();
         }
         #endregion
 
