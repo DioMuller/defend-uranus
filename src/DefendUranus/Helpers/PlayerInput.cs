@@ -79,7 +79,11 @@ namespace DefendUranus.Helpers
         public float Thrust { get { return State.Thrust; } }
         public float Rotate { get { return State.Rotate; } }
         public bool FireMainWeapon { get { return State.FireMainWeapon; } }
-        public bool FireSpecialWeapon { get { return State.FireSpecialWeapon; } }
+
+        public bool FireSpecialWeapon
+        {
+            get { return _lastState != null && !_lastState.Value.FireSpecialWeapon && _state.Value.FireSpecialWeapon; }
+        }
 
         public bool Confirm
         {

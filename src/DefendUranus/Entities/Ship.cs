@@ -114,7 +114,7 @@ namespace DefendUranus.Entities
                 return;
 
             container.Regenerate = false;
-            while (!cancellation.IsCancellationRequested && !container.IsEmpty)
+            if (!container.IsEmpty)
             {
                 container.Quantity--;
                 await fire(cancellation);
