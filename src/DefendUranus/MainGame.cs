@@ -21,14 +21,13 @@ namespace DefendUranus
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public partial class MainGame : ActivitiesGame
+    public class MainGame : ActivitiesGame
     {
-        GraphicsDeviceManager graphics;
+        public GraphicsDeviceManager Graphics { get; private set; }
 
         public MainGame()
-            : base()
         {
-            graphics = new GraphicsDeviceManager(this)
+            Graphics = new GraphicsDeviceManager(this)
             {
                 PreferredBackBufferWidth = 800,
                 PreferredBackBufferHeight = 600

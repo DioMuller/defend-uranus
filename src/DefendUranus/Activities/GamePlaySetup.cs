@@ -42,9 +42,9 @@ namespace DefendUranus.Activities
         }
 
         /// <summary>
-        /// Information about the user selection.
+        /// Information about how to draw the user selection.
         /// </summary>
-        class PlayerSelectionInfo
+        class SelectionDrawInfo
         {
             public int DrawShift { get; set; }
             public bool ShiftingSelection { get; set; }
@@ -53,12 +53,15 @@ namespace DefendUranus.Activities
         }
         #endregion
 
-        #region Attributes
-        readonly public List<ShipDescription> _ships;
+        #region Constants
+        readonly List<ShipDescription> _ships;
         readonly int _spacing;
+        const int MaxVisibleShips = 6;
+        #endregion
 
-        Result _result;
-        PlayerSelectionInfo _p1Info, _p2Info;
+        #region Attributes
+        readonly Result _result;
+        SelectionDrawInfo _p1Info, _p2Info;
         PlayerInput _p1Input, _p2Input;
         GameInput _gameInput;
         #endregion
@@ -68,14 +71,14 @@ namespace DefendUranus.Activities
             : base(game)
         {
             _ships = LoadShips().ToList();
-            _spacing = GraphicsDevice.PresentationParameters.BackBufferWidth / _ships.Count;
+            _spacing = GraphicsDevice.PresentationParameters.BackBufferWidth / Math.Min(_ships.Count, MaxVisibleShips);
             _result = new Result
             {
                 Player1Selection = _ships[0],
                 Player2Selection = _ships[_ships.Count / 2]
             };
-            _p1Info = new PlayerSelectionInfo { IconScales = GetIconScales(_result.Player1Selection) };
-            _p2Info = new PlayerSelectionInfo { IconScales = GetIconScales(_result.Player2Selection) };
+            _p1Info = new SelectionDrawInfo { IconScales = GetIconScales(_result.Player1Selection) };
+            _p2Info = new SelectionDrawInfo { IconScales = GetIconScales(_result.Player2Selection) };
         }
         #endregion
 
@@ -149,7 +152,7 @@ namespace DefendUranus.Activities
         /// </summary>
         /// <param name="info">Player info.</param>
         /// <param name="input">Player input.</param>
-        void CheckPlayerInput(PlayerSelectionInfo info, PlayerInput input)
+        void CheckPlayerInput(SelectionDrawInfo info, PlayerInput input)
         {
             if (input.Right)
                 ShiftSelection(info, left: false);
@@ -168,21 +171,20 @@ namespace DefendUranus.Activities
             GraphicsDevice.Clear(Color.DarkGreen);
 
             SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);
-            DrawPlayerSelection(gameTime, _result.Player1Selection, _p1Info, 200);
-            DrawPlayerSelection(gameTime, _result.Player2Selection, _p2Info, 400);
+            DrawPlayerSelection(_result.Player1Selection, _p1Info, 200);
+            DrawPlayerSelection(_result.Player2Selection, _p2Info, 400);
             SpriteBatch.End();
         }
 
         /// <summary>
         /// Draw the ship selection for the specified player at the specified position.
         /// </summary>
-        /// <param name="gameTime">Current game time.</param>
         /// <param name="selection">Current player selection.</param>
-        /// <param name="info">Current player info.</param>
+        /// <param name="drawInfo">Current player draw info.</param>
         /// <param name="height">The y position on the screen where the selection will be drawn.</param>
-        private void DrawPlayerSelection(GameTime gameTime, ShipDescription selection, PlayerSelectionInfo info, int height)
+        void DrawPlayerSelection(ShipDescription selection, SelectionDrawInfo drawInfo, int height)
         {
-            int sideShips = _ships.Count - 2;
+            int sideShips = Math.Min(_ships.Count, MaxVisibleShips) - 2;
             int width = (sideShips * 2 + 1) * _spacing;
             int x = (Game.Window.ClientBounds.Width - width) / 2 + _spacing / 2;
 
@@ -191,8 +193,8 @@ namespace DefendUranus.Activities
             {
                 var ship = _ships[i.Mod(_ships.Count)];
                 SpriteBatch.Draw(ship.Texture,
-                    position: new Vector2(x + info.DrawShift, height),
-                    scale: info.IconScales[ship],
+                    position: new Vector2(x + drawInfo.DrawShift, height),
+                    scale: drawInfo.IconScales[ship],
                     origin: new Vector2(ship.Texture.Width / 2, ship.Texture.Height / 2));
             }
         }
@@ -206,7 +208,7 @@ namespace DefendUranus.Activities
         /// </summary>
         /// <param name="info">Info of the player changing ship selection.</param>
         /// <param name="left">True if selecting the ship to the left.</param>
-        async void ShiftSelection(PlayerSelectionInfo info, bool left)
+        async void ShiftSelection(SelectionDrawInfo info, bool left)
         {
             if (info.ShiftingSelection) return;
             info.ShiftingSelection = true;
@@ -239,8 +241,8 @@ namespace DefendUranus.Activities
         /// <summary>
         /// Calculates the initial scale values, based on the player selection.
         /// </summary>
-        /// <param name="selection"></param>
-        /// <returns></returns>
+        /// <param name="selection">Current player selection.</param>
+        /// <returns>Dictionary containing an Scale value for each ship.</returns>
         IDictionary<ShipDescription, Vector2> GetIconScales(ShipDescription selection)
         {
             return _ships.ToDictionary(i => i, i => i == selection ? new Vector2(2) : Vector2.One);
@@ -260,7 +262,7 @@ namespace DefendUranus.Activities
         }
 
         #region Special Attacks
-        SpecialAttack WanderAttack(Ship target)
+        static SpecialAttack WanderAttack(Ship target)
         {
             var specialAttack = new SpecialAttack(target.Level, "Sprites/Explorer-WandererProbe.png")
             {
@@ -282,7 +284,7 @@ namespace DefendUranus.Activities
             return specialAttack;
         }
 
-        SpecialAttack PursuiterMissile(Ship target)
+        static SpecialAttack PursuiterMissile(Ship target)
         {
             var specialAttack = new SpecialAttack(target.Level, "Sprites/Avenger-PursuiterMissile.png")
             {
@@ -301,7 +303,7 @@ namespace DefendUranus.Activities
             return specialAttack;
         }
 
-        SpecialAttack FleeingFake(Ship target)
+        static SpecialAttack FleeingFake(Ship target)
         {
             var specialAttack = new SpecialAttack(target.Level, "Sprites/Avenger-PursuiterMissile.png")
             {
@@ -324,7 +326,7 @@ namespace DefendUranus.Activities
         #endregion
 
         #region Helpers
-        void DeployAttack(Ship ship, Func<Ship, SpecialAttack> createAttack)
+        static void DeployAttack(Ship ship, Func<Ship, SpecialAttack> createAttack)
         {
             var target = ship.Level.Entities.OfType<Ship>()
                 .Where(s => s != ship)

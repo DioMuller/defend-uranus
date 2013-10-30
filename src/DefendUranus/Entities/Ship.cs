@@ -138,11 +138,6 @@ namespace DefendUranus.Entities
 
         async Task FireSpecialWeapon(CancellationToken cancellation)
         {
-            var target = Level.Entities.OfType<Ship>()
-                .Where(s => s != this)
-                .OrderBy(s => (s.Position - Position).LengthSquared())
-                .FirstOrDefault();
-
             SpecialAttack(this);
             await TaskEx.Delay(SpecialWeaponDelay);
         }

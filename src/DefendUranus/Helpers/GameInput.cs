@@ -146,7 +146,6 @@ namespace DefendUranus.Helpers
         InputState GetState()
         {
             var gamePad1 = GamePad.GetState(PlayerIndex.One);
-            var gamePad2 = GamePad.GetState(PlayerIndex.Two);
             var kbState = Keyboard.GetState();
 
             if (gamePad1.IsConnected)
