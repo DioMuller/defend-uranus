@@ -56,7 +56,6 @@ namespace DefendUranus.Activities
         #region Attributes
         readonly public List<ShipDescription> _ships;
         readonly int _spacing;
-        Color _drawColor;
 
         Result _result;
         PlayerSelectionInfo _p1Info, _p2Info;
@@ -87,11 +86,10 @@ namespace DefendUranus.Activities
         /// <returns>A task that represents the activity execution.</returns>
         protected async override Task<GamePlaySetup.Result> RunActivity()
         {
-            await FadeIn(100, c => _drawColor = c);
-
+            await FadeIn(100);
             var result = await base.RunActivity();
+            await FadeOut(100);
 
-            await FadeOut(100, c => _drawColor = c);
             return result;
         }
 
@@ -211,8 +209,7 @@ namespace DefendUranus.Activities
                 SpriteBatch.Draw(ship.Texture,
                     position: new Vector2(x + info.DrawShift, height),
                     scale: info.IconScales[ship],
-                    origin: new Vector2(ship.Texture.Width / 2, ship.Texture.Height / 2),
-                    color: _drawColor);
+                    origin: new Vector2(ship.Texture.Width / 2, ship.Texture.Height / 2));
             }
         }
         #endregion

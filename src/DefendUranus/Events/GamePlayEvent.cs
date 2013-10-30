@@ -1,9 +1,10 @@
 ﻿using DefendUranus.Activities;
 using Microsoft.Xna.Framework;
+using MonoGameLib.Core.Events;
 
 namespace DefendUranus.Events
 {
-    class GamePlayEventArgs : GameEventArgs
+    class GamePlayEventArgs : GameLoopEventArgs
     {
         public GamePlayEventArgs(GameTime gameTime, GamePlay level)
             : base(gameTime)

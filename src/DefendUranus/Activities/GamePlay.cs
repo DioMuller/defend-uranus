@@ -53,7 +53,6 @@ namespace DefendUranus.Activities
         private List<GamePlayEntity> _entities;
         private List<Ship> _ships;
         private Texture2D _background, _stars;
-        private Color _drawColor;
         #endregion
 
         #region Properties
@@ -95,11 +94,10 @@ namespace DefendUranus.Activities
         /// <returns>A task that represents the activity execution.</returns>
         protected async override Task<GamePlay.Result> RunActivity()
         {
-            await FadeIn(100, c => _drawColor = c);
-
+            await FadeIn(100);
             var result = await base.RunActivity();
+            await FadeOut(100);
 
-            await FadeOut(100, c => _drawColor = c);
             return result;
         }
 
@@ -250,7 +248,7 @@ namespace DefendUranus.Activities
         {
             SpriteBatch.Begin(camera, zoom, Game.GraphicsDevice.Viewport);
             foreach (var ent in _entities.ToList())
-                ent.Draw(gameTime, SpriteBatch, new Color(ent.Color, _drawColor.A));
+                ent.Draw(gameTime, SpriteBatch, ent.Color);
             SpriteBatch.End();
         }
 
@@ -268,16 +266,14 @@ namespace DefendUranus.Activities
                     (int)(camera.X * BackgroundSlideFactor),
                     (int)(camera.Y * BackgroundSlideFactor),
                     (int)(_stars.Width),
-                    (int)(_stars.Height)).Scale(1 / ScaleZoom(zoom, BackgroundMaxScale, BackgroundMinScale)),
-                    color: _drawColor);
+                    (int)(_stars.Height)).Scale(1 / ScaleZoom(zoom, BackgroundMaxScale, BackgroundMinScale)));
             SpriteBatch.Draw(_stars,
                 drawRectangle: GraphicsDevice.Viewport.Bounds,
                 sourceRectangle: new Rectangle(
                     (int)(camera.X * StarsSlideFactor),
                     (int)(camera.Y * StarsSlideFactor),
                     (int)(_stars.Width),
-                    (int)(_stars.Height)).Scale(1 / ScaleZoom(zoom, StarsMaxScale, StarsMinScale)),
-                    color: _drawColor);
+                    (int)(_stars.Height)).Scale(1 / ScaleZoom(zoom, StarsMaxScale, StarsMinScale)));
             SpriteBatch.End();
         }
 

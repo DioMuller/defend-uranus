@@ -1,6 +1,8 @@
 ﻿#region Using Statements
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGameLib.Activities;
+using MonoGameLib.Core.Events;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,7 +15,14 @@ namespace DefendUranus.Activities
 {
     abstract class GameActivity<T> : Activity<T>
     {
+        #region Constants
+        readonly Texture2D BlackTexture;
+        #endregion
+
         #region Attributes
+        float _screenOpacity = 1;
+        CancellationTokenSource _fadeCancellation;
+
         TaskCompletionSource<GameTime> _syncDraw, _syncUpdate;
         #endregion
 
@@ -25,6 +34,8 @@ namespace DefendUranus.Activities
         public GameActivity(MainGame game)
             : base(game)
         {
+            BlackTexture = new Texture2D(game.GraphicsDevice, 1, 1);
+            BlackTexture.SetData(new[] { Color.Black });
         }
         #endregion
 
@@ -74,6 +85,13 @@ namespace DefendUranus.Activities
                 _syncDraw = null;
             }
         }
+
+        void DrawFade(object sender, GameLoopEventArgs args)
+        {
+            SpriteBatch.Begin();
+            SpriteBatch.Draw(BlackTexture, drawRectangle: GraphicsDevice.Viewport.Bounds, color: new Color(Color.White, _screenOpacity));
+            SpriteBatch.End();
+        }
         #endregion
 
         #region Sync
@@ -93,7 +111,7 @@ namespace DefendUranus.Activities
         #endregion
 
         #region Animations
-        public async Task FloatAnimation(int duration, float startValue, float endValue, Action<float> valueStep, TweeningFunction easingFunction = null, CancellationToken ct = default(CancellationToken))
+        public async Task FloatAnimation(int duration, float startValue, float endValue, Action<float> valueStep, TweeningFunction easingFunction = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (duration <= 0)
                 throw new ArgumentOutOfRangeException("duration", "Duration must be greater than zero");
@@ -101,44 +119,48 @@ namespace DefendUranus.Activities
             if (valueStep == null)
                 throw new ArgumentNullException("valueStep");
 
+            Action<float> updateValue = dur =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                valueStep(GetValue(dur, duration, startValue, endValue, easingFunction));
+            };
+
             float curDuration = 0;
             do
             {
-                if (ct.IsCancellationRequested)
-                    return;
-
-                valueStep(GetValue(curDuration, duration, startValue, endValue, easingFunction));
-
+                updateValue(curDuration);
                 var gt = await SyncDraw();
                 curDuration += (int)gt.ElapsedGameTime.TotalMilliseconds;
             } while (curDuration < duration);
-
-            if (ct.IsCancellationRequested)
-                return;
-
-            valueStep(GetValue(curDuration, duration, startValue, endValue, easingFunction));
+            updateValue(curDuration);
         }
 
-        public async Task FadeIn(int duration, Action<Color> colorStep)
+        async Task FadeTo(int completeDuration, float value)
         {
-            if (colorStep == null)
-                throw new ArgumentNullException("colorStep");
+            var textureDesiredOpacity = 1 - value;
 
-            await FloatAnimation(duration, 0, 1, value =>
-            {
-                colorStep(new Color(Color.White, value));
-            });
+            if (_fadeCancellation != null)
+                _fadeCancellation.Cancel();
+            else
+                PostDraw += DrawFade;
+
+            _fadeCancellation = new CancellationTokenSource();
+            var duration = (int)(Math.Abs(_screenOpacity - textureDesiredOpacity) * completeDuration);
+            if (_screenOpacity != textureDesiredOpacity)
+                await FloatAnimation(duration, _screenOpacity, textureDesiredOpacity, v => _screenOpacity = v, cancellationToken: _fadeCancellation.Token);
+
+            PostDraw -= DrawFade;
+            _fadeCancellation = null;
         }
 
-        public async Task FadeOut(int duration, Action<Color> colorStep)
+        public Task FadeIn(int completeDuration)
         {
-            if (colorStep == null)
-                throw new ArgumentNullException("colorStep");
+            return FadeTo(completeDuration, 1);
+        }
 
-            await FloatAnimation(duration, 1, 0, value =>
-            {
-                colorStep(new Color(Color.White, value));
-            });
+        public Task FadeOut(int completeDuration)
+        {
+            return FadeTo(completeDuration, 0);
         }
         #endregion
 

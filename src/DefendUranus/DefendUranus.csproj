@@ -71,7 +71,6 @@
     <Compile Include="Entities\SteeringEntity.cs" />
     <Compile Include="Events\EntityCollisionEvent.cs" />
     <Compile Include="Events\EntityEvent.cs" />
-    <Compile Include="Events\GameEvent.cs" />
     <Compile Include="Events\GamePlayEvent.cs" />
     <Compile Include="Helpers\AsyncOperation.cs" />
     <Compile Include="Helpers\CommonExtensions.cs" />
@@ -232,7 +231,7 @@
   <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\submodule\monogame-aux-lib\src\MonoGameLib.Activities\MonoGameLib.Activities.csproj">
-      <Project>{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}</Project>
+      <Project>{b63836a7-fc4d-4c6b-86f7-abeab15788b3}</Project>
       <Name>MonoGameLib.Activities</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\submodule\monogame-aux-lib\src\MonoGameLib.Core\MonoGameLib.Core.csproj">

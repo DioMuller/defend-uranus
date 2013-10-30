@@ -23,7 +23,6 @@ namespace DefendUranus.Activities
         #region Attributes
         private GameInput _gameInput;
         private Texture2D _title;
-        private Color _drawColor;
         private Vector2 _scale;
         #endregion
 
@@ -50,12 +49,12 @@ namespace DefendUranus.Activities
         protected async override Task<StartScreen.Options> RunActivity()
         {
             await TaskEx.WhenAll(
-                FadeIn(100, c => _drawColor = c),
+                FadeIn(100),
                 FloatAnimation(100, 2, 1, v => _scale = new Vector2(v)));
 
             var result = await base.RunActivity();
 
-            await FadeOut(100, c => _drawColor = c);
+            await FadeOut(100);
             return result;
         }
         #endregion
@@ -80,7 +79,7 @@ namespace DefendUranus.Activities
             GraphicsDevice.Clear(Color.Black);
 
             SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);
-            SpriteBatch.Draw(_title, Vector2.Zero, color: _drawColor, scale: _scale);
+            SpriteBatch.Draw(_title, Vector2.Zero, scale: _scale);
             SpriteBatch.End();
 
             base.Draw(gameTime);
