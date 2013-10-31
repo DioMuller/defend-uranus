@@ -104,19 +104,21 @@ namespace DefendUranus.Entities
         #endregion Properties
 
         #region Constructors
-        public PhysicsEntity()
+        public PhysicsEntity() : this(null)
         {
         }
 
         public PhysicsEntity(string texturePath)
         {
-            if (texturePath == null)
-                return;
+            Mass = 1;
 
-            Sprite = new Sprite(texturePath, default(Point), 0);
-            Sprite.Animations.Add(new Animation("default", 0, 0, 0));
-            Sprite.Origin = new Vector2(Sprite.FrameSize.X, Sprite.FrameSize.Y) / 2;
-            Sprite.ChangeAnimation(0);
+            if (texturePath != null)
+            {
+                Sprite = new Sprite(texturePath, default(Point), 0);
+                Sprite.Animations.Add(new Animation("default", 0, 0, 0));
+                Sprite.Origin = new Vector2(Sprite.FrameSize.X, Sprite.FrameSize.Y) / 2;
+                Sprite.ChangeAnimation(0);
+            }
         }
         #endregion Constructor
 

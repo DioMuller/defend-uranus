@@ -18,12 +18,17 @@ using DefendUranus.Entities.SpecialAttacks;
 
 namespace DefendUranus.Activities
 {
+    /// <summary>
+    /// The ship selecion screen.
+    /// It shows the available ships with their information
+    /// so the players can select their preference.
+    /// </summary>
     class GamePlaySetup : GameActivity<GamePlaySetup.Result>
     {
         #region Nested
         /// <summary>
         /// Setup Result.
-        /// Contains the information selected before the game starts.
+        /// Contains the information selected by the players before the game starts.
         /// </summary>
         public class Result
         {
@@ -62,7 +67,7 @@ namespace DefendUranus.Activities
 
         #region Attributes
         readonly Result _result;
-        SelectionDrawInfo _p1Info, _p2Info;
+        readonly SelectionDrawInfo _p1Info, _p2Info;
         PlayerInput _p1Input, _p2Input;
         GameInput _gameInput;
         #endregion
@@ -78,8 +83,8 @@ namespace DefendUranus.Activities
                 Player1Selection = _ships[0],
                 Player2Selection = _ships[_ships.Count / 2]
             };
-            _p1Info = new SelectionDrawInfo { IconScales = GetIconScales(_result.Player1Selection) };
-            _p2Info = new SelectionDrawInfo { IconScales = GetIconScales(_result.Player2Selection) };
+            _p1Info = new SelectionDrawInfo { IconScales = GetDefaultScales(_result.Player1Selection) };
+            _p2Info = new SelectionDrawInfo { IconScales = GetDefaultScales(_result.Player2Selection) };
         }
         #endregion
 
@@ -240,11 +245,11 @@ namespace DefendUranus.Activities
 
         #region Initialization
         /// <summary>
-        /// Calculates the initial scale values, based on the player selection.
+        /// Calculates the initial ship scale values, based on the player selection.
         /// </summary>
         /// <param name="selection">Current player selection.</param>
         /// <returns>Dictionary containing an Scale value for each ship.</returns>
-        IDictionary<ShipDescription, Vector2> GetIconScales(ShipDescription selection)
+        IDictionary<ShipDescription, Vector2> GetDefaultScales(ShipDescription selection)
         {
             return _ships.ToDictionary(i => i, i => i == selection ? new Vector2(2) : Vector2.One);
         }
@@ -256,10 +261,10 @@ namespace DefendUranus.Activities
         IEnumerable<ShipDescription> LoadShips()
         {
             // TODO: Load ships from XML
-            yield return new ShipDescription(Content, "Sprites/Avenger", 2, "Earth Avenger", ship => ship.DeployAttack(new PursuiterMissile(ship)));
-            yield return new ShipDescription(Content, "Sprites/Explorer", 1, "Uranus Explorer", ship => ship.DeployAttack(new WandererProbe(ship)));
-            yield return new ShipDescription(Content, "Sprites/Fatboy", 4, "Big Fatboy", ship => ship.DeployAttack(new FleeingFake(ship)));
-            yield return new ShipDescription(Content, "Sprites/Meteoroid", 3, "Meteoroid Destroyer", ship => ship.DeployAttack(new WandererProbe(ship)));
+            yield return new ShipDescription(Content, "Sprites/Avenger", 2, "Earth Avenger", ship => new PursuiterMissile(ship));
+            yield return new ShipDescription(Content, "Sprites/Explorer", 1, "Uranus Explorer", ship => new WandererProbe(ship));
+            yield return new ShipDescription(Content, "Sprites/Fatboy", 4, "Big Fatboy", ship => new FleeingFake(ship));
+            yield return new ShipDescription(Content, "Sprites/Meteoroid", 3, "Meteoroid Destroyer", ship => new WandererProbe(ship));
         }
         #endregion
         #endregion

@@ -12,7 +12,7 @@ namespace DefendUranus.Entities
     class Ship : GamePlayEntity
     {
         #region Nested
-        public delegate void SpecialAttackMethod(Ship owner);
+        public delegate SpecialAttack SpecialAttackCreator(Ship owner);
         #endregion
 
         #region Constants
@@ -59,12 +59,17 @@ namespace DefendUranus.Entities
         public AsyncOperation SpecialWeapon { get; set; }
 
         /// <summary>
-        /// The method that this ship will use as special attack.
+        /// The method that this ship will use to create its special attack.
         /// </summary>
-        public SpecialAttackMethod SpecialAttack { get; set; }
+        public SpecialAttackCreator SpecialAttack { get; set; }
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Create a ship with default parameters.
+        /// </summary>
+        /// <param name="level">The level that will contain this Ship.</param>
+        /// <param name="texturePath">The location of the ship's draw image.</param>
         public Ship(GamePlay level, string texturePath)
             : base(level, texturePath)
         {
@@ -78,6 +83,20 @@ namespace DefendUranus.Entities
 
             MainWeapon = new AsyncOperation(c => FireWeapon(_mainWeaponAmmo, FireLaser, c));
             SpecialWeapon = new AsyncOperation(c => FireWeapon(_specialWeaponAmmo, FireSpecialWeapon, c));
+        }
+
+        /// <summary>
+        /// Create a ship based on this description.
+        /// </summary>
+        /// <param name="level">The level that will contain this Ship.</param>
+        /// <param name="description">The ship description details.</param>
+        public Ship(GamePlay level, ShipDescription description)
+            : this(level, description.TexturePath)
+        {
+            Mass = description.Mass;
+            MaxSpeed = description.MaxSpeed;
+            RotationStabilizer = description.RotationStabilizer;
+            SpecialAttack = description.SpecialAttack;
         }
         #endregion
 
@@ -161,7 +180,7 @@ namespace DefendUranus.Entities
                 return false;
 
             _specialWeaponAmmo.Quantity--;
-            SpecialAttack(this);
+            DeployAttack(SpecialAttack(this));
             await Level.Delay(SpecialWeaponDelay);
             return true;
         }

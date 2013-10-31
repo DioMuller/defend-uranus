@@ -23,6 +23,10 @@ using MonoGameLib.Core.Extensions;
 
 namespace DefendUranus.Activities
 {
+    /// <summary>
+    /// The Game Play screen.
+    /// It shows the players ship and finishes when one of them is destroyed.
+    /// </summary>
     class GamePlay : GameActivity<GamePlay.Result>
     {
         #region Constants
@@ -103,12 +107,8 @@ namespace DefendUranus.Activities
         public GamePlay(MainGame game, GamePlaySetup.Result setup)
             : base(game)
         {
-            var p1Ship = setup.Player1Selection.BuildShip(this);
-            var p2Ship = setup.Player2Selection.BuildShip(this);
-
-            // TODO: Set initial position based on ship size
-            p1Ship.Position = new Vector2(-100, 0);
-            p2Ship.Position = new Vector2(100, 0);
+            var p1Ship = new Ship(this, setup.Player1Selection) { Position = new Vector2(-100, 0) };
+            var p2Ship = new Ship(this, setup.Player2Selection) { Position = new Vector2(100, 0) };
 
             p1Ship.Behaviors.Add(new ShipInputBehavior(PlayerIndex.One, p1Ship));
             p2Ship.Behaviors.Add(new ShipInputBehavior(PlayerIndex.Two, p2Ship));
@@ -123,6 +123,24 @@ namespace DefendUranus.Activities
 
         #region Activity Life-Cycle
         /// <summary>
+        /// Prepares the activity to be started.
+        /// </summary>
+        protected override void Starting()
+        {
+            base.Starting();
+            _spawnAsteroids.IsActive = true;
+        }
+
+        /// <summary>
+        /// The activity is being finished.
+        /// </summary>
+        protected override void Completing()
+        {
+            base.Completing();
+            _spawnAsteroids.IsActive = false;
+        }
+
+        /// <summary>
         /// Prepares the activity to be activated.
         /// </summary>
         protected override void Activating()
@@ -131,14 +149,6 @@ namespace DefendUranus.Activities
             _gameInput = new GameInput();
             _background = Content.Load<Texture2D>("Backgrounds/Background");
             _stars = Content.Load<Texture2D>("Backgrounds/Background2");
-
-            _spawnAsteroids.IsActive = true;
-        }
-
-        protected override void Deactivating()
-        {
-            base.Deactivating();
-            _spawnAsteroids.IsActive = false;
         }
         #endregion
 
@@ -167,22 +177,18 @@ namespace DefendUranus.Activities
         /// <param name="gameTime"></param>
         void UpdateEntities(GameTime gameTime)
         {
-            const int maxDistanceSqr = 1000000;
             var camera = GetCamera();
 
             var upEnt = _entities.ToList();
             for (int i = 0; i < upEnt.Count; i++)
             {
                 var ent = upEnt[i];
-                if ((ent.Position - camera.Position).LengthSquared() > maxDistanceSqr)
-                {
-                    RemoveEntity(ent);
+                if (!IsValidEntity(camera, ent))
                     continue;
-                }
 
                 ent.Update(gameTime);
 
-                // Handle collision
+                // Handle collisions
                 for (int j = i + 1; j < upEnt.Count; j++)
                 {
                     var cEnt = upEnt[j];
@@ -267,7 +273,7 @@ namespace DefendUranus.Activities
         /// <param name="camera">Current camera position.</param>
         void DrawEntities(GameTime gameTime, CameraInfo camera)
         {
-            SpriteBatch.Begin(camera.Position, camera.ZoomFactor, Game.GraphicsDevice.Viewport);
+            SpriteBatch.Begin(camera, GraphicsDevice.Viewport);
             foreach (var ent in _entities.ToList())
                 ent.Draw(gameTime, SpriteBatch, ent.Color);
             SpriteBatch.End();
@@ -349,6 +355,11 @@ namespace DefendUranus.Activities
         #endregion
 
         #region Private
+        /// <summary>
+        /// Continuously spawn asteroids in the screen.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token that will stop the creation of asteroids.</param>
+        /// <returns>The task that will create asteroids in the screen.</returns>
         async Task SpawnAsteroids(CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
@@ -358,6 +369,9 @@ namespace DefendUranus.Activities
             }
         }
 
+        /// <summary>
+        /// Spawn a single asteroid at the screen.
+        /// </summary>
         void SpawnAsteroid()
         {
             const int AsteroidMass = 5;
@@ -381,6 +395,27 @@ namespace DefendUranus.Activities
                 Momentum = -directionFromCamera * RandomNumberGenerator.Next(AsteroidMinSpeed, AsteroidMaxSpeed),
                 AngularMomentum = RandomNumberGenerator.Next(-AsteroidMaxRotationSpeed, AsteroidMaxRotationSpeed)
             });
+        }
+
+        /// <summary>
+        /// Verifies if a specified entity can be used in the game.
+        /// </summary>
+        /// <param name="camera">Current game camera.</param>
+        /// <param name="entity">The entity to be checked.</param>
+        /// <returns>True if the entity can be used in the game, otherwise False.</returns>
+        bool IsValidEntity(CameraInfo camera, GamePlayEntity entity)
+        {
+            const int maxDistanceSqr = 1000000;
+
+            // Check the entity distance from the screen.
+            var distance = entity.Position - camera.Position;
+            if (distance.LengthSquared() > maxDistanceSqr)
+            {
+                RemoveEntity(entity);
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -442,11 +477,19 @@ namespace DefendUranus.Activities
         #endregion
 
         #region Public
+        /// <summary>
+        /// Adds an entity to the game.
+        /// </summary>
+        /// <param name="entity">Entity to be added.</param>
         public void AddEntity(GamePlayEntity entity)
         {
             _entities.Add(entity);
         }
 
+        /// <summary>
+        /// Removes an entity from the game.
+        /// </summary>
+        /// <param name="entity">Entity to be removed.</param>
         public void RemoveEntity(GamePlayEntity entity)
         {
             _entities.Remove(entity);

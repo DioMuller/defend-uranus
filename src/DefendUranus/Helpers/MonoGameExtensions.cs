@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using DefendUranus.Activities;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -9,11 +10,11 @@ namespace DefendUranus.Helpers
 {
     public static class MonoGameExtensions
     {
-        public static void Begin(this SpriteBatch spriteBatch, Vector2 camera = default(Vector2), float zoom = 1, Viewport gameViewport = default(Viewport), SamplerState sampler = null)
+        internal static void Begin(this SpriteBatch spriteBatch, GamePlay.CameraInfo camera, Viewport gameViewport = default(Viewport), SamplerState sampler = null)
         {
-            var transformation = Matrix.CreateTranslation(new Vector3(-camera.X, -camera.Y, 0)) *
+            var transformation = Matrix.CreateTranslation(new Vector3(-camera.Position.X, -camera.Position.Y, 0)) *
                 //Matrix.CreateRotationZ(Rotation) *
-                Matrix.CreateScale(new Vector3(zoom, zoom, 1)) *
+                Matrix.CreateScale(new Vector3(camera.ZoomFactor, camera.ZoomFactor, 1)) *
                 Matrix.CreateTranslation(new Vector3(gameViewport.Width * 0.5f, gameViewport.Height * 0.5f, 0));
 
             spriteBatch.Begin(SpriteSortMode.Immediate,

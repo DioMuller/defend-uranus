@@ -21,7 +21,6 @@ namespace DefendUranus.Entities.SpecialAttacks
             _owner = owner;
             RotateToMomentum = true;
             Momentum = Vector2.One;
-            Mass = 1f;
             MaxSpeed = 10f;
 
             _wander = new Wander(this)

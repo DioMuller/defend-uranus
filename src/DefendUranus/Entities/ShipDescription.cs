@@ -14,7 +14,7 @@ namespace DefendUranus.Entities
     class ShipDescription
     {
         #region Properties
-        // TODO: Change Texture to Sprite.
+        // TODO: Change Texture2D to Sprite and remove TexturePath.
         public Texture2D Texture { get; private set; }
         public string TexturePath { get; set; }
 
@@ -42,11 +42,11 @@ namespace DefendUranus.Entities
         /// <summary>
         /// The method that this ship will use as special attack.
         /// </summary>
-        public Ship.SpecialAttackMethod SpecialAttack { get; set; }
+        public Ship.SpecialAttackCreator SpecialAttack { get; set; }
         #endregion
 
         #region Constructors
-        public ShipDescription(ContentManager content, string texturePath, float mass, string description, Ship.SpecialAttackMethod specialAttack)
+        public ShipDescription(ContentManager content, string texturePath, float mass, string description, Ship.SpecialAttackCreator specialAttack)
         {
             Texture = content.Load<Texture2D>(texturePath);
             TexturePath = texturePath;
@@ -57,23 +57,6 @@ namespace DefendUranus.Entities
             RotationStabilizer = 0.1f;
 
             SpecialAttack = specialAttack;
-        }
-        #endregion
-
-        #region Public Methods
-        /// <summary>
-        /// Build the ship based on this description.
-        /// </summary>
-        /// <returns></returns>
-        public Ship BuildShip(GamePlay gamePlay)
-        {
-            return new Ship(gamePlay, TexturePath)
-            {
-                Mass = Mass,
-                MaxSpeed = MaxSpeed,
-                RotationStabilizer = RotationStabilizer,
-                SpecialAttack = SpecialAttack
-            };
         }
         #endregion
     }
