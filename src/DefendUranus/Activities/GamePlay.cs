@@ -17,6 +17,8 @@ using MonoGameLib.Core.Input;
 using DefendUranus.Entities;
 using DefendUranus.Helpers;
 using DefendUranus.SteeringBehaviors;
+using MonoGameLib.Core;
+using MonoGameLib.Core.Extensions;
 #endregion
 
 namespace DefendUranus.Activities
@@ -36,6 +38,8 @@ namespace DefendUranus.Activities
         const float StarsSlideFactor = 0.4f;
         const float StarsMaxScale = 1f;
         const float StarsMinScale = StarsMaxScale * 0.6f;
+
+        readonly TimeSpan SpawnAsteroidsDelay = TimeSpan.FromSeconds(30);
         #endregion
 
         #region Nested
@@ -54,6 +58,7 @@ namespace DefendUranus.Activities
         #endregion
 
         #region Attributes
+        readonly AsyncOperation _spawnAsteroids;
 
         readonly List<GamePlayEntity> _entities;
         readonly List<Ship> _ships;
@@ -93,6 +98,8 @@ namespace DefendUranus.Activities
             _ships = new List<Ship> { p1Ship, p2Ship };
             _entities = new List<GamePlayEntity>(_ships);
             _duration = TimeSpan.Zero;
+
+            _spawnAsteroids = new AsyncOperation(SpawnAsteroids);
         }
         #endregion
 
@@ -106,6 +113,14 @@ namespace DefendUranus.Activities
             _gameInput = new GameInput();
             _background = Content.Load<Texture2D>("Backgrounds/Background");
             _stars = Content.Load<Texture2D>("Backgrounds/Background2");
+
+            _spawnAsteroids.IsActive = true;
+        }
+
+        protected override void Deactivating()
+        {
+            base.Deactivating();
+            _spawnAsteroids.IsActive = false;
         }
         #endregion
 
@@ -322,11 +337,50 @@ namespace DefendUranus.Activities
         #endregion
 
         #region Private
+        async Task SpawnAsteroids(CancellationToken cancellationToken)
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                await Delay(SpawnAsteroidsDelay, cancellationToken);
+                SpawnAsteroid();
+            }
+        }
+
+        Vector2 Limit(Vector2 vec, float maxX, float maxY)
+        {
+            var ratio = Math.Min(maxX / Math.Abs(vec.X), maxY / Math.Abs(vec.Y));
+            return vec * ratio;
+        }
+
+        void SpawnAsteroid()
+        {
+            var camera = GetCamera();
+
+            var meteorDirection = Vector2Extension.AngleToVector2(RandomNumberGenerator.Next(-MathHelper.Pi, MathHelper.Pi));
+
+            var screenMaxWidth = GraphicsDevice.Viewport.Width / camera.ZoomFactor / 2 + 16;
+            var screenMaxHeight = GraphicsDevice.Viewport.Height / camera.ZoomFactor / 2 + 16;
+
+            Vector2 mPos = new Vector2(
+                x: screenMaxWidth / meteorDirection.X,
+                y: screenMaxHeight / meteorDirection.Y);
+
+            mPos = Limit(mPos,
+                maxX: screenMaxWidth,
+                maxY: screenMaxHeight);
+
+            var asteroid = new GamePlayEntity(this, "Sprites/Meteoroid") { Mass = 5, MaxSpeed = 30, MaxRotationSpeed = 2 };
+            asteroid.Position = new Vector2(camera.Position.X + mPos.X, camera.Position.Y + mPos.Y);
+            asteroid.ApplyAcceleration(-Vector2.Normalize(mPos) * 2, instantaneous: true);
+            AddEntity(asteroid);
+        }
+
         /// <summary>
         /// Transfers energy from one entity to another.
         /// </summary>
         /// <param name="a">Entity A</param>
         /// <param name="b">Entity B</param>
+        /// <param name="gameTime">Current game time.</param>
         void ResolveCollision(GamePlayEntity a, GamePlayEntity b, GameTime gameTime)
         {
             var normal = a.Position - b.Position;
@@ -357,19 +411,20 @@ namespace DefendUranus.Activities
 
             #region Apply Rotation
             var collisionPlane = new Vector2(-normal.Y, normal.X);
+
             if (a.Momentum != Vector2.Zero)
             {
                 var angle = Vector2.Dot(a.Momentum, collisionPlane);
 
                 if (!b.RotateToMomentum)
-                    b.ApplyRotation(angle * (float)Math.Abs(j), instantaneous: true);
+                    b.ApplyRotation(angle * -j * a.Mass / b.Mass, instantaneous: true);
             }
             if (b.Momentum != Vector2.Zero)
             {
                 var angle = -Vector2.Dot(b.Momentum, collisionPlane);
 
                 if (!a.RotateToMomentum)
-                    a.ApplyRotation(angle * (float)Math.Abs(j), instantaneous: true);
+                    a.ApplyRotation(angle * -j * b.Mass / a.Mass, instantaneous: true);
             }
             #endregion
 

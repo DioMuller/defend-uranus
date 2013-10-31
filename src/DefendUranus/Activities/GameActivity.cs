@@ -1,4 +1,4 @@
-﻿#region Using Statements
+#region Using Statements
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameLib.Activities;
@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using XNATweener;
+using DefendUranus.Helpers;
 #endregion
 
 namespace DefendUranus.Activities
@@ -103,7 +104,30 @@ namespace DefendUranus.Activities
         #region Game Loop
         #endregion
 
-        #region Sync
+        #region Async
+        /// <summary>
+        /// Creates a task that will complete after a time delay.
+        /// </summary>
+        /// <param name="dueTime">The time span to wait before completing the returned task.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        public async Task<GameTime> Delay(TimeSpan dueTime, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            TimeSpan totalGameTime;
+            TimeSpan elapsed = TimeSpan.Zero;
+
+            do
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var gt = await WaitUpdate();
+                elapsed += gt.ElapsedGameTime;
+                totalGameTime = gt.TotalGameTime;
+            } while(elapsed < dueTime);
+
+            return new GameTime(totalGameTime, elapsed);
+        }
+        #endregion
+
+        #region Synchronization
         /// <summary>
         /// Wait asynchronously for the next Draw.
         /// </summary>

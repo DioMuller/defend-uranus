@@ -21,7 +21,7 @@ namespace DefendUranus.Entities
             Momentum = momentum;
             Position = position + direction * _owner.Size / 2;
 
-            Mass = 1;
+            Mass = 0.1f;
             MaxSpeed = 50;
             RotateToMomentum = true;
 

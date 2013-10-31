@@ -128,8 +128,8 @@ namespace DefendUranus.Entities
 
             var laser = new Laser(this, Momentum, Position, direction);
 
-            laser.ApplyForce(direction * laser.MaxSpeed, instantaneous: true);
-            ApplyForce(direction * laser.MaxSpeed * -0.001f, instantaneous: true);
+            laser.ApplyAcceleration(direction * laser.MaxSpeed, instantaneous: true);
+            ApplyForce(-direction * laser.Mass, instantaneous: true);
 
             Level.AddEntity(laser);
 

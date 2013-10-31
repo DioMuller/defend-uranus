@@ -204,10 +204,17 @@ namespace DefendUranus.Entities
         /// Apply an acceleration to this body.
         /// The acceleration is applied regardless of the body's mass.
         /// </summary>
-        /// <param name="acceleration"></param>
-        public void ApplyAcceleration(Vector2 acceleration)
+        /// <param name="acceleration">How much the entity should accelerate.</param>
+        /// <param name="instantaneous">
+        /// Indicates if this force will be applied only once to this body.
+        /// Leave it to False if this force is being applied on every game loop.
+        /// </param>
+        public void ApplyAcceleration(Vector2 acceleration, bool instantaneous = false)
         {
-            _acceleration += acceleration;
+            if (instantaneous)
+                _instantaneousForce += acceleration;
+            else
+                _acceleration += acceleration;
         }
         #endregion Methods
     }
