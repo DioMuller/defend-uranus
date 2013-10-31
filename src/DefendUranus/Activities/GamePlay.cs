@@ -52,8 +52,26 @@ namespace DefendUranus.Activities
 
         public class CameraInfo
         {
-            public Vector2 Position { get; set; }
-            public float ZoomFactor { get; set; }
+            public Vector2 Position { get; private set; }
+            public float ZoomFactor { get; private set; }
+
+            public CameraInfo(Vector2 position, float zoomFactor)
+            {
+                Position = position;
+                ZoomFactor = zoomFactor;
+            }
+
+            public Rectangle GetArea(Viewport viewport)
+            {
+                var screenWidth = (int)(viewport.Width / ZoomFactor / 2);
+                var screenHeight = (int)(viewport.Height / ZoomFactor / 2);
+
+                return new Rectangle(
+                    x: (int)(Position.X) - screenWidth / 2,
+                    y: (int)(Position.Y) - screenHeight / 2,
+                    width: screenWidth,
+                    height: screenHeight);
+            }
         }
         #endregion
 
@@ -289,22 +307,16 @@ namespace DefendUranus.Activities
                 throw new InvalidOperationException();
 
             if (_ships.Count == 1)
-            {
-                return new CameraInfo
-                {
-                    Position = _ships[0].Position,
-                    ZoomFactor = MaxZoomFactor
-                };
-            }
+                return new CameraInfo(_ships[0].Position, MaxZoomFactor);
 
             var p1 = _ships[0];
             var p2 = _ships[1];
 
             return new CameraInfo
-            {
-                Position = (p1.Position + p2.Position) / 2,
-                ZoomFactor = GetZoomFactor((p2.Position - p1.Position).Length())
-            };
+            (
+                position: (p1.Position + p2.Position) / 2,
+                zoomFactor: GetZoomFactor((p2.Position - p1.Position).Length())
+            );
         }
 
         /// <summary>
@@ -346,33 +358,29 @@ namespace DefendUranus.Activities
             }
         }
 
-        Vector2 Limit(Vector2 vec, float maxX, float maxY)
-        {
-            var ratio = Math.Min(maxX / Math.Abs(vec.X), maxY / Math.Abs(vec.Y));
-            return vec * ratio;
-        }
-
         void SpawnAsteroid()
         {
+            const int AsteroidMass = 5;
+            const int AsteroidMinSpeed = 1;
+            const int AsteroidMaxSpeed = 10;
+            const int AsteroidMaxRotationSpeed = 2;
+
             var camera = GetCamera();
+            var area = camera.GetArea(GraphicsDevice.Viewport);
 
-            var meteorDirection = Vector2Extension.AngleToVector2(RandomNumberGenerator.Next(-MathHelper.Pi, MathHelper.Pi));
+            var directionFromCamera = RandomNumberGenerator.NextDirection();
+            var screenSizeRatio = Math.Min((area.Width + 16) / Math.Abs(directionFromCamera.X),
+                                           (area.Height + 16) / Math.Abs(directionFromCamera.Y));
 
-            var screenMaxWidth = GraphicsDevice.Viewport.Width / camera.ZoomFactor / 2 + 16;
-            var screenMaxHeight = GraphicsDevice.Viewport.Height / camera.ZoomFactor / 2 + 16;
-
-            Vector2 mPos = new Vector2(
-                x: screenMaxWidth / meteorDirection.X,
-                y: screenMaxHeight / meteorDirection.Y);
-
-            mPos = Limit(mPos,
-                maxX: screenMaxWidth,
-                maxY: screenMaxHeight);
-
-            var asteroid = new GamePlayEntity(this, "Sprites/Meteoroid") { Mass = 5, MaxSpeed = 30, MaxRotationSpeed = 2 };
-            asteroid.Position = new Vector2(camera.Position.X + mPos.X, camera.Position.Y + mPos.Y);
-            asteroid.ApplyAcceleration(-Vector2.Normalize(mPos) * 2, instantaneous: true);
-            AddEntity(asteroid);
+            AddEntity(new GamePlayEntity(this, "Sprites/Meteoroid")
+            {
+                Mass = AsteroidMass,
+                MaxSpeed = AsteroidMaxSpeed,
+                MaxRotationSpeed = AsteroidMaxRotationSpeed,
+                Position = camera.Position + directionFromCamera * screenSizeRatio,
+                Momentum = -directionFromCamera * RandomNumberGenerator.Next(AsteroidMinSpeed, AsteroidMaxSpeed),
+                AngularMomentum = RandomNumberGenerator.Next(-AsteroidMaxRotationSpeed, AsteroidMaxRotationSpeed)
+            });
         }
 
         /// <summary>
