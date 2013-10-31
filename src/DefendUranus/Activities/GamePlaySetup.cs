@@ -13,6 +13,7 @@ using Microsoft.Xna.Framework.Content;
 using DefendUranus.Helpers;
 using DefendUranus.SteeringBehaviors;
 using MonoGameLib.Core.Extensions;
+using DefendUranus.Entities.SpecialAttacks;
 #endregion
 
 namespace DefendUranus.Activities
@@ -255,93 +256,10 @@ namespace DefendUranus.Activities
         IEnumerable<ShipDescription> LoadShips()
         {
             // TODO: Load ships from XML
-            yield return new ShipDescription(Content, "Sprites/Avenger", 2, "Earth Avenger", ship => DeployAttack(ship, PursuiterMissile));
-            yield return new ShipDescription(Content, "Sprites/Explorer", 1, "Uranus Explorer", ship => DeployAttack(ship, WanderAttack));
-            yield return new ShipDescription(Content, "Sprites/Fatboy", 4, "Big Fatboy", ship => DeployAttack(ship, FleeingFake));
-            yield return new ShipDescription(Content, "Sprites/Meteoroid", 3, "Meteoroid Destroyer", ship => DeployAttack(ship, WanderAttack));
-        }
-
-        #region Special Attacks
-        static SpecialAttack WanderAttack(Ship target)
-        {
-            var specialAttack = new SpecialAttack(target.Level, "Sprites/Explorer-WandererProbe.png")
-            {
-                RotateToMomentum = true,
-                Momentum = Vector2.One,
-                Mass = 1f,
-                MaxSpeed = 10f,
-            };
-            var steeringBehavior = new Wander(specialAttack)
-            {
-                Target = target,
-                Jitter = 1.25f,
-                WanderDistance = 50f,
-                WanderRadius = 90f,
-            };
-
-            specialAttack.SteeringBehaviors.Add(steeringBehavior);
-
-            return specialAttack;
-        }
-
-        static SpecialAttack PursuiterMissile(Ship target)
-        {
-            var specialAttack = new SpecialAttack(target.Level, "Sprites/Avenger-PursuiterMissile.png")
-            {
-                RotateToMomentum = true,
-                Momentum = Vector2.One,
-                Mass = 1f,
-                MaxSpeed = 10f,
-            };
-            var steeringBehavior = new Pursuit(specialAttack)
-            {
-                Target = target,
-            };
-
-            specialAttack.SteeringBehaviors.Add(steeringBehavior);
-
-            return specialAttack;
-        }
-
-        static SpecialAttack FleeingFake(Ship target)
-        {
-            var specialAttack = new SpecialAttack(target.Level, "Sprites/Avenger-PursuiterMissile.png")
-            {
-                RotateToMomentum = true,
-                Momentum = Vector2.One,
-                Mass = 1f,
-                MaxSpeed = 10f,
-            };
-            var steeringBehavior = new Flee(specialAttack)
-            {
-                PanicDistance = 500f,
-                Target = target,
-            };
-
-            specialAttack.SteeringBehaviors.Add(steeringBehavior);
-
-            return specialAttack;
-        }
-        #endregion
-        #endregion
-
-        #region Helpers
-        static void DeployAttack(Ship ship, Func<Ship, SpecialAttack> createAttack)
-        {
-            var target = ship.Level.Entities.OfType<Ship>()
-                .Where(s => s != ship)
-                .OrderBy(s => (s.Position - ship.Position).LengthSquared())
-                .FirstOrDefault();
-
-            var direction = Vector2Extension.AngleToVector2(ship.Rotation);
-
-            var item = createAttack(target);
-            item.Position = ship.Position + direction * ship.Size / 2;
-
-            item.ApplyForce(direction * item.MaxSpeed, instantaneous: true);
-            ship.ApplyForce(direction * item.MaxSpeed * -0.01f, instantaneous: true);
-
-            ship.Level.AddEntity(item);
+            yield return new ShipDescription(Content, "Sprites/Avenger", 2, "Earth Avenger", ship => ship.DeployAttack(new PursuiterMissile(ship)));
+            yield return new ShipDescription(Content, "Sprites/Explorer", 1, "Uranus Explorer", ship => ship.DeployAttack(new WandererProbe(ship)));
+            yield return new ShipDescription(Content, "Sprites/Fatboy", 4, "Big Fatboy", ship => ship.DeployAttack(new FleeingFake(ship)));
+            yield return new ShipDescription(Content, "Sprites/Meteoroid", 3, "Meteoroid Destroyer", ship => ship.DeployAttack(new WandererProbe(ship)));
         }
         #endregion
         #endregion

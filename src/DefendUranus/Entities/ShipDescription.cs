@@ -42,11 +42,11 @@ namespace DefendUranus.Entities
         /// <summary>
         /// The method that this ship will use as special attack.
         /// </summary>
-        public Action<Ship> SpecialAttack { get; set; }
+        public Ship.SpecialAttackMethod SpecialAttack { get; set; }
         #endregion
 
         #region Constructors
-        public ShipDescription(ContentManager content, string texturePath, float mass, string description, Action<Ship> specialAttack)
+        public ShipDescription(ContentManager content, string texturePath, float mass, string description, Ship.SpecialAttackMethod specialAttack)
         {
             Texture = content.Load<Texture2D>(texturePath);
             TexturePath = texturePath;
@@ -67,11 +67,12 @@ namespace DefendUranus.Entities
         /// <returns></returns>
         public Ship BuildShip(GamePlay gamePlay)
         {
-            return new Ship(gamePlay, TexturePath, SpecialAttack)
+            return new Ship(gamePlay, TexturePath)
             {
                 Mass = Mass,
                 MaxSpeed = MaxSpeed,
-                RotationStabilizer = RotationStabilizer
+                RotationStabilizer = RotationStabilizer,
+                SpecialAttack = SpecialAttack
             };
         }
         #endregion

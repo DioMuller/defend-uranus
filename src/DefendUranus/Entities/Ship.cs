@@ -11,6 +11,10 @@ namespace DefendUranus.Entities
 {
     class Ship : GamePlayEntity
     {
+        #region Nested
+        public delegate void SpecialAttackMethod(Ship owner);
+        #endregion
+
         #region Constants
         /// <summary>
         /// Time between main weapon shots.
@@ -57,11 +61,11 @@ namespace DefendUranus.Entities
         /// <summary>
         /// The method that this ship will use as special attack.
         /// </summary>
-        Action<Ship> SpecialAttack { get; set; }
+        public SpecialAttackMethod SpecialAttack { get; set; }
         #endregion
 
         #region Constructors
-        public Ship(GamePlay level, string texturePath, Action<Ship> specialAttack)
+        public Ship(GamePlay level, string texturePath)
             : base(level, texturePath)
         {
             Health = new Container(100);
@@ -74,8 +78,6 @@ namespace DefendUranus.Entities
 
             MainWeapon = new AsyncOperation(c => FireWeapon(_mainWeaponAmmo, FireLaser, c));
             SpecialWeapon = new AsyncOperation(c => FireWeapon(_specialWeaponAmmo, FireSpecialWeapon, c));
-
-            SpecialAttack = specialAttack;
         }
         #endregion
 
@@ -94,6 +96,18 @@ namespace DefendUranus.Entities
         {
             ApplyForce(Vector2Extension.AngleToVector2(Rotation) * thrust * ThrotleForce);
         }
+
+        public void DeployAttack(SpecialAttack attack)
+        {
+            var direction = Vector2Extension.AngleToVector2(Rotation);
+
+            attack.Position = Position + direction * Size / 2;
+
+            attack.ApplyForce(direction * attack.MaxSpeed, instantaneous: true);
+            ApplyForce(-direction * attack.Mass, instantaneous: true);
+
+            Level.AddEntity(attack);
+        }
         #endregion
 
         #region Game Loop
@@ -108,22 +122,25 @@ namespace DefendUranus.Entities
         #endregion
 
         #region Private
-        async Task FireWeapon(AutoRegenContainer container, Func<CancellationToken, Task> fire, CancellationToken cancellation)
+        async Task FireWeapon(AutoRegenContainer container, Func<CancellationToken, Task<bool>> fire, CancellationToken cancellation)
         {
             if (container.IsEmpty)
                 return;
 
             container.Regenerate = false;
-            if (!container.IsEmpty)
-            {
-                container.Quantity--;
-                await fire(cancellation);
-            }
+
+            while (!cancellation.IsCancellationRequested)
+                if (!await fire(cancellation))
+                    break;
+
             container.Regenerate = true;
         }
 
-        async Task FireLaser(CancellationToken cancellation)
+        public async Task<bool> FireLaser(CancellationToken cancellation)
         {
+            if (_mainWeaponAmmo.IsEmpty)
+                return false;
+
             var direction = Vector2Extension.AngleToVector2(Rotation);
 
             var laser = new Laser(this, Momentum, Position, direction);
@@ -131,15 +148,22 @@ namespace DefendUranus.Entities
             laser.ApplyAcceleration(direction * laser.MaxSpeed, instantaneous: true);
             ApplyForce(-direction * laser.Mass, instantaneous: true);
 
+            _mainWeaponAmmo.Quantity--;
             Level.AddEntity(laser);
 
-            await TaskEx.Delay(MainWeaponDelay);
+            await Level.Delay(MainWeaponDelay);
+            return true;
         }
 
-        async Task FireSpecialWeapon(CancellationToken cancellation)
+        public async Task<bool> FireSpecialWeapon(CancellationToken cancellation)
         {
+            if (SpecialAttack == null || _specialWeaponAmmo.IsEmpty)
+                return false;
+
+            _specialWeaponAmmo.Quantity--;
             SpecialAttack(this);
-            await TaskEx.Delay(SpecialWeaponDelay);
+            await Level.Delay(SpecialWeaponDelay);
+            return true;
         }
         #endregion
     }
