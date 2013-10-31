@@ -1,6 +1,7 @@
 ﻿using DefendUranus.Activities;
 using DefendUranus.Events;
 using Microsoft.Xna.Framework;
+using MonoGameLib.Core.Sprites;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,21 @@ namespace DefendUranus.Entities
         /// How much damage this entity can endure before getting destroyed.
         /// </summary>
         public Container Health { get; protected set; }
+
+        /// <summary>
+        /// Entity size for fast access.
+        /// </summary>
+        public new Vector2 Size;
+
+        public new Sprite Sprite
+        {
+            get { return base.Sprite; }
+            set
+            {
+                base.Sprite = value;
+                Size = new Vector2(Sprite.FrameSize.X, Sprite.FrameSize.Y);
+            }
+        }
         #endregion
 
         #region Constructors
@@ -35,6 +51,8 @@ namespace DefendUranus.Entities
             : base(texturePath)
         {
             Level = level;
+            if(texturePath != null)
+                Size = base.Size;
         }
         #endregion
 
