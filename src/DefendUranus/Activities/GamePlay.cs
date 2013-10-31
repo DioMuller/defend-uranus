@@ -45,14 +45,23 @@ namespace DefendUranus.Activities
             public int Winner { get; set; }
             public TimeSpan Duration { get; set; }
         }
+
+        public class CameraInfo
+        {
+            public Vector2 Position { get; set; }
+            public float ZoomFactor { get; set; }
+        }
         #endregion
 
         #region Attributes
-        private GameInput _gameInput;
-        private TimeSpan _duration;
-        private List<GamePlayEntity> _entities;
-        private List<Ship> _ships;
-        private Texture2D _background, _stars;
+
+        readonly List<GamePlayEntity> _entities;
+        readonly List<Ship> _ships;
+
+        GameInput _gameInput;
+        TimeSpan _duration;
+
+        Texture2D _background, _stars;
         #endregion
 
         #region Properties
@@ -126,14 +135,13 @@ namespace DefendUranus.Activities
         void UpdateEntities(GameTime gameTime)
         {
             const int maxDistanceSqr = 1000000;
-
-            Vector2 camera = (_ships.Last().Position + _ships.First().Position) / 2;
+            var camera = GetCamera();
 
             var upEnt = _entities.ToList();
             for (int i = 0; i < upEnt.Count; i++)
             {
                 var ent = upEnt[i];
-                if ((ent.Position - camera).LengthSquared() > maxDistanceSqr)
+                if ((ent.Position - camera.Position).LengthSquared() > maxDistanceSqr)
                 {
                     RemoveEntity(ent);
                     continue;
@@ -212,13 +220,11 @@ namespace DefendUranus.Activities
         /// <param name="gameTime">Current game time.</param>
         protected override void Draw(GameTime gameTime)
         {
-            Vector2 camera = (_ships.Last().Position + _ships.First().Position) / 2;
-            float zoom = GetZoomFactor();
-
             GraphicsDevice.Clear(Color.Black);
 
-            DrawStars(camera, zoom);
-            DrawEntities(gameTime, camera, zoom);
+            var camera = GetCamera();
+            DrawStars(camera);
+            DrawEntities(gameTime, camera);
         }
 
         /// <summary>
@@ -226,10 +232,9 @@ namespace DefendUranus.Activities
         /// </summary>
         /// <param name="gameTime">Current game time.</param>
         /// <param name="camera">Current camera position.</param>
-        /// <param name="zoom">Current zoom level.</param>
-        void DrawEntities(GameTime gameTime, Vector2 camera, float zoom)
+        void DrawEntities(GameTime gameTime, CameraInfo camera)
         {
-            SpriteBatch.Begin(camera, zoom, Game.GraphicsDevice.Viewport);
+            SpriteBatch.Begin(camera.Position, camera.ZoomFactor, Game.GraphicsDevice.Viewport);
             foreach (var ent in _entities.ToList())
                 ent.Draw(gameTime, SpriteBatch, ent.Color);
             SpriteBatch.End();
@@ -239,42 +244,65 @@ namespace DefendUranus.Activities
         /// Draw the stars background, based on the camera position.
         /// </summary>
         /// <param name="camera">Current camera position.</param>
-        /// <param name="zoom">Current zoom level.</param>
-        void DrawStars(Vector2 camera, float zoom)
+        void DrawStars(CameraInfo camera)
         {
             SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.LinearWrap, null, null);
             SpriteBatch.Draw(_background,
                 drawRectangle: GraphicsDevice.Viewport.Bounds,
                 sourceRectangle: new Rectangle(
-                    (int)(camera.X * BackgroundSlideFactor),
-                    (int)(camera.Y * BackgroundSlideFactor),
-                    (int)(_stars.Width),
-                    (int)(_stars.Height)).Scale(1 / ScaleZoom(zoom, BackgroundMaxScale, BackgroundMinScale)));
+                    (int)(camera.Position.X * BackgroundSlideFactor),
+                    (int)(camera.Position.Y * BackgroundSlideFactor),
+                    _stars.Width, _stars.Height)
+                .Scale(1 / ScaleZoom(camera.ZoomFactor, BackgroundMaxScale, BackgroundMinScale)));
             SpriteBatch.Draw(_stars,
                 drawRectangle: GraphicsDevice.Viewport.Bounds,
                 sourceRectangle: new Rectangle(
-                    (int)(camera.X * StarsSlideFactor),
-                    (int)(camera.Y * StarsSlideFactor),
-                    (int)(_stars.Width),
-                    (int)(_stars.Height)).Scale(1 / ScaleZoom(zoom, StarsMaxScale, StarsMinScale)));
+                    (int)(camera.Position.X * StarsSlideFactor),
+                    (int)(camera.Position.Y * StarsSlideFactor),
+                    _stars.Width, _stars.Height)
+                .Scale(1 / ScaleZoom(camera.ZoomFactor, StarsMaxScale, StarsMinScale)));
             SpriteBatch.End();
+        }
+
+        /// <summary>
+        /// Get the current camera position and zoom factor.
+        /// </summary>
+        /// <returns>The camera information.</returns>
+        CameraInfo GetCamera()
+        {
+            if (_ships.Count == 0)
+                throw new InvalidOperationException();
+
+            if (_ships.Count == 1)
+            {
+                return new CameraInfo
+                {
+                    Position = _ships[0].Position,
+                    ZoomFactor = MaxZoomFactor
+                };
+            }
+
+            var p1 = _ships[0];
+            var p2 = _ships[1];
+
+            return new CameraInfo
+            {
+                Position = (p1.Position + p2.Position) / 2,
+                ZoomFactor = GetZoomFactor((p2.Position - p1.Position).Length())
+            };
         }
 
         /// <summary>
         /// Gets the current zoom factor based on the ships distance.
         /// </summary>
         /// <returns>The zoom factor to be used by the game.</returns>
-        float GetZoomFactor()
+        float GetZoomFactor(float distance)
         {
-            var dist = _ships.Last().Position - _ships.First().Position;
-            var distLength = dist.Length();
-
-            if (distLength < MinZoomDistance)
+            if (distance < MinZoomDistance)
                 return MaxZoomFactor;
-            else if (distLength > MaxZoomDistance)
+            if (distance > MaxZoomDistance)
                 return MinZoomFactor;
-
-            return XNATweener.Cubic.EaseOut(distLength - MinZoomDistance, MaxZoomFactor, MinZoomFactor - MaxZoomFactor, MaxZoomDistance - MinZoomDistance);
+            return XNATweener.Cubic.EaseOut(distance - MinZoomDistance, MaxZoomFactor, MinZoomFactor - MaxZoomFactor, MaxZoomDistance - MinZoomDistance);
         }
 
         /// <summary>
