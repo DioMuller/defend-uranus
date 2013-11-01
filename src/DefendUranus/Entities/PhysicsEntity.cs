@@ -16,12 +16,12 @@ namespace DefendUranus.Entities
         /// <summary>
         /// Angular forces that are constantly being applied to the body.
         /// </summary>
-        float _angularForce;
+        float _angularAcceleration;
         /// <summary>
         /// Angular forces that will be applied only once to the body.
         /// These forces are not affected by game time.
         /// </summary>
-        float _instantaneousAngularForce;
+        float _instantaneousAngularAcceleration;
         /// <summary>
         /// Forces/Accelerations that are constantly being applied to the body.
         /// </summary>
@@ -30,7 +30,7 @@ namespace DefendUranus.Entities
         /// Forces that will be applied only once to the body.
         /// These forces are not affected by game time.
         /// </summary>
-        Vector2 _instantaneousForce;
+        Vector2 _instantaneousAcceleration;
         #endregion
 
         #region Properties
@@ -133,7 +133,7 @@ namespace DefendUranus.Entities
 
             Vector2 accelSecs = _acceleration * secs;
 
-            Momentum += _instantaneousForce;
+            Momentum += _instantaneousAcceleration;
             Momentum *= Vector2.One - Friction;
             Position += WorldHelper.MetersToPixels((Momentum + accelSecs / 2) * secs);
             Momentum += accelSecs;
@@ -142,9 +142,9 @@ namespace DefendUranus.Entities
                 Rotation = Momentum.GetAngle();
             else
             {
-                var angularAccelSecs = _angularForce * secs;
+                var angularAccelSecs = _angularAcceleration * secs;
 
-                AngularMomentum += _instantaneousAngularForce;
+                AngularMomentum += _instantaneousAngularAcceleration;
                 AngularMomentum *= 1 - RotationFriction;
 
                 AngularMomentum = MathHelper.Clamp(AngularMomentum, -MaxRotationSpeed, MaxRotationSpeed);
@@ -152,10 +152,10 @@ namespace DefendUranus.Entities
                 Rotation += (AngularMomentum + angularAccelSecs / 2) * secs;
                 AngularMomentum += angularAccelSecs;
 
-                _instantaneousAngularForce = _angularForce = 0;
+                _instantaneousAngularAcceleration = _angularAcceleration = 0;
             }
 
-            _instantaneousForce = _acceleration = Vector2.Zero;
+            _instantaneousAcceleration = _acceleration = Vector2.Zero;
 
 
             AngularMomentum = MathHelper.Clamp(AngularMomentum, -MaxRotationSpeed, MaxRotationSpeed);
@@ -169,21 +169,23 @@ namespace DefendUranus.Entities
         /// Apply a rotation force to the body.
         /// </summary>
         /// <param name="force">How much force is being applied.</param>
+        /// <param name="isAcceleration">True if the Mass should affect the object acceleration.</param>
         /// <param name="instantaneous">
         /// Indicates if this force will be applied only once to this body.
         /// Leave it to False if this force is being applied on every game loop.
         /// </param>
-        public void ApplyRotation(float force, bool instantaneous = false)
+        public void ApplyRotation(float force, bool isAcceleration, bool instantaneous = false)
         {
 #if DEBUG
             if (RotateToMomentum)
                 throw new InvalidOperationException("This entity is set to RotateToMomentum and manual rotation is disabled.");
 #endif
+            float acceleration = isAcceleration? force : force / Mass;
 
             if (instantaneous)
-                _instantaneousAngularForce += force / Mass;
+                _instantaneousAngularAcceleration += acceleration;
             else
-                _angularForce += force / Mass;
+                _angularAcceleration += acceleration;
         }
 
         /// <summary>
@@ -197,7 +199,7 @@ namespace DefendUranus.Entities
         public void ApplyForce(Vector2 force, bool instantaneous = false)
         {
             if (instantaneous)
-                _instantaneousForce += force / Mass;
+                _instantaneousAcceleration += force / Mass;
             else
                 _acceleration += force / Mass;
         }
@@ -214,7 +216,7 @@ namespace DefendUranus.Entities
         public void ApplyAcceleration(Vector2 acceleration, bool instantaneous = false)
         {
             if (instantaneous)
-                _instantaneousForce += acceleration;
+                _instantaneousAcceleration += acceleration;
             else
                 _acceleration += acceleration;
         }

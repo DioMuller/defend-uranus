@@ -16,33 +16,33 @@ namespace DefendUranus.Entities
         #region Properties
         // TODO: Change Texture2D to Sprite and remove TexturePath.
         public Texture2D Texture { get; private set; }
-        public string TexturePath { get; set; }
+        public string TexturePath { get; private set; }
 
         /// <summary>
         /// Text description of the ship.
         /// </summary>
-        public string Description { get; set; }
+        public string Description { get; private set; }
 
         /// <summary>
         /// How much mass the ship have.
         /// </summary>
-        public float Mass { get; set; }
+        public float Mass { get; private set; }
 
         /// <summary>
         /// Top speed of the ship.
         /// </summary>
-        public float MaxSpeed { get; set; }
+        public float MaxSpeed { get; private set; }
 
         /// <summary>
         /// Effectiveness of the ship's stabilizer.
         /// When set to 1, the ship can stop rotating immediately.
         /// </summary>
-        public float RotationStabilizer { get; set; }
+        public float RotationStabilizer { get; private set; }
 
         /// <summary>
         /// The method that this ship will use as special attack.
         /// </summary>
-        public Ship.SpecialAttackCreator SpecialAttack { get; set; }
+        public Ship.SpecialAttackCreator SpecialAttack { get; private set; }
         #endregion
 
         #region Constructors

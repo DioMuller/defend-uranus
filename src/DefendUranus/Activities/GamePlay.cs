@@ -188,12 +188,27 @@ namespace DefendUranus.Activities
 
                 ent.Update(gameTime);
 
-                // Handle collisions
                 for (int j = i + 1; j < upEnt.Count; j++)
                 {
                     var cEnt = upEnt[j];
                     var dist = ent.Position - cEnt.Position;
-                    if (dist.Length() < ent.Size.Y / 2 + cEnt.Size.Y / 2)
+
+                    var minDist = ent.Size.Y / 2 + cEnt.Size.Y / 2;
+
+                    // Handle gravity
+                    if (dist != Vector2.Zero)
+                    {
+                        var distSquare = Math.Max(dist.LengthSquared(), 1024);
+                        var direction = Vector2.Normalize(dist);
+
+                        var intensity = 1000 * (ent.Mass * cEnt.Mass) / distSquare;
+
+                        ent.ApplyAcceleration(-direction * intensity);
+                        cEnt.ApplyAcceleration(direction * intensity);
+                    }
+
+                    // Handle collisions
+                    if (dist.Length() < minDist)
                         ResolveCollision(ent, cEnt, gameTime);
                 }
             }
@@ -427,6 +442,7 @@ namespace DefendUranus.Activities
         void ResolveCollision(GamePlayEntity a, GamePlayEntity b, GameTime gameTime)
         {
             var normal = a.Position - b.Position;
+            var dist = normal;
             normal.Normalize();
 
             // Calculate relative velocity
@@ -460,15 +476,21 @@ namespace DefendUranus.Activities
                 var angle = Vector2.Dot(a.Momentum, collisionPlane);
 
                 if (!b.RotateToMomentum)
-                    b.ApplyRotation(angle * -j * a.Mass / b.Mass, instantaneous: true);
+                    b.ApplyRotation(angle * -j * a.Mass / b.Mass, isAcceleration: false, instantaneous: true);
             }
             if (b.Momentum != Vector2.Zero)
             {
                 var angle = -Vector2.Dot(b.Momentum, collisionPlane);
 
                 if (!a.RotateToMomentum)
-                    a.ApplyRotation(angle * -j * b.Mass / a.Mass, instantaneous: true);
+                    a.ApplyRotation(angle * -j * b.Mass / a.Mass, isAcceleration: false, instantaneous: true);
             }
+            #endregion
+
+            #region Stops overlapping
+            var distLength = dist.Length();
+            if (distLength < 16)
+                a.Position += normal * (16 - distLength);
             #endregion
 
             a.RaiseCollision(b, gameTime, this);

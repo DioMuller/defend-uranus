@@ -108,7 +108,7 @@ namespace DefendUranus.Entities
             else
                 RotationFriction = RotationStabilizer;
 
-            ApplyRotation(force * RotationForce);
+            ApplyRotation(force * RotationForce, isAcceleration: true);
         }
 
         public void Accelerate(float thrust)
