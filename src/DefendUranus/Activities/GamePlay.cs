@@ -198,7 +198,7 @@ namespace DefendUranus.Activities
                     // Handle gravity
                     if (dist != Vector2.Zero)
                     {
-                        var distSquare = Math.Max(dist.LengthSquared(), 1024);
+                        var distSquare = Math.Max(dist.LengthSquared(), 4096);
                         var direction = Vector2.Normalize(dist);
 
                         var intensity = 1000 * (ent.Mass * cEnt.Mass) / distSquare;
@@ -441,6 +441,9 @@ namespace DefendUranus.Activities
         /// <param name="gameTime">Current game time.</param>
         void ResolveCollision(GamePlayEntity a, GamePlayEntity b, GameTime gameTime)
         {
+            var aDirection = Vector2.Normalize(a.Momentum);
+            var bDirection = Vector2.Normalize(b.Momentum);
+
             var normal = a.Position - b.Position;
             var dist = normal;
             normal.Normalize();
@@ -469,21 +472,24 @@ namespace DefendUranus.Activities
             #endregion
 
             #region Apply Rotation
-            var collisionPlane = new Vector2(-normal.Y, normal.X);
-
-            if (a.Momentum != Vector2.Zero)
+            if (velAlongNormal > 2)
             {
-                var angle = Vector2.Dot(a.Momentum, collisionPlane);
+                var collisionPlane = new Vector2(-normal.Y, normal.X);
 
-                if (!b.RotateToMomentum)
-                    b.ApplyRotation(angle * -j * a.Mass / b.Mass, isAcceleration: false, instantaneous: true);
-            }
-            if (b.Momentum != Vector2.Zero)
-            {
-                var angle = -Vector2.Dot(b.Momentum, collisionPlane);
+                if (a.Momentum != Vector2.Zero)
+                {
+                    var angle = Vector2.Dot(aDirection, collisionPlane);
 
-                if (!a.RotateToMomentum)
-                    a.ApplyRotation(angle * -j * b.Mass / a.Mass, isAcceleration: false, instantaneous: true);
+                    if (!b.RotateToMomentum)
+                        b.ApplyRotation(angle * -j * a.Mass / b.Mass, isAcceleration: false, instantaneous: true);
+                }
+                if (b.Momentum != Vector2.Zero)
+                {
+                    var angle = -Vector2.Dot(bDirection, collisionPlane);
+
+                    if (!a.RotateToMomentum)
+                        a.ApplyRotation(angle * -j * b.Mass / a.Mass, isAcceleration: false, instantaneous: true);
+                }
             }
             #endregion
 
