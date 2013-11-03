@@ -110,6 +110,7 @@ namespace DefendUranus.Entities
 
         public PhysicsEntity(string texturePath)
         {
+            MaxSpeed = int.MaxValue;
             Mass = 1;
 
             if (texturePath != null)

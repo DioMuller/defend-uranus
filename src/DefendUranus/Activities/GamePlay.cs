@@ -80,6 +80,7 @@ namespace DefendUranus.Activities
         #endregion
 
         #region Attributes
+        readonly PhysicsEntity _baseEntity;
         readonly AsyncOperation _spawnAsteroids;
 
         readonly List<GamePlayEntity> _entities;
@@ -113,6 +114,7 @@ namespace DefendUranus.Activities
             p1Ship.Behaviors.Add(new ShipInputBehavior(PlayerIndex.One, p1Ship));
             p2Ship.Behaviors.Add(new ShipInputBehavior(PlayerIndex.Two, p2Ship));
 
+            _baseEntity = new PhysicsEntity();
             _ships = new List<Ship> { p1Ship, p2Ship };
             _entities = new List<GamePlayEntity>(_ships);
             _duration = TimeSpan.Zero;
@@ -167,16 +169,36 @@ namespace DefendUranus.Activities
             if (IsGameEnded())
                 return;
 
+            UpdateRelativeSpeeds();
             UpdateEntities(gameTime);
             UpdateCyclicSpace();
         }
 
         /// <summary>
+        /// Convert all the speeds in the game to a relative value.
+        /// The speed are related to the currently slower player.
+        /// </summary>
+        void UpdateRelativeSpeeds()
+        {
+            var p1Speed = _ships[0].Speed;
+            var p2Speed = _ships[1].Speed;
+
+            var minMomentum = _ships[p1Speed < p2Speed? 0 : 1].Momentum;
+
+            foreach (var ent in _entities)
+                ent.Momentum -= minMomentum;
+
+            _baseEntity.Momentum += minMomentum;
+        }
+
+        /// <summary>
         /// Update all the entities and handle collisions.
         /// </summary>
-        /// <param name="gameTime"></param>
+        /// <param name="gameTime">Current game time.</param>
         void UpdateEntities(GameTime gameTime)
         {
+            _baseEntity.Update(gameTime);
+
             var camera = GetCamera();
 
             var upEnt = _entities.ToList();
@@ -304,15 +326,15 @@ namespace DefendUranus.Activities
             SpriteBatch.Draw(_background,
                 drawRectangle: GraphicsDevice.Viewport.Bounds,
                 sourceRectangle: new Rectangle(
-                    (int)(camera.Position.X * BackgroundSlideFactor),
-                    (int)(camera.Position.Y * BackgroundSlideFactor),
+                    (int)((_baseEntity.Position.X + camera.Position.X) * BackgroundSlideFactor),
+                    (int)((_baseEntity.Position.X + camera.Position.Y) * BackgroundSlideFactor),
                     _stars.Width, _stars.Height)
                 .Scale(1 / ScaleZoom(camera.ZoomFactor, BackgroundMaxScale, BackgroundMinScale)));
             SpriteBatch.Draw(_stars,
                 drawRectangle: GraphicsDevice.Viewport.Bounds,
                 sourceRectangle: new Rectangle(
-                    (int)(camera.Position.X * StarsSlideFactor),
-                    (int)(camera.Position.Y * StarsSlideFactor),
+                    (int)((_baseEntity.Position.X + camera.Position.X) * StarsSlideFactor),
+                    (int)((_baseEntity.Position.Y + camera.Position.Y) * StarsSlideFactor),
                     _stars.Width, _stars.Height)
                 .Scale(1 / ScaleZoom(camera.ZoomFactor, StarsMaxScale, StarsMinScale)));
             SpriteBatch.End();
