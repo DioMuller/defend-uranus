@@ -19,16 +19,35 @@ namespace DefendUranus.Entities
         /// <summary>
         /// Time between main weapon shots.
         /// </summary>
-        readonly TimeSpan MainWeaponDelay = TimeSpan.FromMilliseconds(100);
+        static readonly TimeSpan MainWeaponDelay = TimeSpan.FromMilliseconds(100);
         /// <summary>
         /// Time between special weapon shots.
         /// </summary>
-        readonly TimeSpan SpecialWeaponDelay = TimeSpan.FromSeconds(1);
+        static readonly TimeSpan SpecialWeaponDelay = TimeSpan.FromSeconds(1);
+        /// <summary>
+        /// For how long the power can be used before emptying.
+        /// </summary>
+        static readonly TimeSpan FuelDuration = TimeSpan.FromSeconds(4);
+        /// <summary>
+        /// How long does it take for the power to refill.
+        /// Refill will only occur if the power is not in use.
+        /// </summary>
+        static readonly TimeSpan FuelRegenTime = TimeSpan.FromSeconds(2);
+        /// <summary>
+        /// How much fuel is needed for automatic operations.
+        /// RotationStabilizer is only applied when the fuel is not on reserve.
+        /// </summary>
+        static readonly TimeSpan FuelReserve = TimeSpan.FromSeconds(0.25);
         #endregion
 
         #region Attributes
-        AutoRegenContainer _mainWeaponAmmo = new AutoRegenContainer(20, TimeSpan.FromSeconds(2));
-        AutoRegenContainer _specialWeaponAmmo = new AutoRegenContainer(3, TimeSpan.FromSeconds(60));
+        bool _rotating, _accelerating;
+        public readonly AutoRegenContainer Fuel = new AutoRegenContainer((int)FuelDuration.TotalMilliseconds, FuelRegenTime)
+        {
+            Reserve = (int)FuelReserve.TotalMilliseconds
+        };
+        public readonly AutoRegenContainer MainWeaponAmmo = new AutoRegenContainer(20, TimeSpan.FromSeconds(2));
+        public readonly AutoRegenContainer SpecialWeaponAmmo = new AutoRegenContainer(3, TimeSpan.FromSeconds(60));
         #endregion
 
         #region Properties
@@ -74,15 +93,14 @@ namespace DefendUranus.Entities
             : base(level, texturePath)
         {
             Health = new Container(100);
-            RotationFriction = 0.1f;
             RotationForce = 10;
             MaxRotationSpeed = 3;
             MaxSpeed = 10;
             ThrotleForce = 20;
             Restitution = 0.5f;
 
-            MainWeapon = new AsyncOperation(c => FireWeapon(_mainWeaponAmmo, FireLaser, c));
-            SpecialWeapon = new AsyncOperation(c => FireWeapon(_specialWeaponAmmo, FireSpecialWeapon, c));
+            MainWeapon = new AsyncOperation(c => FireWeapon(MainWeaponAmmo, FireLaser, c));
+            SpecialWeapon = new AsyncOperation(c => FireWeapon(SpecialWeaponAmmo, FireSpecialWeapon, c));
         }
 
         /// <summary>
@@ -101,19 +119,63 @@ namespace DefendUranus.Entities
         #endregion
 
         #region Actions
-        public void Rotate(float force)
+        /// <summary>
+        /// Rotate the ship in the specified direction.
+        /// If no direction is specified the ship will try to stop its rotation.
+        /// </summary>
+        /// <param name="gameTime">Current game time.</param>
+        /// <param name="force">
+        /// How much force will be applied to rotation.
+        /// Possible values range from -1 to 1.
+        /// </param>
+        public void Rotate(GameTime gameTime, float force)
         {
-            if (Math.Abs(force) > 0.1f)
-                RotationFriction = 0;
-            else
-                RotationFriction = RotationStabilizer;
+#if DEBUG
+            if (Math.Abs(force) > 1)
+                throw new ArgumentOutOfRangeException("force", "Force must be between -1 and 1.");
+#endif
 
-            ApplyRotation(force * RotationForce, isAcceleration: true);
+            _rotating = false;
+
+            if (Math.Abs(force) <= 0.1f)
+            {
+                if (Math.Abs(AngularMomentum) < 0.01f)
+                {
+                    AngularMomentum = 0;
+                    return;
+                }
+                if (Fuel.IsOnReserve) return;
+                force = MathHelper.Clamp(-AngularMomentum * RotationStabilizer, -1, 1);
+            }
+
+            var fuelNeeded = (int)(gameTime.ElapsedGameTime.TotalMilliseconds * Math.Abs(force));
+
+            if (Fuel.Quantity > fuelNeeded)
+            {
+                _rotating = true;
+                Fuel.Quantity -= fuelNeeded;
+                ApplyRotation(force * RotationForce, isAcceleration: true);
+            }
         }
 
-        public void Accelerate(float thrust)
+        public void Accelerate(GameTime gameTime, float thrust)
         {
-            ApplyForce(Vector2Extension.AngleToVector2(Rotation) * thrust * ThrotleForce);
+#if DEBUG
+            if (Math.Abs(thrust) > 1)
+                throw new ArgumentOutOfRangeException("thrust", "Thrust must be between -1 and 1.");
+#endif
+            _accelerating = false;
+            if(Math.Abs(thrust) < 0.1f)
+                return;
+
+            var fuelNeeded = (int)(gameTime.ElapsedGameTime.TotalMilliseconds * Math.Abs(thrust));
+
+            if (Fuel.Quantity > fuelNeeded)
+            {
+                _accelerating = true;
+                Fuel.Quantity -= fuelNeeded;
+                ApplyForce(Vector2Extension.AngleToVector2(Rotation) * thrust * ThrotleForce);
+            }
         }
 
         public void DeployAttack(SpecialAttack attack)
@@ -133,8 +195,10 @@ namespace DefendUranus.Entities
         #region Update
         public override void Update(GameTime gameTime)
         {
-            _mainWeaponAmmo.Update(gameTime);
-            _specialWeaponAmmo.Update(gameTime);
+            Fuel.Regenerate = !_rotating && !_accelerating;
+            Fuel.Update(gameTime);
+            MainWeaponAmmo.Update(gameTime);
+            SpecialWeaponAmmo.Update(gameTime);
             base.Update(gameTime);
         }
         #endregion
@@ -157,7 +221,7 @@ namespace DefendUranus.Entities
 
         public async Task<bool> FireLaser(CancellationToken cancellation)
         {
-            if (_mainWeaponAmmo.IsEmpty)
+            if (MainWeaponAmmo.IsEmpty)
                 return false;
 
             var direction = Vector2Extension.AngleToVector2(Rotation);
@@ -167,7 +231,7 @@ namespace DefendUranus.Entities
             laser.ApplyAcceleration(direction * laser.MaxSpeed, instantaneous: true);
             ApplyForce(-direction * laser.Mass, instantaneous: true);
 
-            _mainWeaponAmmo.Quantity--;
+            MainWeaponAmmo.Quantity--;
             Level.AddEntity(laser);
 
             await Level.Delay(MainWeaponDelay);
@@ -176,10 +240,10 @@ namespace DefendUranus.Entities
 
         public async Task<bool> FireSpecialWeapon(CancellationToken cancellation)
         {
-            if (SpecialAttack == null || _specialWeaponAmmo.IsEmpty)
+            if (SpecialAttack == null || SpecialWeaponAmmo.IsEmpty)
                 return false;
 
-            _specialWeaponAmmo.Quantity--;
+            SpecialWeaponAmmo.Quantity--;
             DeployAttack(SpecialAttack(this));
             await Level.Delay(SpecialWeaponDelay);
             return true;

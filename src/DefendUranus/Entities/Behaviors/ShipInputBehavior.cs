@@ -43,8 +43,8 @@ namespace DefendUranus
         {
             Input.Update();
 
-            Ship.Rotate(Input.Rotate);
-            Ship.Accelerate(Input.Thrust);
+            Ship.Rotate(gameTime, Input.Rotate);
+            Ship.Accelerate(gameTime, Input.Thrust);
 
             Ship.MainWeapon.IsActive = Input.FireMainWeapon;
             Ship.SpecialWeapon.IsActive = Input.FireSpecialWeapon;

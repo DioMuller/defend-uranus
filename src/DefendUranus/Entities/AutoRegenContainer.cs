@@ -42,7 +42,7 @@ namespace DefendUranus.Entities
 
         public void Update(GameTime gameTime)
         {
-            if (Regenerate)
+            if (Regenerate && !IsFull)
             {
                 _currentRegenTime += gameTime.ElapsedGameTime;
                 _ignoreValueChange = true;

@@ -54,7 +54,7 @@ namespace DefendUranus.Entities
             Description = description;
 
             MaxSpeed = 10;
-            RotationStabilizer = 0.1f;
+            RotationStabilizer = 0.5f;
 
             SpecialAttack = specialAttack;
         }

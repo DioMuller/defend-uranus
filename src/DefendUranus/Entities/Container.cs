@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace DefendUranus.Entities
 {
@@ -48,8 +49,20 @@ namespace DefendUranus.Entities
             {
                 if (_quantity == value)
                     return;
-                _quantity = _maximum == null ? value : (int)Math.Min(value, _maximum.Value);
+                _quantity = MathHelper.Clamp(value, 0, _maximum ?? int.MaxValue);
                 FireValueChanged();
+            }
+        }
+
+        public int? Reserve { get; set; }
+
+        public bool IsOnReserve
+        {
+            get
+            {
+                if (Reserve == null)
+                    return false;
+                return _quantity < Reserve.Value;
             }
         }
 
