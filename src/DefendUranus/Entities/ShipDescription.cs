@@ -13,15 +13,23 @@ namespace DefendUranus.Entities
     /// </summary>
     class ShipDescription
     {
+        #region Nested
+        public class Special
+        {
+            public string Name { get; set; }
+            public Ship.SpecialAttackCreator Creator { get; set; }
+        }
+        #endregion
+
         #region Properties
         // TODO: Change Texture2D to Sprite and remove TexturePath.
         public Texture2D Texture { get; private set; }
         public string TexturePath { get; private set; }
 
         /// <summary>
-        /// Text description of the ship.
+        /// Text name of the ship.
         /// </summary>
-        public string Description { get; private set; }
+        public string Name { get; private set; }
 
         /// <summary>
         /// How much mass the ship have.
@@ -40,23 +48,30 @@ namespace DefendUranus.Entities
         public float RotationStabilizer { get; private set; }
 
         /// <summary>
-        /// The method that this ship will use as special attack.
+        /// The special attack that the ship will use.
         /// </summary>
-        public Ship.SpecialAttackCreator SpecialAttack { get; private set; }
+        public Special SpecialAttack { get; private set; }
+
+        /// <summary>
+        /// How long does the fuel takes to empty, when on full power.
+        /// </summary>
+        public TimeSpan FuelDuration { get; private set; }
         #endregion
 
         #region Constructors
-        public ShipDescription(ContentManager content, string texturePath, float mass, string description, Ship.SpecialAttackCreator specialAttack)
+        public ShipDescription(ContentManager content, string texturePath, string name, Special specialAttack, float mass, float maxSpeed, TimeSpan fuel)
         {
             Texture = content.Load<Texture2D>(texturePath);
             TexturePath = texturePath;
             Mass = mass;
-            Description = description;
+            Name = name;
 
-            MaxSpeed = 10;
+            MaxSpeed = maxSpeed;
             RotationStabilizer = 0.5f;
 
             SpecialAttack = specialAttack;
+
+            FuelDuration = fuel;
         }
         #endregion
     }

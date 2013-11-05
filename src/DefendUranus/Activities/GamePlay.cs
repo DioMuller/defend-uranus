@@ -36,10 +36,10 @@ namespace DefendUranus.Activities
         const float MinZoomDistance = 150;
         const float MaxZoomDistance = 650;
 
-        const float BackgroundSlideFactor = 0.05f;
+        public const float BackgroundSlideFactor = 0.05f;
         const float BackgroundMaxScale = 0.9f;
         const float BackgroundMinScale = BackgroundMaxScale * 0.75f;
-        const float StarsSlideFactor = 0.4f;
+        public const float StarsSlideFactor = 0.4f;
         const float StarsMaxScale = 1f;
         const float StarsMinScale = StarsMaxScale * 0.6f;
 

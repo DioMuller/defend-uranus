@@ -114,7 +114,12 @@ namespace DefendUranus.Entities
             Mass = description.Mass;
             MaxSpeed = description.MaxSpeed;
             RotationStabilizer = description.RotationStabilizer;
-            SpecialAttack = description.SpecialAttack;
+            SpecialAttack = description.SpecialAttack.Creator;
+
+            Fuel = new AutoRegenContainer((int)description.FuelDuration.TotalMilliseconds, FuelRegenTime)
+            {
+                Reserve = (int)FuelReserve.TotalMilliseconds
+            };
         }
         #endregion
 

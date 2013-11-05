@@ -14,6 +14,7 @@ using DefendUranus.Helpers;
 using DefendUranus.SteeringBehaviors;
 using MonoGameLib.Core.Extensions;
 using DefendUranus.Entities.SpecialAttacks;
+using MonoGameLib.GUI.Base;
 #endregion
 
 namespace DefendUranus.Activities
@@ -70,6 +71,14 @@ namespace DefendUranus.Activities
         readonly SelectionDrawInfo _p1Info, _p2Info;
         PlayerInput _p1Input, _p2Input;
         GameInput _gameInput;
+
+        #region Content
+        Texture2D _background, _stars;
+        Vector2 _camera;
+
+        public SpriteFont _bigFont;
+        public SpriteFont _smallFont;
+        #endregion
         #endregion
 
         #region Constructors
@@ -98,6 +107,11 @@ namespace DefendUranus.Activities
             _p1Input = new PlayerInput(PlayerIndex.One);
             _p2Input = new PlayerInput(PlayerIndex.Two);
             _gameInput = new GameInput();
+
+            _background = Content.Load<Texture2D>("Backgrounds/Background");
+            _stars = Content.Load<Texture2D>("Backgrounds/Background2");
+            _bigFont = Content.Load<SpriteFont>("Fonts/BigFont");
+            _smallFont = Content.Load<SpriteFont>("Fonts/DefaultFont");
         }
         #endregion
 
@@ -176,10 +190,38 @@ namespace DefendUranus.Activities
         {
             GraphicsDevice.Clear(Color.DarkGreen);
 
+            DrawStars(gameTime);
+
             SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);
-            DrawPlayerSelection(_result.Player1Selection, _p1Info, 200);
-            DrawPlayerSelection(_result.Player2Selection, _p2Info, 400);
+            DrawPlayerSelection(_result.Player1Selection, _p1Info, 10);
+            DrawPlayerSelection(_result.Player2Selection, _p2Info, 310);
             SpriteBatch.End();
+        }
+
+        /// <summary>
+        /// Draw the stars background, based on the camera position.
+        /// </summary>
+        /// <param name="gameTime">Current game time.</param>
+        void DrawStars(GameTime gameTime)
+        {
+            SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.LinearWrap, null, null);
+            SpriteBatch.Draw(_background,
+                drawRectangle: GraphicsDevice.Viewport.Bounds,
+                sourceRectangle: new Rectangle(
+                    (int)(_camera.X * GamePlay.BackgroundSlideFactor),
+                    (int)(_camera.Y * GamePlay.BackgroundSlideFactor),
+                    _stars.Width, _stars.Height)
+                .Scale(1.1f));
+            SpriteBatch.Draw(_stars,
+                drawRectangle: GraphicsDevice.Viewport.Bounds,
+                sourceRectangle: new Rectangle(
+                    (int)(_camera.X * GamePlay.StarsSlideFactor),
+                    (int)(_camera.Y * GamePlay.StarsSlideFactor),
+                    _stars.Width, _stars.Height));
+            SpriteBatch.End();
+
+            Vector2 cameraDirection = new Vector2(2, 0);
+            _camera += WorldHelper.MetersToPixels(cameraDirection) * (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
 
         /// <summary>
@@ -187,9 +229,11 @@ namespace DefendUranus.Activities
         /// </summary>
         /// <param name="selection">Current player selection.</param>
         /// <param name="drawInfo">Current player draw info.</param>
-        /// <param name="height">The y position on the screen where the selection will be drawn.</param>
-        void DrawPlayerSelection(ShipDescription selection, SelectionDrawInfo drawInfo, int height)
+        /// <param name="y">The y position on the screen where the selection will be drawn.</param>
+        void DrawPlayerSelection(ShipDescription selection, SelectionDrawInfo drawInfo, int y)
         {
+            SpriteBatch.DrawString(_bigFont, selection.Name, new Vector2(Game.Window.ClientBounds.Width / 2, y), Color.White, HorizontalAlign.Center);
+
             int sideShips = Math.Min(_ships.Count, MaxVisibleShips) - 2;
             int width = (sideShips * 2 + 1) * _spacing;
             int x = (Game.Window.ClientBounds.Width - width) / 2 + _spacing / 2;
@@ -199,10 +243,32 @@ namespace DefendUranus.Activities
             {
                 var ship = _ships[i.Mod(_ships.Count)];
                 SpriteBatch.Draw(ship.Texture,
-                    position: new Vector2(x + drawInfo.DrawShift, height),
+                    position: new Vector2(x + drawInfo.DrawShift, y + 110),
                     scale: drawInfo.IconScales[ship],
                     origin: new Vector2(ship.Texture.Width / 2, ship.Texture.Height / 2));
             }
+
+            #region Stats
+            int statsY = y + 180;
+
+            var leftStats = new Dictionary<string, object>
+            {
+                { "Special", selection.SpecialAttack.Name },
+                { "Speed", selection.MaxSpeed }
+            };
+
+            var rightStats = new Dictionary<string, object>
+            {
+                { "Mass", selection.Mass },
+                { "Fuel Duration", selection.FuelDuration.ToString("%s") },
+            };
+
+            var leftStatsString = string.Join("\r\n", leftStats.Select(k => k.Key + ": " + k.Value));
+            var rightStatsString = string.Join("\r\n", rightStats.Select(k => k.Key + ": " + k.Value));
+
+            SpriteBatch.DrawString(_smallFont, leftStatsString, new Vector2(40, statsY), Color.Gray);
+            SpriteBatch.DrawString(_smallFont, rightStatsString, new Vector2(420, statsY), Color.Gray);
+            #endregion
         }
         #endregion
         #endregion
@@ -261,10 +327,30 @@ namespace DefendUranus.Activities
         IEnumerable<ShipDescription> LoadShips()
         {
             // TODO: Load ships from XML
-            yield return new ShipDescription(Content, "Sprites/Avenger", 2, "Earth Avenger", ship => new PursuiterMissile(ship));
-            yield return new ShipDescription(Content, "Sprites/Explorer", 1, "Uranus Explorer", ship => new WandererProbe(ship));
-            yield return new ShipDescription(Content, "Sprites/Fatboy", 4, "Big Fatboy", ship => new FleeingFake(ship));
-            yield return new ShipDescription(Content, "Sprites/Meteoroid", 3, "Meteoroid Destroyer", ship => new WandererProbe(ship));
+            yield return new ShipDescription(Content, "Sprites/Avenger", "Earth Avenger", SpecialAttack("Pursuiter Missile"), mass: 2, maxSpeed: 10, fuel: TimeSpan.FromSeconds(3));
+            yield return new ShipDescription(Content, "Sprites/Explorer", "Uranus Explorer", SpecialAttack("Wanderer Probe"), mass: 1, maxSpeed: 10, fuel: TimeSpan.FromSeconds(2));
+            yield return new ShipDescription(Content, "Sprites/Fatboy", "Big Fatboy", SpecialAttack("Fleeing Fake"), mass: 2, maxSpeed: 10, fuel: TimeSpan.FromSeconds(5));
+            yield return new ShipDescription(Content, "Sprites/Meteoroid", "Meteoroid Destroyer", SpecialAttack("Fleeing Fake"), mass: 3, maxSpeed: 13, fuel: TimeSpan.FromSeconds(4));
+        }
+
+        static ShipDescription.Special SpecialAttack(string name)
+        {
+            var specialCreators = new Dictionary<string, Ship.SpecialAttackCreator>
+            {
+                { "Pursuiter Missile", ship => new PursuiterMissile(ship) },
+                { "Wanderer Probe", ship => new WandererProbe(ship) },
+                { "Fleeing Fake", ship => new FleeingFake(ship) },
+                //{ "Meteoroid Destroyer", ship => new WandererProbe(ship) },
+            };
+
+            if (!specialCreators.ContainsKey(name))
+                throw new NotImplementedException("Special attack \"" + name + "\" could not be found.");
+
+            return new ShipDescription.Special
+            {
+                Name = name,
+                Creator = specialCreators[name]
+            };
         }
         #endregion
         #endregion

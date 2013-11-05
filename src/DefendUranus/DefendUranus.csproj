@@ -230,7 +230,14 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Content\Fonts\BigFont.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Fonts\DefaultFont.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\submodule\monogame-aux-lib\src\MonoGameLib.Activities\MonoGameLib.Activities.csproj">
       <Project>{b63836a7-fc4d-4c6b-86f7-abeab15788b3}</Project>
