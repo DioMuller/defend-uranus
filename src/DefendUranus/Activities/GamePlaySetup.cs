@@ -79,6 +79,10 @@ namespace DefendUranus.Activities
         public SpriteFont _bigFont;
         public SpriteFont _smallFont;
         #endregion
+
+        #region Animations
+        float _statsX, _descriptionOpacity;
+        #endregion
         #endregion
 
         #region Constructors
@@ -112,6 +116,23 @@ namespace DefendUranus.Activities
             _stars = Content.Load<Texture2D>("Backgrounds/Background2");
             _bigFont = Content.Load<SpriteFont>("Fonts/BigFont");
             _smallFont = Content.Load<SpriteFont>("Fonts/DefaultFont");
+        }
+        #endregion
+
+        #region Activity Life-Cycle
+        protected override Task IntroductionAnimation()
+        {
+            return TaskEx.WhenAll(
+                base.IntroductionAnimation(),
+                FloatAnimation(300, 0, 1, v => _descriptionOpacity = v),
+                FloatAnimation(100, 200, 0, v => _statsX = v));
+        }
+
+        protected override Task ConclusionAnimation()
+        {
+            return TaskEx.WhenAll(
+                base.ConclusionAnimation(),
+                FloatAnimation(100, 0, -200, v => _statsX = v));
         }
         #endregion
 
@@ -232,7 +253,7 @@ namespace DefendUranus.Activities
         /// <param name="y">The y position on the screen where the selection will be drawn.</param>
         void DrawPlayerSelection(ShipDescription selection, SelectionDrawInfo drawInfo, int y)
         {
-            SpriteBatch.DrawString(_bigFont, selection.Name, new Vector2(Game.Window.ClientBounds.Width / 2, y), Color.White, HorizontalAlign.Center);
+            SpriteBatch.DrawString(_bigFont, selection.Name, new Vector2(Game.Window.ClientBounds.Width / 2, y), new Color(Color.White, _descriptionOpacity), HorizontalAlign.Center);
 
             int sideShips = Math.Min(_ships.Count, MaxVisibleShips) - 2;
             int width = (sideShips * 2 + 1) * _spacing;
@@ -266,8 +287,8 @@ namespace DefendUranus.Activities
             var leftStatsString = string.Join("\r\n", leftStats.Select(k => k.Key + ": " + k.Value));
             var rightStatsString = string.Join("\r\n", rightStats.Select(k => k.Key + ": " + k.Value));
 
-            SpriteBatch.DrawString(_smallFont, leftStatsString, new Vector2(40, statsY), Color.Gray);
-            SpriteBatch.DrawString(_smallFont, rightStatsString, new Vector2(420, statsY), Color.Gray);
+            SpriteBatch.DrawString(_smallFont, leftStatsString, new Vector2(_statsX + 40, statsY), Color.Gray);
+            SpriteBatch.DrawString(_smallFont, rightStatsString, new Vector2(_statsX + 420, statsY), Color.Gray);
             #endregion
         }
         #endregion
