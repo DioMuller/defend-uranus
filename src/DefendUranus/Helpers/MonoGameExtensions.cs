@@ -35,25 +35,7 @@ namespace DefendUranus.Helpers
 
         public static void DrawString(this SpriteBatch spriteBatch, SpriteFont font, string text, Vector2 position, Color color, HorizontalAlign hAlign, VerticalAlign vAlign = VerticalAlign.Top)
         {
-            float x;
-            switch(hAlign)
-            {
-                case HorizontalAlign.Left: x = 0; break;
-                case HorizontalAlign.Center: x = 0.5f; break;
-                case HorizontalAlign.Right: x = 1; break;
-                default: throw new NotImplementedException();
-            }
-
-            float y;
-            switch(vAlign)
-            {
-                case VerticalAlign.Top: y = 0; break;
-                case VerticalAlign.Middle: y = 0.5f; break;
-                case VerticalAlign.Bottom: y = 1; break;
-                default: throw new NotImplementedException();
-            }
-
-            spriteBatch.DrawString(font, text, position, color, new Vector2(x, y));
+            spriteBatch.DrawString(font, text, position, color, AlignExtensions.ToVector(hAlign, vAlign));
         }
 
         public static Vector2 Center(this Viewport viewPort)
