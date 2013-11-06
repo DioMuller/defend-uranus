@@ -20,6 +20,7 @@ using DefendUranus.SteeringBehaviors;
 using MonoGameLib.Core;
 using MonoGameLib.Core.Extensions;
 using MonoGameLib.GUI.Components;
+using DefendUranus.Components;
 #endregion
 
 namespace DefendUranus.Activities
@@ -90,11 +91,8 @@ namespace DefendUranus.Activities
         GameInput _gameInput;
         TimeSpan _duration;
 
-        #region Content
         Texture2D _background, _stars;
-        public SpriteFont _bigFont;
-        public SpriteFont _smallFont;
-        #endregion
+        PlayerGUI _p1Gui, _p2Gui;
         #endregion
 
         #region Properties
@@ -113,6 +111,9 @@ namespace DefendUranus.Activities
         public GamePlay(MainGame game, GamePlaySetup.Result setup)
             : base(game)
         {
+            const int guiHMargin = 10;
+            var guiSize = new Point(100, 140);
+
             var p1Ship = new Ship(this, setup.Player1Selection) { Position = new Vector2(-100, 0) };
             var p2Ship = new Ship(this, setup.Player2Selection) { Position = new Vector2(100, 0) };
 
@@ -125,6 +126,9 @@ namespace DefendUranus.Activities
             _duration = TimeSpan.Zero;
 
             _spawnAsteroids = new AsyncOperation(SpawnAsteroids);
+
+            _p1Gui = new PlayerGUI("Player 1", p1Ship, new Point(guiHMargin, 0), guiSize);
+            _p2Gui = new PlayerGUI("Player 2", p2Ship, new Point(GraphicsDevice.Viewport.Width - guiSize.X - guiHMargin, 0), guiSize);
         }
         #endregion
 
@@ -156,8 +160,6 @@ namespace DefendUranus.Activities
             _gameInput = new GameInput();
             _background = Content.Load<Texture2D>("Backgrounds/Background");
             _stars = Content.Load<Texture2D>("Backgrounds/Background2");
-            _bigFont = Content.Load<SpriteFont>("Fonts/BigFont");
-            _smallFont = Content.Load<SpriteFont>("Fonts/DefaultFont");
         }
         #endregion
 
@@ -356,94 +358,10 @@ namespace DefendUranus.Activities
         {
             SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
 
-            var size = new Point(100, 140);
-            var hMargin = 10;
-            var screen = GraphicsDevice.Viewport;
-            DrawGui(gameTime, "Player 1", _ships[0], new Vector2(hMargin, 0), size);
-            DrawGui(gameTime, "Player 2", _ships[1], new Vector2(screen.Width - size.X - hMargin, 0), size);
+            _p1Gui.Draw(gameTime, SpriteBatch);
+            _p2Gui.Draw(gameTime, SpriteBatch);
 
             SpriteBatch.End();
-        }
-
-        /// <summary>
-        /// Draw a player stats onto the screen.
-        /// </summary>
-        /// <param name="gameTime">Current game time.</param>
-        /// <param name="name">Player name.</param>
-        /// <param name="ship">Player ship.</param>
-        /// <param name="position">Where to draw the stats.</param>
-        /// <param name="size">Stats panel size.</param>
-        void DrawGui(GameTime gameTime, string name, Ship ship, Vector2 position, Point size)
-        {
-            var pSize = new Point(size.X, Math.Min((size.Y - 16) / 4, 31));
-            SpriteBatch.DrawString(_smallFont, "Player 1", position, new Color(Color.White, 0.6f));
-            CreateProgress("Health", ship.Health, new Point((int)position.X, (int)(position.Y + size.Y * 1 / 4.0f)), pSize).Draw(gameTime, SpriteBatch);
-            CreateProgress("Fuel", ship.Fuel, new Point((int)position.X, (int)(position.Y + size.Y * 2 / 4.0f)), pSize).Draw(gameTime, SpriteBatch);
-            CreateProgress("Ammo", ship.MainWeaponAmmo, new Point((int)position.X, (int)(position.Y + size.Y * 3 / 4.0f)), pSize).Draw(gameTime, SpriteBatch);
-        }
-
-        /// <summary>
-        /// Creates a colored progress bar based on a container.
-        /// </summary>
-        /// <param name="name">Container name.</param>
-        /// <param name="container">Container to be represented as a progress bar.</param>
-        /// <param name="position">Where the progress bar will be located.</param>
-        /// <param name="size">Size of the progress bar.</param>
-        /// <returns>A progress bar mathing the specified values.</returns>
-        ProgressBar CreateProgress(string name, Container container, Point position, Point size)
-        {
-            return new ProgressBar(name, "fonts/DefaultFont", GetBackgroundColor(container), GetForegroundColor(container))
-            {
-                Color = Color.Black,
-                MaximumValue = container.Maximum.Value,
-                CurrentValue = container.Quantity,
-                Position = position,
-                Size = size
-            };
-        }
-
-        Color GetForegroundColor(Container fuelContainer)
-        {
-            const float alpha = 0.6f;
-            /*// Static color
-            if(fuelContainer.IsOnReserve)
-                return new Color(Color.Red, alpha);
-            if (fuelContainer.Quantity < fuelContainer.Maximum / 2)
-                return new Color(1, 1, 0, alpha);
-
-            return new Color(0, 1, 0, alpha); /*/
-
-            // Dynamic color
-            var ratio = fuelContainer.Quantity / (float)fuelContainer.Maximum;
-
-            return new Color(
-                r: MathHelper.Clamp((1 - ratio) * 2, 0, 1),
-                g: MathHelper.Clamp(ratio * 2, 0, 1),
-                b: 0,
-                alpha: alpha
-            );//*/
-        }
-
-        Color GetBackgroundColor(Container fuelContainer)
-        {
-            const float alpha = 0.6f;
-            /*// Static color
-            if (fuelContainer.IsOnReserve)
-                return new Color(1, 0.85f, 0.7f, alpha);
-            return new Color(Color.White, alpha); /*/
-
-            // Dynamic color
-            var ratio = fuelContainer.Quantity / (float)fuelContainer.Maximum;
-
-            // lighter colors
-            ratio =  ratio * 0.3f + 0.7f;
-
-            return new Color(
-                r: 1,
-                g: ratio / 2 + 0.5f,
-                b: ratio,
-                alpha: alpha
-            );//*/
         }
 
         /// <summary>
