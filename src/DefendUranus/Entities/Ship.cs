@@ -41,7 +41,7 @@ namespace DefendUranus.Entities
         #endregion
 
         #region Attributes
-        bool _rotating, _accelerating;
+        bool _rotating, _accelerating, _useReserve;
         public readonly AutoRegenContainer Fuel = new AutoRegenContainer((int)FuelDuration.TotalMilliseconds, FuelRegenTime)
         {
             Reserve = (int)FuelReserve.TotalMilliseconds
@@ -146,11 +146,13 @@ namespace DefendUranus.Entities
             {
                 if (Math.Abs(AngularMomentum) < 0.01f)
                 {
+                    _useReserve = false;
                     AngularMomentum = 0;
                     return;
                 }
-                if (Fuel.IsOnReserve) return;
+                if (Fuel.IsOnReserve && !_useReserve) return;
                 force = MathHelper.Clamp(-AngularMomentum * RotationStabilizer, -1, 1);
+                _useReserve = true;
             }
 
             var fuelNeeded = (int)(gameTime.ElapsedGameTime.TotalMilliseconds * Math.Abs(force));

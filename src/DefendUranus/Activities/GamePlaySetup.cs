@@ -287,8 +287,9 @@ namespace DefendUranus.Activities
             var leftStatsString = string.Join("\r\n", leftStats.Select(k => k.Key + ": " + k.Value));
             var rightStatsString = string.Join("\r\n", rightStats.Select(k => k.Key + ": " + k.Value));
 
-            SpriteBatch.DrawString(_smallFont, leftStatsString, new Vector2(_statsX + 40, statsY), Color.Gray);
-            SpriteBatch.DrawString(_smallFont, rightStatsString, new Vector2(_statsX + 420, statsY), Color.Gray);
+            var statsColor = new Color(Color.Gray, 0.6f);
+            SpriteBatch.DrawString(_smallFont, leftStatsString, new Vector2(_statsX + 40, statsY), statsColor);
+            SpriteBatch.DrawString(_smallFont, rightStatsString, new Vector2(_statsX + 420, statsY), statsColor);
             #endregion
         }
         #endregion
