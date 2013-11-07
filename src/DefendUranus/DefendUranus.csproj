@@ -193,6 +193,9 @@
     <Content Include="Content\Sounds\Special04.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\Sprites\Asteroid.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Sprites\Avenger-PursuiterMissile.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

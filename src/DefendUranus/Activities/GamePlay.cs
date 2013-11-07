@@ -447,7 +447,7 @@ namespace DefendUranus.Activities
             var screenSizeRatio = Math.Min((area.Width + 16) / Math.Abs(directionFromCamera.X),
                                            (area.Height + 16) / Math.Abs(directionFromCamera.Y));
 
-            AddEntity(new GamePlayEntity(this, "Sprites/Meteoroid")
+            AddEntity(new GamePlayEntity(this, "Sprites/Asteroid")
             {
                 Mass = AsteroidMass,
                 MaxSpeed = AsteroidMaxSpeed,
