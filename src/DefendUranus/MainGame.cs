@@ -42,6 +42,7 @@ namespace DefendUranus
             base.Initialize();
             GameContent.Initialize(Content);
             GraphicsHelper.Device = GraphicsDevice;
+            SoundManager.SEFolder = "Sounds";
         }
 
         /// <summary>

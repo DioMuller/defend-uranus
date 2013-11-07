@@ -15,6 +15,7 @@ using DefendUranus.SteeringBehaviors;
 using MonoGameLib.Core.Extensions;
 using DefendUranus.Entities.SpecialAttacks;
 using MonoGameLib.GUI.Base;
+using MonoGameLib.Core;
 #endregion
 
 namespace DefendUranus.Activities
@@ -180,6 +181,7 @@ namespace DefendUranus.Activities
             // TODO: Start the game when both players have confirmed selection.
             if (_gameInput.Confirm)
             {
+                SoundManager.PlaySound("Select02");
                 _result.Aborted = false;
                 Exit(_result);
                 return true;
@@ -196,9 +198,15 @@ namespace DefendUranus.Activities
         void CheckPlayerInput(SelectionDrawInfo info, PlayerInput input)
         {
             if (input.Right)
+            {
                 ShiftSelection(info, left: false);
+                SoundManager.PlaySound("Select01");
+            }
             else if (input.Left)
+            {
                 ShiftSelection(info, left: true);
+                SoundManager.PlaySound("Select01");
+            }
         }
         #endregion
 

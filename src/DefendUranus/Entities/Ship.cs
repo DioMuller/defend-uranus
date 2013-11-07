@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoGameLib.Core;
 
 namespace DefendUranus.Entities
 {
@@ -239,6 +240,7 @@ namespace DefendUranus.Entities
             ApplyForce(-direction * laser.Mass, instantaneous: true);
 
             MainWeaponAmmo.Quantity--;
+            SoundManager.PlaySound("Shoot01");
             Level.AddEntity(laser);
 
             await Level.Delay(MainWeaponDelay);
@@ -251,6 +253,7 @@ namespace DefendUranus.Entities
                 return false;
 
             SpecialWeaponAmmo.Quantity--;
+            SoundManager.PlaySound("Special03");
             DeployAttack(SpecialAttack(this));
             await Level.Delay(SpecialWeaponDelay);
             return true;
