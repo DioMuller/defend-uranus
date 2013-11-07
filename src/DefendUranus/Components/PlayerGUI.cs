@@ -30,12 +30,12 @@ namespace DefendUranus.Components
             Position = position;
             Size = size;
 
-            Name = new Label(name, font) { Color = Color.White };
+            NameLabel = new Label(name, font) { Color = Color.White };
             Health = new ProgressBar("Health", font);
             Fuel = new ProgressBar("Fuel", font);
             Ammo = new ProgressBar("Ammo", font);
 
-            Children.Add(Name);
+            Children.Add(NameLabel);
             Children.Add(Health);
             Children.Add(Fuel);
             Children.Add(Ammo);
@@ -43,13 +43,14 @@ namespace DefendUranus.Components
             var pSize = new Point(size.X, Math.Min((size.Y - itemMargin * Children.Count) / Children.Count, maxItemHeight));
             for (int i = 0; i < Children.Count; i++)
             {
+                Children[i].HorizontalOrigin = MonoGameLib.GUI.Base.HorizontalAlign.Center;
                 Children[i].Position = new Point((int)position.X, (int)(position.Y + size.Y * (float)i / Children.Count));
                 Children[i].Size = pSize;
             }
         }
         #endregion
 
-        public Label Name { get; set; }
+        public Label NameLabel { get; set; }
         public ProgressBar Health { get; set; }
         public ProgressBar Fuel { get; set; }
         public ProgressBar Ammo { get; set; }
@@ -72,11 +73,12 @@ namespace DefendUranus.Components
             progress.CurrentValue = container.Quantity;
             progress.HighlightColor = GetForegroundColor(container);
             progress.BackgroundColor = GetBackgroundColor(container);
+            progress.BorderColor = new Color(progress.HighlightColor, 0.5f);
         }
 
         static Color GetForegroundColor(Container container)
         {
-            const float alpha = 0.6f;
+            const float alpha = 0.7f;
             /*// Static color
             if(fuelContainer.IsOnReserve)
                 return new Color(Color.Red, alpha);
