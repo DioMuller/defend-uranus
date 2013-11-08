@@ -18,6 +18,18 @@ namespace DefendUranus.Entities
         public event EntityCollisionEventHandler Collided;
         #endregion
 
+        #region Attributes
+        /// <summary>
+        /// Entity size for fast access.
+        /// </summary>
+        public new Vector2 Size;
+
+        /// <summary>
+        /// Momentum relative to the world.
+        /// </summary>
+        public Vector2 AbsoluteMomentum;
+        #endregion
+
         #region Properties
         /// <summary>
         /// The level in which this entity is in.
@@ -28,11 +40,6 @@ namespace DefendUranus.Entities
         /// How much damage this entity can endure before getting destroyed.
         /// </summary>
         public Container Health { get; protected set; }
-
-        /// <summary>
-        /// Entity size for fast access.
-        /// </summary>
-        public new Vector2 Size;
 
         public new Sprite Sprite
         {
@@ -73,6 +80,13 @@ namespace DefendUranus.Entities
             }
 
             return false;
+        }
+        #endregion
+
+        #region Public
+        public float AbsoluteSpeed()
+        {
+            return (Momentum + AbsoluteMomentum).Length();
         }
         #endregion
 

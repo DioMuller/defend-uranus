@@ -189,13 +189,16 @@ namespace DefendUranus.Activities
         /// </summary>
         void UpdateRelativeSpeeds()
         {
-            var p1Speed = _ships[0].Speed;
-            var p2Speed = _ships[1].Speed;
+            var p1Speed = _ships[0].AbsoluteSpeed();
+            var p2Speed = _ships[1].AbsoluteSpeed();
 
             var minMomentum = _ships[p1Speed < p2Speed? 0 : 1].Momentum;
 
             foreach (var ent in _entities)
+            {
                 ent.Momentum -= minMomentum;
+                ent.AbsoluteMomentum += minMomentum;
+            }
 
             _baseEntity.Momentum += minMomentum;
         }
