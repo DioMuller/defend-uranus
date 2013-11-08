@@ -43,6 +43,14 @@ namespace DefendUranus.Helpers
             return new Vector2(viewPort.Width / 2, viewPort.Height / 2);
         }
 
+        public static Vector2 LimitSize(this Vector2 vector, float maxSize)
+        {
+            var length = vector.Length();
+            if (length > maxSize)
+                return vector * (maxSize / length);
+            return vector;
+        }
+
         public static Rectangle Scale(this Rectangle rect, float factor)
         {
             int newWidth = (int)(rect.Width * factor);

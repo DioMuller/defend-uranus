@@ -136,7 +136,9 @@ namespace DefendUranus.Entities
 
             Momentum += _instantaneousAcceleration;
             Momentum *= Vector2.One - Friction;
-            Position += WorldHelper.MetersToPixels((Momentum + accelSecs / 2) * secs);
+            var toMove = Momentum + accelSecs / 2;
+            Position += WorldHelper.MetersToPixels(toMove.LimitSize(MaxSpeed) * secs);
+
             Momentum += accelSecs;
 
             if (RotateToMomentum)
@@ -150,7 +152,9 @@ namespace DefendUranus.Entities
 
                 AngularMomentum = MathHelper.Clamp(AngularMomentum, -MaxRotationSpeed, MaxRotationSpeed);
 
-                Rotation += (AngularMomentum + angularAccelSecs / 2) * secs;
+                var toRotate = AngularMomentum + angularAccelSecs / 2;
+                Rotation += MathHelper.Clamp(toRotate, -MaxRotationSpeed, MaxRotationSpeed) * secs;
+
                 AngularMomentum += angularAccelSecs;
 
                 _instantaneousAngularAcceleration = _angularAcceleration = 0;
