@@ -118,9 +118,7 @@ namespace DefendUranus.Activities
             _bigFont = Content.Load<SpriteFont>("Fonts/BigFont");
             _smallFont = Content.Load<SpriteFont>("Fonts/DefaultFont");
         }
-        #endregion
 
-        #region Activity Life-Cycle
         protected override Task IntroductionAnimation()
         {
             return TaskEx.WhenAll(
@@ -357,10 +355,10 @@ namespace DefendUranus.Activities
         IEnumerable<ShipDescription> LoadShips()
         {
             // TODO: Load ships from XML
-            yield return new ShipDescription(Content, "Sprites/Avenger", "Earth Avenger", SpecialAttack("Pursuiter Missile"), mass: 2, maxSpeed: 10, fuel: TimeSpan.FromSeconds(3));
-            yield return new ShipDescription(Content, "Sprites/Explorer", "Uranus Explorer", SpecialAttack("Wanderer Probe"), mass: 1, maxSpeed: 10, fuel: TimeSpan.FromSeconds(2));
-            yield return new ShipDescription(Content, "Sprites/Fatboy", "Big Fatboy", SpecialAttack("Fleeing Fake"), mass: 2, maxSpeed: 10, fuel: TimeSpan.FromSeconds(5));
-            yield return new ShipDescription(Content, "Sprites/Meteoroid", "Meteoroid Destroyer", SpecialAttack("Fleeing Fake"), mass: 3, maxSpeed: 13, fuel: TimeSpan.FromSeconds(4));
+            yield return new ShipDescription(Content, "Sprites/Avenger", "Earth Avenger", SpecialAttack("Pursuiter Missile"), mass: 2, maxSpeed: 20, fuel: TimeSpan.FromSeconds(2));
+            yield return new ShipDescription(Content, "Sprites/Explorer", "Uranus Explorer", SpecialAttack("Wanderer Probe"), mass: 1, maxSpeed: 10, fuel: TimeSpan.FromSeconds(1.5f));
+            yield return new ShipDescription(Content, "Sprites/Fatboy", "Big Fatboy", SpecialAttack("Fleeing Fake"), mass: 4, maxSpeed: 40, fuel: TimeSpan.FromSeconds(6));
+            yield return new ShipDescription(Content, "Sprites/Meteoroid", "Meteoroid Destroyer", SpecialAttack("Fleeing Fake"), mass: 3, maxSpeed: 30, fuel: TimeSpan.FromSeconds(4));
         }
 
         static ShipDescription.Special SpecialAttack(string name)

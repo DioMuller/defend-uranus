@@ -33,12 +33,12 @@ namespace DefendUranus.Entities
         /// How long does it take for the power to refill.
         /// Refill will only occur if the power is not in use.
         /// </summary>
-        static readonly TimeSpan FuelRegenTime = TimeSpan.FromSeconds(2);
+        static readonly TimeSpan FuelRegenTime = TimeSpan.FromSeconds(3);
         /// <summary>
         /// How much fuel is needed for automatic operations.
         /// RotationStabilizer is only applied when the fuel is not on reserve.
         /// </summary>
-        static readonly TimeSpan FuelReserve = TimeSpan.FromSeconds(0.25);
+        static readonly TimeSpan FuelReserve = TimeSpan.FromSeconds(0.30f);
         #endregion
 
         #region Attributes
@@ -97,7 +97,7 @@ namespace DefendUranus.Entities
             RotationForce = 10;
             MaxRotationSpeed = 3;
             MaxSpeed = 10;
-            ThrotleForce = 20;
+            ThrotleForce = 40;
             Restitution = 0.5f;
 
             MainWeapon = new AsyncOperation(c => FireWeapon(MainWeaponAmmo, FireLaser, c));
@@ -116,7 +116,6 @@ namespace DefendUranus.Entities
             MaxSpeed = description.MaxSpeed;
             RotationStabilizer = description.RotationStabilizer;
             SpecialAttack = description.SpecialAttack.Creator;
-            ThrotleForce = description.ThrotleForce;
 
             Fuel = new AutoRegenContainer((int)description.FuelDuration.TotalMilliseconds, FuelRegenTime)
             {

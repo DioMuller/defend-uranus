@@ -42,11 +42,6 @@ namespace DefendUranus.Entities
         public float MaxSpeed { get; private set; }
 
         /// <summary>
-        /// How much force is applied to the ship's engine.
-        /// </summary>
-        public float ThrotleForce { get; private set; }
-
-        /// <summary>
         /// Effectiveness of the ship's stabilizer.
         /// When set to 1, the ship can stop rotating immediately.
         /// </summary>
@@ -73,7 +68,6 @@ namespace DefendUranus.Entities
 
             MaxSpeed = maxSpeed;
             RotationStabilizer = 0.5f;
-            ThrotleForce = 40;
 
             SpecialAttack = specialAttack;
 
