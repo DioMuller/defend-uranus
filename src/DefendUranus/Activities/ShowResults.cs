@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MonoGameLib.Core.Input;
 using DefendUranus.Helpers;
+using MonoGameLib.Core;
 #endregion
 
 namespace DefendUranus.Activities
@@ -26,6 +27,8 @@ namespace DefendUranus.Activities
         {
             base.Activating();
             _gameInput = new GameInput();
+
+            SoundManager.PlayBGM("Clean Soul");
         }
         #endregion
 

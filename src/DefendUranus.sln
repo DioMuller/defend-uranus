@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DefendUranus", "DefendUranus\DefendUranus.csproj", "{4DBE2B06-C1FB-4394-B398-E056D97DCDE5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{EB11C04C-EFB2-412E-B18B-2EF361550847}"
@@ -33,36 +31,36 @@ Global
 		{4DBE2B06-C1FB-4394-B398-E056D97DCDE5}.Release-Linux|Any CPU.Build.0 = Release-Linux|x86
 		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}.Debug-Linux|Any CPU.ActiveCfg = Debug-Linux|Any CPU
-		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}.Debug-Linux|Any CPU.Build.0 = Debug-Linux|Any CPU
+		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}.Debug-Linux|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}.Debug-Linux|Any CPU.Build.0 = Debug|Any CPU
 		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}.Release-Linux|Any CPU.ActiveCfg = Release-Linux|Any CPU
-		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}.Release-Linux|Any CPU.Build.0 = Release-Linux|Any CPU
+		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}.Release-Linux|Any CPU.ActiveCfg = Release|Any CPU
+		{F3B03CFA-5A42-4E94-A0D3-90EC15330B68}.Release-Linux|Any CPU.Build.0 = Release|Any CPU
 		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}.Debug-Linux|Any CPU.ActiveCfg = Debug-Linux|Any CPU
-		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}.Debug-Linux|Any CPU.Build.0 = Debug-Linux|Any CPU
+		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}.Debug-Linux|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}.Debug-Linux|Any CPU.Build.0 = Debug|Any CPU
 		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}.Release-Linux|Any CPU.ActiveCfg = Release-Linux|Any CPU
-		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}.Release-Linux|Any CPU.Build.0 = Release-Linux|Any CPU
+		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}.Release-Linux|Any CPU.ActiveCfg = Release|Any CPU
+		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9}.Release-Linux|Any CPU.Build.0 = Release|Any CPU
 		{F2C71160-3C00-40DD-AB52-151C9A914570}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F2C71160-3C00-40DD-AB52-151C9A914570}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F2C71160-3C00-40DD-AB52-151C9A914570}.Debug-Linux|Any CPU.ActiveCfg = Debug-Linux|Any CPU
-		{F2C71160-3C00-40DD-AB52-151C9A914570}.Debug-Linux|Any CPU.Build.0 = Debug-Linux|Any CPU
+		{F2C71160-3C00-40DD-AB52-151C9A914570}.Debug-Linux|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2C71160-3C00-40DD-AB52-151C9A914570}.Debug-Linux|Any CPU.Build.0 = Debug|Any CPU
 		{F2C71160-3C00-40DD-AB52-151C9A914570}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2C71160-3C00-40DD-AB52-151C9A914570}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F2C71160-3C00-40DD-AB52-151C9A914570}.Release-Linux|Any CPU.ActiveCfg = Release-Linux|Any CPU
-		{F2C71160-3C00-40DD-AB52-151C9A914570}.Release-Linux|Any CPU.Build.0 = Release-Linux|Any CPU
+		{F2C71160-3C00-40DD-AB52-151C9A914570}.Release-Linux|Any CPU.ActiveCfg = Release|Any CPU
+		{F2C71160-3C00-40DD-AB52-151C9A914570}.Release-Linux|Any CPU.Build.0 = Release|Any CPU
 		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}.Debug-Linux|Any CPU.ActiveCfg = Debug-Linux|Any CPU
-		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}.Debug-Linux|Any CPU.Build.0 = Debug-Linux|Any CPU
+		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}.Debug-Linux|Any CPU.ActiveCfg = Debug|Any CPU
+		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}.Debug-Linux|Any CPU.Build.0 = Debug|Any CPU
 		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}.Release-Linux|Any CPU.ActiveCfg = Release-Linux|Any CPU
-		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}.Release-Linux|Any CPU.Build.0 = Release-Linux|Any CPU
+		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}.Release-Linux|Any CPU.ActiveCfg = Release|Any CPU
+		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3}.Release-Linux|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -72,9 +70,6 @@ Global
 		{F2A64D02-17C0-4E50-91CB-DEAD4DABDBE9} = {EB11C04C-EFB2-412E-B18B-2EF361550847}
 		{F2C71160-3C00-40DD-AB52-151C9A914570} = {EB11C04C-EFB2-412E-B18B-2EF361550847}
 		{B63836A7-FC4D-4C6B-86F7-ABEAB15788B3} = {EB11C04C-EFB2-412E-B18B-2EF361550847}
-	EndGlobalSection
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = DefendUranus\DefendUranus.csproj

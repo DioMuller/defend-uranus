@@ -117,6 +117,8 @@ namespace DefendUranus.Activities
             _stars = Content.Load<Texture2D>("Backgrounds/Background2");
             _bigFont = Content.Load<SpriteFont>("Fonts/BigFont");
             _smallFont = Content.Load<SpriteFont>("Fonts/DefaultFont");
+
+            SoundManager.PlayBGM("Pamgaea");
         }
 
         protected override Task IntroductionAnimation()

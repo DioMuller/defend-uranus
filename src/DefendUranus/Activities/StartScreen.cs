@@ -3,6 +3,7 @@ using DefendUranus.Helpers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGameLib.Core;
 using MonoGameLib.Core.Input;
 using System.Threading.Tasks;
 #endregion
@@ -39,6 +40,8 @@ namespace DefendUranus.Activities
             base.Activating();
             _gameInput = new GameInput();
             _title = Content.Load<Texture2D>("Images/Title");
+
+            SoundManager.PlayBGM("Pamgaea");
         }
 
         protected override void Deactivating()

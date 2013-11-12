@@ -160,6 +160,8 @@ namespace DefendUranus.Activities
             _gameInput = new GameInput();
             _background = Content.Load<Texture2D>("Backgrounds/Background");
             _stars = Content.Load<Texture2D>("Backgrounds/Background2");
+
+            SoundManager.PlayBGM("Failing Defense");
         }
         #endregion
 

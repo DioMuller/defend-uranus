@@ -35,14 +35,17 @@ namespace DefendUranus
             Content.RootDirectory = "Content";
 
             Window.Title = "Defend Uranus";
+
+            GameContent.Initialize(Content);
+            SoundManager.SEFolder = "Sounds";
+            SoundManager.BGMFolder = "BGM";
         }
 
         protected override void Initialize()
         {
             base.Initialize();
-            GameContent.Initialize(Content);
+            
             GraphicsHelper.Device = GraphicsDevice;
-            SoundManager.SEFolder = "Sounds";
         }
 
         /// <summary>
