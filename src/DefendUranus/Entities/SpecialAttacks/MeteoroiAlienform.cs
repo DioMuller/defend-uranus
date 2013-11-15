@@ -10,7 +10,7 @@ namespace DefendUranus.Entities.SpecialAttacks
     class MeteoroiAlienform : SpecialAttack
     {
         #region Attributes
-        Wander _wander;
+        Pursuit _pursuit;
         Ship _owner;
         #endregion
 
@@ -21,30 +21,31 @@ namespace DefendUranus.Entities.SpecialAttacks
             _owner = owner;
             RotateToMomentum = true;
             Momentum = Vector2.One;
-            MaxSpeed = 10f;
+            MaxSpeed = 9f;
 
-            _wander = new Wander(this)
-            {
-                Jitter = 1.25f,
-                WanderDistance = 50f,
-                WanderRadius = 90f,
-            };
-            SteeringBehaviors.Add(_wander);
+            _pursuit = new Pursuit(this);
+            SteeringBehaviors.Add(_pursuit);
         }
         #endregion
 
         #region Game Loop
         public override void Update(GameTime gameTime)
         {
-            if (_wander.Target == null)
-            {
-                var target = _owner.Level.Entities.OfType<Ship>()
-                    .Where(s => s != _owner)
-                    .OrderBy(s => (s.Position - Position).LengthSquared())
-                    .FirstOrDefault();
+            #region Selects target
+             var target = _owner.Level.Entities.OfType<SpecialAttack>()
+                .Where(s => s != this)
+                .OrderBy(s => (s.Position - Position).LengthSquared())
+                .FirstOrDefault();
 
-                _wander.Target = target;
+            // If you got a new target...
+            if (_pursuit.Target != target)
+            {
+                target.SteeringBehaviors.Clear();
+                target.SteeringBehaviors.Add(new Flee(target) { PanicDistance = 1000f, Target = this});
+                _pursuit.Target = target;
             }
+
+            #endregion Selects target
 
             base.Update(gameTime);
         }
