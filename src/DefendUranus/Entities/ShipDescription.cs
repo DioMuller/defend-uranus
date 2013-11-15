@@ -1,4 +1,5 @@
 ﻿using DefendUranus.Activities;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -56,6 +57,11 @@ namespace DefendUranus.Entities
         /// How long does the fuel takes to empty, when on full power.
         /// </summary>
         public TimeSpan FuelDuration { get; private set; }
+
+        /// <summary>
+        /// Propulsion particle color.
+        /// </summary>
+        public Color ParticleColor { get; set; }
         #endregion
 
         #region Constructors

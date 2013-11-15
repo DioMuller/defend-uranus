@@ -357,10 +357,10 @@ namespace DefendUranus.Activities
         IEnumerable<ShipDescription> LoadShips()
         {
             // TODO: Load ships from XML
-            yield return new ShipDescription(Content, "Sprites/Avenger", "Earth Avenger", SpecialAttack("Pursuiter Missile"), mass: 2, maxSpeed: 20, fuel: TimeSpan.FromSeconds(2));
-            yield return new ShipDescription(Content, "Sprites/Explorer", "Uranus Explorer", SpecialAttack("Wanderer Probe"), mass: 1, maxSpeed: 10, fuel: TimeSpan.FromSeconds(1.5f));
-            yield return new ShipDescription(Content, "Sprites/Fatboy", "Big Fatboy", SpecialAttack("Fleeing Fake"), mass: 4, maxSpeed: 40, fuel: TimeSpan.FromSeconds(6));
-            yield return new ShipDescription(Content, "Sprites/Meteoroid", "Meteoroid Destroyer", SpecialAttack("Fleeing Fake"), mass: 3, maxSpeed: 30, fuel: TimeSpan.FromSeconds(4));
+            yield return new ShipDescription(Content, "Sprites/Avenger", "Earth Avenger", SpecialAttack("Pursuiter Missile"), mass: 2, maxSpeed: 20, fuel: TimeSpan.FromSeconds(2)) {ParticleColor = Color.Red};
+            yield return new ShipDescription(Content, "Sprites/Explorer", "Uranus Explorer", SpecialAttack("Wanderer Probe"), mass: 1, maxSpeed: 10, fuel: TimeSpan.FromSeconds(1.5f)) { ParticleColor = Color.CornflowerBlue }; ;
+            yield return new ShipDescription(Content, "Sprites/Fatboy", "Big Fatboy", SpecialAttack("Fleeing Fake"), mass: 4, maxSpeed: 40, fuel: TimeSpan.FromSeconds(6)) { ParticleColor = Color.Yellow }; ;
+            yield return new ShipDescription(Content, "Sprites/Meteoroid", "Meteoroid Alienform", SpecialAttack("Meteoroid Alienform"), mass: 3, maxSpeed: 30, fuel: TimeSpan.FromSeconds(4)) { ParticleColor = Color.Green }; ;
         }
 
         static ShipDescription.Special SpecialAttack(string name)
@@ -370,7 +370,7 @@ namespace DefendUranus.Activities
                 { "Pursuiter Missile", ship => new PursuiterMissile(ship) },
                 { "Wanderer Probe", ship => new WandererProbe(ship) },
                 { "Fleeing Fake", ship => new FleeingFake(ship) },
-                //{ "Meteoroid Destroyer", ship => new WandererProbe(ship) },
+                { "Meteoroid Alienform", ship => new MeteoroiAlienform(ship) }, //TODO: Change to something else.
             };
 
             if (!specialCreators.ContainsKey(name))

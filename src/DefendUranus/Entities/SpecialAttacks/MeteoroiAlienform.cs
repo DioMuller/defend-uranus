@@ -7,38 +7,43 @@ using System.Text;
 
 namespace DefendUranus.Entities.SpecialAttacks
 {
-    class PursuiterMissile : SpecialAttack
+    class MeteoroiAlienform : SpecialAttack
     {
         #region Attributes
-        Pursuit _pursuit;
+        Wander _wander;
         Ship _owner;
         #endregion
 
         #region Constructors
-        public PursuiterMissile(Ship owner)
-            : base(owner.Level, "Sprites/Avenger-PursuiterMissile.png", Color.Red)
+        public MeteoroiAlienform(Ship owner)
+            : base(owner.Level, "Sprites/Meteoroid-Alienform.png", Color.Green)
         {
             _owner = owner;
             RotateToMomentum = true;
             Momentum = Vector2.One;
             MaxSpeed = 10f;
 
-            _pursuit = new Pursuit(this);
-            SteeringBehaviors.Add(_pursuit);
+            _wander = new Wander(this)
+            {
+                Jitter = 1.25f,
+                WanderDistance = 50f,
+                WanderRadius = 90f,
+            };
+            SteeringBehaviors.Add(_wander);
         }
         #endregion
 
         #region Game Loop
         public override void Update(GameTime gameTime)
         {
-            if (_pursuit.Target == null)
+            if (_wander.Target == null)
             {
                 var target = _owner.Level.Entities.OfType<Ship>()
                     .Where(s => s != _owner)
                     .OrderBy(s => (s.Position - Position).LengthSquared())
                     .FirstOrDefault();
 
-                _pursuit.Target = target;
+                _wander.Target = target;
             }
 
             base.Update(gameTime);

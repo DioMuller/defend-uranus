@@ -1,12 +1,15 @@
-﻿using DefendUranus.Activities;
+﻿using System.Collections.Generic;
+using DefendUranus.Activities;
 using DefendUranus.Helpers;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGameLib.Core.Extensions;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoGameLib.Core;
+using MonoGameLib.Core.Particles;
 
 namespace DefendUranus.Entities
 {
@@ -49,6 +52,9 @@ namespace DefendUranus.Entities
         };
         public readonly AutoRegenContainer MainWeaponAmmo = new AutoRegenContainer(20, TimeSpan.FromSeconds(2));
         public readonly AutoRegenContainer SpecialWeaponAmmo = new AutoRegenContainer(3, TimeSpan.FromSeconds(60));
+
+        private ParticleEmiter _particleEmiter;
+        private Color _particleColor;
         #endregion
 
         #region Properties
@@ -90,7 +96,7 @@ namespace DefendUranus.Entities
         /// </summary>
         /// <param name="level">The level that will contain this Ship.</param>
         /// <param name="texturePath">The location of the ship's draw image.</param>
-        public Ship(GamePlay level, string texturePath)
+        public Ship(GamePlay level, string texturePath, Color particleColor)
             : base(level, texturePath)
         {
             Health = new Container(100);
@@ -102,6 +108,20 @@ namespace DefendUranus.Entities
 
             MainWeapon = new AsyncOperation(c => FireWeapon(MainWeaponAmmo, FireLaser, c));
             SpecialWeapon = new AsyncOperation(c => FireWeapon(SpecialWeaponAmmo, FireSpecialWeapon, c));
+
+            #region Particle
+            _particleColor = particleColor;
+
+            List<ParticleState> particleStates = new List<ParticleState>();
+            particleStates.Add(new ParticleState() { StartTime = 0f, Color = _particleColor, Scale = 1f });
+            particleStates.Add(new ParticleState() { StartTime = 200f, Color = _particleColor * 0.8f, Scale = 1f });
+            particleStates.Add(new ParticleState() { StartTime = 300f, Color = _particleColor * 0.6f, Scale = 1f });
+            particleStates.Add(new ParticleState() { StartTime = 400f, Color = _particleColor * 0.3f, Scale = 1f });
+            particleStates.Add(new ParticleState() { StartTime = 500f, Color = _particleColor * 0.2f, Scale = 11f });
+
+
+            _particleEmiter = new ParticleEmiter("particles/spark.png", particleStates) { ParticleMaxTime = 500f, MillisecondsToEmit = 8f, OpeningAngle = 20f, ParticleSpeed = 1f };
+            #endregion Particle
         }
 
         /// <summary>
@@ -110,7 +130,7 @@ namespace DefendUranus.Entities
         /// <param name="level">The level that will contain this Ship.</param>
         /// <param name="description">The ship description details.</param>
         public Ship(GamePlay level, ShipDescription description)
-            : this(level, description.TexturePath)
+            : this(level, description.TexturePath, description.ParticleColor)
         {
             Mass = description.Mass;
             MaxSpeed = description.MaxSpeed;
@@ -207,9 +227,26 @@ namespace DefendUranus.Entities
             Fuel.Update(gameTime);
             MainWeaponAmmo.Update(gameTime);
             SpecialWeaponAmmo.Update(gameTime);
+
+            #region Particles
+            _particleEmiter.Position = this.Position;
+            _particleEmiter.Direction = new Vector2(0, 1).RotateRadians(Rotation);
+
+            _particleEmiter.Update(gameTime);
+            #endregion Particles
+
             base.Update(gameTime);
         }
         #endregion
+
+        #region Draw
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, Color? colorOverride = null)
+        {
+            _particleEmiter.Draw(gameTime, spriteBatch);
+            base.Draw(gameTime, spriteBatch, colorOverride);            
+        }
+
+        #endregion Draw
         #endregion
 
         #region Private

@@ -16,7 +16,7 @@ namespace DefendUranus.Entities.SpecialAttacks
 
         #region Constructors
         public WandererProbe(Ship owner)
-            : base(owner.Level, "Sprites/Explorer-WandererProbe.png")
+            : base(owner.Level, "Sprites/Explorer-WandererProbe.png", Color.CornflowerBlue)
         {
             _owner = owner;
             RotateToMomentum = true;

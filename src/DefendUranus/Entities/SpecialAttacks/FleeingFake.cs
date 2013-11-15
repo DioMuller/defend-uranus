@@ -16,7 +16,7 @@ namespace DefendUranus.Entities.SpecialAttacks
 
         #region Constructors
         public FleeingFake(Ship owner)
-            : base(owner.Level, "Sprites/Fatboy-FleeingFake.png")
+            : base(owner.Level, "Sprites/Fatboy-FleeingFake.png", Color.Yellow)
         {
             _owner = owner;
             RotateToMomentum = true;

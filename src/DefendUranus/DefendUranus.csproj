@@ -68,6 +68,7 @@
     <Compile Include="Entities\ShipDescription.cs" />
     <Compile Include="Entities\SpecialAttack.cs" />
     <Compile Include="Entities\PhysicsEntity.cs" />
+    <Compile Include="Entities\SpecialAttacks\MeteoroiAlienform.cs" />
     <Compile Include="Entities\SpecialAttacks\FleeingFake.cs" />
     <Compile Include="Entities\SpecialAttacks\PursuiterMissile.cs" />
     <Compile Include="Entities\SpecialAttacks\WandererProbe.cs" />
@@ -164,6 +165,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Images\Title.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Particles\spark.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Sounds\Explosion01.wav">
