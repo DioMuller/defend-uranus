@@ -10,8 +10,9 @@ namespace DefendUranus.Entities.SpecialAttacks
     class WandererProbe : SpecialAttack
     {
         #region Attributes
-        Wander _wander;
-        Ship _owner;
+        private Wander _wander;
+        private Seek _seek;
+        private Ship _owner;
         #endregion
 
         #region Constructors
@@ -21,7 +22,7 @@ namespace DefendUranus.Entities.SpecialAttacks
             _owner = owner;
             RotateToMomentum = true;
             Momentum = Vector2.One;
-            MaxSpeed = 10f;
+            MaxSpeed = 12f;
 
             _wander = new Wander(this)
             {
@@ -29,6 +30,10 @@ namespace DefendUranus.Entities.SpecialAttacks
                 WanderDistance = 50f,
                 WanderRadius = 90f,
             };
+
+            _seek = new Seek(this) { Target =  null };
+            
+            SteeringBehaviors.Add(_seek);
             SteeringBehaviors.Add(_wander);
         }
         #endregion
@@ -36,14 +41,17 @@ namespace DefendUranus.Entities.SpecialAttacks
         #region Game Loop
         public override void Update(GameTime gameTime)
         {
-            if (_wander.Target == null)
+            if (_seek.Target == null)
             {
-                var target = _owner.Level.Entities.OfType<Ship>()
-                    .Where(s => s != _owner)
+                var target = _owner.Level.Entities.OfType<PhysicsEntity>()
+                    .Where(s => s != _owner && s != this)
                     .OrderBy(s => (s.Position - Position).LengthSquared())
                     .FirstOrDefault();
 
-                _wander.Target = target;
+                if ( target != null && (target.Position - Position).LengthSquared() < 5000)
+                {
+                    _seek.Target = target;   
+                }
             }
 
             base.Update(gameTime);

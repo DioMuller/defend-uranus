@@ -33,8 +33,24 @@ namespace DefendUranus.Entities
         /// <param name="gameTime">Current game time.</param>
         public override void Update(GameTime gameTime)
         {
+            float totalSpeed = 0f;
+            float speedSquared = MaxSpeed * MaxSpeed;
+
             foreach( SteeringBehavior sb in SteeringBehaviors )
-                ApplyForce(sb.Calculate(gameTime));
+            {
+                Vector2 force = sb.Calculate(gameTime);
+                float length = force.LengthSquared();
+
+                if (totalSpeed + length <= speedSquared)
+                {
+                    ApplyForce(force);
+                    totalSpeed += length;
+                }
+                else
+                {
+                    break; //Do not execute any behaviors after the maxspeed passed.
+                }
+            }
 
             base.Update(gameTime);
         }

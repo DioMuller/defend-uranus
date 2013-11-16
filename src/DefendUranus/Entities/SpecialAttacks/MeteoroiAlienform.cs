@@ -38,10 +38,10 @@ namespace DefendUranus.Entities.SpecialAttacks
                 .FirstOrDefault();
 
             // If you got a new target...
-            if (_pursuit.Target != target)
+            if (target != null && _pursuit.Target != target)
             {
-                target.SteeringBehaviors.Clear();
-                target.SteeringBehaviors.Add(new Flee(target) { PanicDistance = 1000f, Target = this});
+                //target.SteeringBehaviors.Clear();
+                target.SteeringBehaviors.Insert(0, new Flee(target) { PanicDistance = 10000f, Target = this});
                 _pursuit.Target = target;
             }
 

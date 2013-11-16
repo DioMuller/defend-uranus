@@ -21,11 +21,16 @@ namespace DefendUranus.SteeringBehaviors
         /// <returns>Movement vector</returns>
         public override Vector2 Calculate(GameTime gameTime)
         {
-            Vector2 desiredVelocity = Target.Position - Parent.Position;
-            desiredVelocity.Normalize();
-            desiredVelocity *= Parent.MaxSpeed;
+            if( Target != null )
+            {
+                Vector2 desiredVelocity = Target.Position - Parent.Position;
+                desiredVelocity.Normalize();
+                desiredVelocity *= Parent.MaxSpeed;
 
-            return desiredVelocity;
+                return desiredVelocity;
+            }
+
+            return Vector2.Zero;
         }
     }
 }

@@ -21,29 +21,34 @@ namespace DefendUranus.SteeringBehaviors
         /// <returns>Movement vector</returns>
         public override Vector2 Calculate(GameTime gameTime)
         {
-            Vector2 futurePosition;
-            Vector2 toEvader = Target.Position - Parent.Position;
-            float relativeDir = Vector2.Dot(Parent.Direction, Target.Direction);
+            if( Target != null )
+            {
+                Vector2 futurePosition;
+                Vector2 toEvader = Target.Position - Parent.Position;
+                float relativeDir = Vector2.Dot(Parent.Direction, Target.Direction);
 
-            if( Vector2.Dot(toEvader, Target.Direction) > 0 && (relativeDir < -0.95 ) ) //acos(0.95) = 18 degs
-            {
-                futurePosition = Target.Position;
-            }
-            else
-            {
-                float lookAheadTime = toEvader.Length() / (Parent.MaxSpeed + Target.Speed);
-                futurePosition = Target.Position + (Target.Momentum * lookAheadTime);
-            }
+                if( Vector2.Dot(toEvader, Target.Direction) > 0 && (relativeDir < -0.95 ) ) //acos(0.95) = 18 degs
+                {
+                    futurePosition = Target.Position;
+                }
+                else
+                {
+                    float lookAheadTime = toEvader.Length() / (Parent.MaxSpeed + Target.Speed);
+                    futurePosition = Target.Position + (Target.Momentum * lookAheadTime);
+                }
             
              
 
-            #region Seek
-            Vector2 desiredVelocity = futurePosition - Parent.Position;
-            desiredVelocity.Normalize();
-            desiredVelocity *= Parent.MaxSpeed;
-            #endregion Seek
+                #region Seek
+                Vector2 desiredVelocity = futurePosition - Parent.Position;
+                desiredVelocity.Normalize();
+                desiredVelocity *= Parent.MaxSpeed;
+                #endregion Seek
 
-            return desiredVelocity;
+                return desiredVelocity;
+            }
+
+            return Vector2.Zero;
         }
     }
 }
