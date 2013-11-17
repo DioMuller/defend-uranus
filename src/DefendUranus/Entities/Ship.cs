@@ -99,7 +99,7 @@ namespace DefendUranus.Entities
         public Ship(GamePlay level, string texturePath, Color particleColor)
             : base(level, texturePath)
         {
-            Health = new Container(100);
+            Health = new Container(20);
             RotationForce = 10;
             MaxRotationSpeed = 3;
             MaxSpeed = 10;
