@@ -20,6 +20,7 @@ namespace MonoGameLib.Core.Particles
         public List<ParticleState> States { get; protected set; }
         public float Speed { get; set; }
         public float TimeAlive { get; set; }
+        public float Opacity { get; set; }
 
         public ParticleState CurrentState
         {
@@ -43,6 +44,7 @@ namespace MonoGameLib.Core.Particles
             Direction = direction;
             States = states;
             _currentState = 0;
+            Opacity = 1;
         }
         #endregion Constructor
 
@@ -62,7 +64,7 @@ namespace MonoGameLib.Core.Particles
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(Texture, Position, null, CurrentState.Color, 0f, Vector2.Zero, CurrentState.Scale, SpriteEffects.None, 0 );
+            spriteBatch.Draw(Texture, Position, null, new Color(CurrentState.Color, Opacity), 0f, Vector2.Zero, CurrentState.Scale, SpriteEffects.None, 0 );
         }
         #endregion Cycle Methods
     }
