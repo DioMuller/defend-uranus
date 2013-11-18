@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Lifetime;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,10 +14,14 @@ namespace DefendUranus.Entities
 {
     class SpecialAttack : SteeringEntity
     {
+        #region Attributes
         private ParticleEmiter _particleEmiter;
-        private Color _particleColor;
+        private float _remainingLifetime;
+        protected Ship _owner;
+        protected float _lifetime;
+        #endregion Attributes
 
-        public SpecialAttack(GamePlay level, string texturePath, Color particleColor)
+        public SpecialAttack(GamePlay level, string texturePath, Color particleColor, Ship owner, float lifetime)
             : base(level)
         {
             Sprite = new Sprite(texturePath, new Point(16, 16), 0);
@@ -27,15 +32,18 @@ namespace DefendUranus.Entities
             MaxRotationSpeed = 4;
             MaxSpeed = 12;
 
-            #region Particle
-            _particleColor = particleColor;
+            _owner = owner;
 
+            _lifetime = lifetime;
+            _remainingLifetime = _lifetime;
+
+            #region Particle
             List<ParticleState> particleStates = new List<ParticleState>();
-            particleStates.Add(new ParticleState() { StartTime = 0f, Color = _particleColor, Scale = 1f });
-            particleStates.Add(new ParticleState() { StartTime = 200f, Color = _particleColor * 0.8f, Scale = 1f });
-            particleStates.Add(new ParticleState() { StartTime = 300f, Color = _particleColor * 0.6f, Scale = 1f });
-            particleStates.Add(new ParticleState() { StartTime = 400f, Color = _particleColor * 0.3f, Scale = 1f });
-            particleStates.Add(new ParticleState() { StartTime = 500f, Color = _particleColor * 0.2f, Scale = 11f });
+            particleStates.Add(new ParticleState() { StartTime = 0f, Color = particleColor, Scale = 1f });
+            particleStates.Add(new ParticleState() { StartTime = 200f, Color = particleColor * 0.8f, Scale = 1f });
+            particleStates.Add(new ParticleState() { StartTime = 300f, Color = particleColor * 0.6f, Scale = 1f });
+            particleStates.Add(new ParticleState() { StartTime = 400f, Color = particleColor * 0.3f, Scale = 1f });
+            particleStates.Add(new ParticleState() { StartTime = 500f, Color = particleColor * 0.2f, Scale = 1f });
 
 
             _particleEmiter = new ParticleEmiter("particles/spark.png", particleStates) { ParticleMaxTime = 500f, MillisecondsToEmit = 8f, OpeningAngle = 20f, ParticleSpeed = 1f };
@@ -52,6 +60,16 @@ namespace DefendUranus.Entities
 
             _particleEmiter.Update(gameTime);
             #endregion Particles
+
+            if ( _lifetime > 0f)
+            {
+                _remainingLifetime -= gameTime.ElapsedGameTime.Milliseconds;
+
+                if ( _remainingLifetime < 0f )
+                {
+                    _owner.Level.RemoveEntity(this);
+                }
+            }
 
             base.Update(gameTime);
         }

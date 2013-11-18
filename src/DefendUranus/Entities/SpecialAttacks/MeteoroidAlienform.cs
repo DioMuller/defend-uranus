@@ -7,16 +7,15 @@ using System.Text;
 
 namespace DefendUranus.Entities.SpecialAttacks
 {
-    class MeteoroiAlienform : SpecialAttack
+    class MeteoroidAlienform : SpecialAttack
     {
         #region Attributes
         Pursuit _pursuit;
-        Ship _owner;
         #endregion
 
         #region Constructors
-        public MeteoroiAlienform(Ship owner)
-            : base(owner.Level, "Sprites/Meteoroid-Alienform.png", Color.Green)
+        public MeteoroidAlienform(Ship owner, float lifetime)
+            : base(owner.Level, "Sprites/Meteoroid-Alienform.png", Color.Green, owner, lifetime)
         {
             _owner = owner;
             RotateToMomentum = true;

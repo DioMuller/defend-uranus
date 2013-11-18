@@ -12,12 +12,11 @@ namespace DefendUranus.Entities.SpecialAttacks
         #region Attributes
         private Wander _wander;
         private Seek _seek;
-        private Ship _owner;
         #endregion
 
         #region Constructors
-        public WandererProbe(Ship owner)
-            : base(owner.Level, "Sprites/Explorer-WandererProbe.png", Color.CornflowerBlue)
+        public WandererProbe(Ship owner, float lifetime)
+            : base(owner.Level, "Sprites/Explorer-WandererProbe.png", Color.CornflowerBlue, owner, lifetime)
         {
             _owner = owner;
             RotateToMomentum = true;

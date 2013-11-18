@@ -356,7 +356,7 @@ namespace DefendUranus.Activities
         /// <returns>Descriptions of each ship in the game.</returns>
         IEnumerable<ShipDescription> LoadShips()
         {
-            // TODO: Load ships from XML
+            // TODO: Load ships from XML?
             yield return new ShipDescription(Content, "Sprites/Avenger", "Earth Avenger", SpecialAttack("Pursuiter Missile"), mass: 2, maxSpeed: 20, fuel: TimeSpan.FromSeconds(2)) {ParticleColor = Color.Red};
             yield return new ShipDescription(Content, "Sprites/Explorer", "Uranus Explorer", SpecialAttack("Wanderer Probe"), mass: 1, maxSpeed: 10, fuel: TimeSpan.FromSeconds(1.5f)) { ParticleColor = Color.CornflowerBlue }; ;
             yield return new ShipDescription(Content, "Sprites/Fatboy", "Big Fatboy", SpecialAttack("Fleeing Fake"), mass: 4, maxSpeed: 40, fuel: TimeSpan.FromSeconds(6)) { ParticleColor = Color.Yellow }; ;
@@ -367,10 +367,10 @@ namespace DefendUranus.Activities
         {
             var specialCreators = new Dictionary<string, Ship.SpecialAttackCreator>
             {
-                { "Pursuiter Missile", ship => new PursuiterMissile(ship) },
-                { "Wanderer Probe", ship => new WandererProbe(ship) },
-                { "Fleeing Fake", ship => new FleeingFake(ship) },
-                { "Meteoroid Alienform", ship => new MeteoroiAlienform(ship) }, //TODO: Change to something else.
+                { "Pursuiter Missile", ship => new PursuiterMissile(ship, 5000f) },
+                { "Wanderer Probe", ship => new WandererProbe(ship, 15000f) },
+                { "Fleeing Fake", ship => new FleeingFake(ship, 7500f) },
+                { "Meteoroid Alienform", ship => new MeteoroidAlienform(ship, 5000f) },
             };
 
             if (!specialCreators.ContainsKey(name))

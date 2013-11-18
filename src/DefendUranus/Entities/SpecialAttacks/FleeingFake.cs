@@ -11,12 +11,11 @@ namespace DefendUranus.Entities.SpecialAttacks
     {
         #region Attributes
         Flee _flee;
-        Ship _owner;
         #endregion
 
         #region Constructors
-        public FleeingFake(Ship owner)
-            : base(owner.Level, "Sprites/Fatboy-FleeingFake.png", Color.Yellow)
+        public FleeingFake(Ship owner, float lifetime)
+            : base(owner.Level, "Sprites/Fatboy-FleeingFake.png", Color.Yellow, owner, lifetime)
         {
             _owner = owner;
             RotateToMomentum = true;

@@ -11,12 +11,11 @@ namespace DefendUranus.Entities.SpecialAttacks
     {
         #region Attributes
         Pursuit _pursuit;
-        Ship _owner;
         #endregion
 
         #region Constructors
-        public PursuiterMissile(Ship owner)
-            : base(owner.Level, "Sprites/Avenger-PursuiterMissile.png", Color.Red)
+        public PursuiterMissile(Ship owner, float lifetime)
+            : base(owner.Level, "Sprites/Avenger-PursuiterMissile.png", Color.Red, owner, lifetime)
         {
             _owner = owner;
             RotateToMomentum = true;
