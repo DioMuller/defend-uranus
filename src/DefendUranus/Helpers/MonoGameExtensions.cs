@@ -38,9 +38,9 @@ namespace DefendUranus.Helpers
             spriteBatch.DrawString(font, text, position, color, AlignExtensions.ToVector(hAlign, vAlign));
         }
 
-        public static Vector2 Center(this Viewport viewPort)
+        public static Point CenterPoint(this Viewport viewPort)
         {
-            return new Vector2(viewPort.Width / 2, viewPort.Height / 2);
+            return new Point((int)(viewPort.Width / 2), (int)(viewPort.Height / 2));
         }
 
         public static Vector2 LimitSize(this Vector2 vector, float maxSize)
