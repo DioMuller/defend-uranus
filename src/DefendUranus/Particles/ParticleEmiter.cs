@@ -25,7 +25,6 @@ namespace MonoGameLib.Core.Particles
         #region Properties
         public float MillisecondsToEmit { get; set; }
         public Vector2 Position { get; set; }
-
         public Vector2 Direction { get; set; }
         public float ParticleSpeed { get; set; }
         public float OpeningAngle { get; set; }
@@ -33,6 +32,7 @@ namespace MonoGameLib.Core.Particles
         public List<ParticleState> ParticleStates { get; protected set; }
         public bool Enabled { get; set; }
         public float DecayTime { get; set; }
+        public float Intensity { get; set; }
         #endregion Properties
 
         #region Delegates
@@ -42,6 +42,8 @@ namespace MonoGameLib.Core.Particles
         #region Constructor
         public ParticleEmiter(string texture, List<ParticleState> particleStates)
         {
+            Intensity = 1f;
+
             _particleTexture = texture;
             _rng = new Random();
             ParticleStates = particleStates;
@@ -73,12 +75,13 @@ namespace MonoGameLib.Core.Particles
             if (Enabled)
             {
                 _sinceLastEmision += gameTime.ElapsedGameTime.Milliseconds;
+                var toEmit = MillisecondsToEmit / Intensity;
 
-                while (_sinceLastEmision >= MillisecondsToEmit)
+                while (_sinceLastEmision >= toEmit)
                 {
                     float angle = (float)(_rng.NextDouble() * (2 * OpeningAngle)) - OpeningAngle;
-                    _sinceLastEmision -= MillisecondsToEmit;
-                    _particles.Add(new Particle(_particleTexture, Position, Direction.Rotate(angle), ParticleStates) { Speed = ParticleSpeed });
+                    _sinceLastEmision -= toEmit;
+                    _particles.Add(new Particle(_particleTexture, Position, Direction.Rotate(angle), ParticleStates) { Speed = ParticleSpeed, Opacity = Intensity });
                 }
             }
 
@@ -89,7 +92,7 @@ namespace MonoGameLib.Core.Particles
 
             if (ParticleMaxTime > 0f)
             {
-                List<Particle> toRemove = _particles.Where((p) => p.TimeAlive > ParticleMaxTime).ToList(); ;
+                List<Particle> toRemove = _particles.Where((p) => p.TimeAlive > ParticleMaxTime).ToList();
 
                 foreach (Particle p in toRemove)
                 {

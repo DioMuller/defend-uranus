@@ -45,7 +45,8 @@ namespace DefendUranus.Entities
         #endregion
 
         #region Attributes
-        bool _rotating, _accelerating, _useReserve;
+        bool _useReserve;
+        float _rotating, _accelerating;
         public readonly AutoRegenContainer Fuel = new AutoRegenContainer((int)FuelDuration.TotalMilliseconds, FuelRegenTime)
         {
             Reserve = (int)FuelReserve.TotalMilliseconds
@@ -53,7 +54,7 @@ namespace DefendUranus.Entities
         public readonly AutoRegenContainer MainWeaponAmmo = new AutoRegenContainer(20, TimeSpan.FromSeconds(2));
         public readonly AutoRegenContainer SpecialWeaponAmmo = new AutoRegenContainer(3, TimeSpan.FromSeconds(60));
 
-        private ParticleEmiter _particleEmiter;
+        private ParticleEmiter _thrustParticleEmiter, _rotateParticleEmiter;
         private Color _particleColor;
         #endregion
 
@@ -119,8 +120,8 @@ namespace DefendUranus.Entities
             particleStates.Add(new ParticleState() { StartTime = 400f, Color = _particleColor * 0.3f, Scale = 1f });
             particleStates.Add(new ParticleState() { StartTime = 500f, Color = _particleColor * 0.2f, Scale = 11f });
 
-
-            _particleEmiter = new ParticleEmiter("particles/spark.png", particleStates) { ParticleMaxTime = 500f, MillisecondsToEmit = 8f, OpeningAngle = 20f, ParticleSpeed = 1f };
+            _thrustParticleEmiter = new ParticleEmiter("particles/spark.png", particleStates) { ParticleMaxTime = 500f, MillisecondsToEmit = 8f, OpeningAngle = 20f, ParticleSpeed = 1f };
+            _rotateParticleEmiter = new ParticleEmiter("particles/spark.png", particleStates) { ParticleMaxTime = 250f, MillisecondsToEmit = 8f, OpeningAngle = 20f, ParticleSpeed = 2f };
             #endregion Particle
         }
 
@@ -161,7 +162,7 @@ namespace DefendUranus.Entities
                 throw new ArgumentOutOfRangeException("force", "Force must be between -1 and 1.");
 #endif
 
-            _rotating = false;
+            _rotating = 0;
 
             if (Math.Abs(force) <= 0.1f)
             {
@@ -180,7 +181,7 @@ namespace DefendUranus.Entities
 
             if (Fuel.Quantity > fuelNeeded)
             {
-                _rotating = true;
+                _rotating = force;
                 Fuel.Quantity -= fuelNeeded;
                 ApplyRotation(force * RotationForce, isAcceleration: true);
             }
@@ -192,15 +193,15 @@ namespace DefendUranus.Entities
             if (Math.Abs(thrust) > 1)
                 throw new ArgumentOutOfRangeException("thrust", "Thrust must be between -1 and 1.");
 #endif
-            _accelerating = false;
-            if(Math.Abs(thrust) < 0.1f)
+            _accelerating = 0;
+            if (Math.Abs(thrust) < 0.1f)
                 return;
 
             var fuelNeeded = (int)(gameTime.ElapsedGameTime.TotalMilliseconds * Math.Abs(thrust));
 
             if (Fuel.Quantity > fuelNeeded)
             {
-                _accelerating = true;
+                _accelerating = thrust;
                 Fuel.Quantity -= fuelNeeded;
                 ApplyForce(Vector2Extension.AngleToVector2(Rotation) * thrust * ThrotleForce);
             }
@@ -223,16 +224,26 @@ namespace DefendUranus.Entities
         #region Update
         public override void Update(GameTime gameTime)
         {
-            Fuel.Regenerate = !_rotating && !_accelerating;
+            Fuel.Regenerate = _rotating == 0 && _accelerating == 0;
             Fuel.Update(gameTime);
             MainWeaponAmmo.Update(gameTime);
             SpecialWeaponAmmo.Update(gameTime);
 
             #region Particles
-            _particleEmiter.Position = this.Position;
-            _particleEmiter.Direction = new Vector2(0, 1).RotateRadians(Rotation);
+            _thrustParticleEmiter.Enabled = _accelerating != 0;
+            if (_thrustParticleEmiter.Enabled)
+                _thrustParticleEmiter.Intensity = Math.Abs(_accelerating);
+            _thrustParticleEmiter.Position = this.Position;
+            _thrustParticleEmiter.Direction = new Vector2(0, _accelerating > 0? 1 : -1).RotateRadians(Rotation);
 
-            _particleEmiter.Update(gameTime);
+            _thrustParticleEmiter.Update(gameTime);
+
+            _rotateParticleEmiter.Enabled = _rotating != 0;
+            if (_rotateParticleEmiter.Enabled)
+                _rotateParticleEmiter.Intensity = Math.Abs(_rotating);
+            _rotateParticleEmiter.Position = this.Position + new Vector2(0, -8).RotateRadians(Rotation);
+            _rotateParticleEmiter.Direction = new Vector2(_rotating < 0? 1 : -1, 0).RotateRadians(Rotation);
+            _rotateParticleEmiter.Update(gameTime);
             #endregion Particles
 
             base.Update(gameTime);
@@ -242,8 +253,9 @@ namespace DefendUranus.Entities
         #region Draw
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, Color? colorOverride = null)
         {
-            _particleEmiter.Draw(gameTime, spriteBatch);
-            base.Draw(gameTime, spriteBatch, colorOverride);            
+            _rotateParticleEmiter.Draw(gameTime, spriteBatch);
+            _thrustParticleEmiter.Draw(gameTime, spriteBatch);
+            base.Draw(gameTime, spriteBatch, colorOverride);
         }
 
         #endregion Draw
