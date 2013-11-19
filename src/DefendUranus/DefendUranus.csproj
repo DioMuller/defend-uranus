@@ -63,6 +63,7 @@
     <Compile Include="Components\PlayerGUI.cs" />
     <Compile Include="Entities\AutoRegenContainer.cs" />
     <Compile Include="Entities\Container.cs" />
+    <Compile Include="Entities\Explosion.cs" />
     <Compile Include="Entities\GamePlayEntity.cs" />
     <Compile Include="Entities\Laser.cs" />
     <Compile Include="Entities\ShipDescription.cs" />
@@ -224,7 +225,9 @@
     <Content Include="Content\Sprites\Explorer.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Sprites\Explosion.png" />
+    <Content Include="Content\Sprites\Explosion.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Sprites\Fatboy-FleeingFake.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

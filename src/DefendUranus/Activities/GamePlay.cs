@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoGameLib.Core.Entities;
 using MonoGameLib.Core.Input;
 using DefendUranus.Entities;
 using DefendUranus.Helpers;
@@ -86,6 +87,7 @@ namespace DefendUranus.Activities
         readonly AsyncOperation _spawnAsteroids;
 
         readonly List<GamePlayEntity> _entities;
+        private readonly List<Entity> _nonPhysicsEntities; 
         readonly List<Ship> _ships;
 
         GameInput _gameInput;
@@ -123,6 +125,7 @@ namespace DefendUranus.Activities
             _baseEntity = new PhysicsEntity();
             _ships = new List<Ship> { p1Ship, p2Ship };
             _entities = new List<GamePlayEntity>(_ships);
+            _nonPhysicsEntities = new List<Entity>();
             _duration = TimeSpan.Zero;
 
             _spawnAsteroids = new AsyncOperation(SpawnAsteroids);
@@ -216,6 +219,10 @@ namespace DefendUranus.Activities
             var camera = GetCamera();
 
             var upEnt = _entities.ToList();
+
+            //Updates non physics
+            foreach( Entity e in _nonPhysicsEntities ) e.Update(gameTime);
+
             for (int i = 0; i < upEnt.Count; i++)
             {
                 var ent = upEnt[i];
@@ -326,6 +333,10 @@ namespace DefendUranus.Activities
         void DrawEntities(GameTime gameTime, CameraInfo camera)
         {
             SpriteBatch.Begin(camera, GraphicsDevice.Viewport);
+
+            //Updates non physics
+            foreach (Entity e in _nonPhysicsEntities) e.Draw(gameTime, SpriteBatch);
+
             foreach (var ent in _entities.ToList())
                 ent.Draw(gameTime, SpriteBatch, ent.Color);
             SpriteBatch.End();
@@ -566,12 +577,30 @@ namespace DefendUranus.Activities
         }
 
         /// <summary>
+        /// Adds a non physics entity.
+        /// </summary>
+        /// <param name="entity">Non physics entity</param>
+        public void AddEntity(Entity entity)
+        {
+            _nonPhysicsEntities.Add(entity);
+        }
+
+        /// <summary>
         /// Removes an entity from the game.
         /// </summary>
         /// <param name="entity">Entity to be removed.</param>
         public void RemoveEntity(GamePlayEntity entity)
         {
             _entities.Remove(entity);
+        }
+
+        /// <summary>
+        /// Removes an non physics entity from the game.
+        /// </summary>
+        /// <param name="entity">Entity to be removed.</param>
+        public void RemoveEntity(Entity entity)
+        {
+            _nonPhysicsEntities.Remove(entity);
         }
         #endregion
     }

@@ -19,6 +19,7 @@ namespace DefendUranus.Entities
         private float _remainingLifetime;
         protected Ship _owner;
         protected float _lifetime;
+        protected Color _particleColor;
         #endregion Attributes
 
         public SpecialAttack(GamePlay level, string texturePath, Color particleColor, Ship owner, float lifetime)
@@ -38,12 +39,14 @@ namespace DefendUranus.Entities
             _remainingLifetime = _lifetime;
 
             #region Particle
+            _particleColor = particleColor;
+
             List<ParticleState> particleStates = new List<ParticleState>();
-            particleStates.Add(new ParticleState() { StartTime = 0f, Color = particleColor, Scale = 1f });
-            particleStates.Add(new ParticleState() { StartTime = 200f, Color = particleColor * 0.8f, Scale = 1f });
-            particleStates.Add(new ParticleState() { StartTime = 300f, Color = particleColor * 0.6f, Scale = 1f });
-            particleStates.Add(new ParticleState() { StartTime = 400f, Color = particleColor * 0.3f, Scale = 1f });
-            particleStates.Add(new ParticleState() { StartTime = 500f, Color = particleColor * 0.2f, Scale = 1f });
+            particleStates.Add(new ParticleState() { StartTime = 0f, Color = _particleColor, Scale = 1f });
+            particleStates.Add(new ParticleState() { StartTime = 200f, Color = _particleColor * 0.8f, Scale = 1f });
+            particleStates.Add(new ParticleState() { StartTime = 300f, Color = _particleColor * 0.6f, Scale = 1f });
+            particleStates.Add(new ParticleState() { StartTime = 400f, Color = _particleColor * 0.3f, Scale = 1f });
+            particleStates.Add(new ParticleState() { StartTime = 500f, Color = _particleColor * 0.2f, Scale = 1f });
 
 
             _particleEmiter = new ParticleEmiter("particles/spark.png", particleStates) { ParticleMaxTime = 500f, MillisecondsToEmit = 8f, OpeningAngle = 20f, ParticleSpeed = 1f };
@@ -68,13 +71,14 @@ namespace DefendUranus.Entities
                 if ( _remainingLifetime < 0f )
                 {
                     _owner.Level.RemoveEntity(this);
+                    _owner.Level.AddEntity(new Explosion(this.Position,1, _particleColor));
                 }
             }
 
             base.Update(gameTime);
         }
 
-        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, Color? colorOverride = null)
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, Color? colorOverride = null, Vector2? scale = null)
         {
             _particleEmiter.Draw(gameTime, spriteBatch);
             base.Draw(gameTime, spriteBatch, colorOverride);

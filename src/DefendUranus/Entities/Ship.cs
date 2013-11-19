@@ -118,7 +118,7 @@ namespace DefendUranus.Entities
             particleStates.Add(new ParticleState() { StartTime = 200f, Color = _particleColor * 0.8f, Scale = 1f });
             particleStates.Add(new ParticleState() { StartTime = 300f, Color = _particleColor * 0.6f, Scale = 1f });
             particleStates.Add(new ParticleState() { StartTime = 400f, Color = _particleColor * 0.3f, Scale = 1f });
-            particleStates.Add(new ParticleState() { StartTime = 500f, Color = _particleColor * 0.2f, Scale = 11f });
+            particleStates.Add(new ParticleState() { StartTime = 500f, Color = _particleColor * 0.2f, Scale = 1f });
 
             _thrustParticleEmiter = new ParticleEmiter("particles/spark.png", particleStates) { ParticleMaxTime = 500f, MillisecondsToEmit = 8f, OpeningAngle = 20f, ParticleSpeed = 1f };
             _rotateParticleEmiter = new ParticleEmiter("particles/spark.png", particleStates) { ParticleMaxTime = 250f, MillisecondsToEmit = 8f, OpeningAngle = 20f, ParticleSpeed = 2f };
@@ -251,7 +251,7 @@ namespace DefendUranus.Entities
         #endregion
 
         #region Draw
-        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, Color? colorOverride = null)
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, Color? colorOverride = null, Vector2? scale = null)
         {
             _rotateParticleEmiter.Draw(gameTime, spriteBatch);
             _thrustParticleEmiter.Draw(gameTime, spriteBatch);
