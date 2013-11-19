@@ -221,7 +221,7 @@ namespace DefendUranus.Activities
             var upEnt = _entities.ToList();
 
             //Updates non physics
-            foreach( Entity e in _nonPhysicsEntities ) e.Update(gameTime);
+            for (int k = 0; k < _nonPhysicsEntities.Count; k++) _nonPhysicsEntities[k].Update(gameTime);
 
             for (int i = 0; i < upEnt.Count; i++)
             {
@@ -463,7 +463,7 @@ namespace DefendUranus.Activities
             var screenSizeRatio = Math.Min((area.Width + 16) / Math.Abs(directionFromCamera.X),
                                            (area.Height + 16) / Math.Abs(directionFromCamera.Y));
 
-            AddEntity(new GamePlayEntity(this, "Sprites/Asteroid")
+            AddEntity(new Asteroid(this)
             {
                 Mass = AsteroidMass,
                 MaxSpeed = AsteroidMaxSpeed,

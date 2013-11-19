@@ -61,6 +61,7 @@
     <Compile Include="Activities\HowToPlay.cs" />
     <Compile Include="Activities\StartScreen.cs" />
     <Compile Include="Components\PlayerGUI.cs" />
+    <Compile Include="Entities\Asteroid.cs" />
     <Compile Include="Entities\AutoRegenContainer.cs" />
     <Compile Include="Entities\Container.cs" />
     <Compile Include="Entities\Explosion.cs" />

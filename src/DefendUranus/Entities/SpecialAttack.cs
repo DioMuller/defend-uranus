@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Lifetime;
 using System.Text;
+using DefendUranus.Events;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameLib.Core.Extensions;
@@ -20,8 +21,10 @@ namespace DefendUranus.Entities
         protected Ship _owner;
         protected float _lifetime;
         protected Color _particleColor;
+        private float _vulnerabilityTime;
         #endregion Attributes
 
+        #region Constructor
         public SpecialAttack(GamePlay level, string texturePath, Color particleColor, Ship owner, float lifetime)
             : base(level)
         {
@@ -34,6 +37,8 @@ namespace DefendUranus.Entities
             MaxSpeed = 12;
 
             _owner = owner;
+
+            _vulnerabilityTime = 300f;
 
             _lifetime = lifetime;
             _remainingLifetime = _lifetime;
@@ -51,7 +56,21 @@ namespace DefendUranus.Entities
 
             _particleEmiter = new ParticleEmiter("particles/spark.png", particleStates) { ParticleMaxTime = 500f, MillisecondsToEmit = 8f, OpeningAngle = 20f, ParticleSpeed = 1f };
             #endregion Particle
+
+            Collided += OnCollided;
         }
+        #endregion Constructor
+
+        #region Events
+        private void OnCollided(object sender, EntityCollisionEventArgs e)
+        {
+            //TODO: Why the special attack hits the parent first, but only sometimes?
+            if (_vulnerabilityTime < 0f)
+            {                
+                Destroy();
+            }
+        }
+        #endregion Events
 
         #region Game Cycle
 
@@ -64,14 +83,15 @@ namespace DefendUranus.Entities
             _particleEmiter.Update(gameTime);
             #endregion Particles
 
+            if (_vulnerabilityTime > 0f) _vulnerabilityTime -= gameTime.ElapsedGameTime.Milliseconds;
+
             if ( _lifetime > 0f)
             {
                 _remainingLifetime -= gameTime.ElapsedGameTime.Milliseconds;
 
                 if ( _remainingLifetime < 0f )
                 {
-                    _owner.Level.RemoveEntity(this);
-                    _owner.Level.AddEntity(new Explosion(this.Position,1, _particleColor));
+                    Destroy();
                 }
             }
 

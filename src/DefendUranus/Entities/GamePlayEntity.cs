@@ -50,6 +50,11 @@ namespace DefendUranus.Entities
                 Size = new Vector2(Sprite.FrameSize.X, Sprite.FrameSize.Y);
             }
         }
+
+        /// <summary>
+        /// Explosion Color.
+        /// </summary>
+        public Color ExplosionColor { get; set; }
         #endregion
 
         #region Constructors
@@ -87,6 +92,12 @@ namespace DefendUranus.Entities
         public float AbsoluteSpeed()
         {
             return (Momentum + AbsoluteMomentum).Length();
+        }
+
+        public void Destroy()
+        {
+            Level.RemoveEntity(this);
+            Level.AddEntity(new Explosion(this.Position, Level, 1, 1000f, Color));
         }
         #endregion
 
