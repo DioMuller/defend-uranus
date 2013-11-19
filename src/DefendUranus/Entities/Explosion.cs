@@ -12,6 +12,8 @@ namespace DefendUranus.Entities
 {
     class Explosion : Entity
     {
+        #region Attributes
+
         private int _growth;
         private float _size;
         private float _scale;
@@ -20,9 +22,14 @@ namespace DefendUranus.Entities
         private float _remainingTime;
         private GamePlay _level;
         private float _transparency;
-        private List<PhysicsEntity> _alreadyHit; 
+        private List<GamePlayEntity> _alreadyHit;
 
-        public Explosion(Vector2 position, GamePlay level, int growth, float lifetime, Color color) : base()
+        #endregion Attributes
+
+        #region Constructor
+
+        public Explosion(Vector2 position, GamePlay level, int growth, float lifetime, Color color)
+            : base()
         {
             Position = position;
 
@@ -34,7 +41,7 @@ namespace DefendUranus.Entities
             _remainingTime = lifetime;
             _level = level;
             _transparency = 1f;
-            _alreadyHit = new List<PhysicsEntity>();
+            _alreadyHit = new List<GamePlayEntity>();
 
             #region Sprites
             Sprite = new Sprite("Sprites/Explosion", default(Point), 0);
@@ -44,62 +51,107 @@ namespace DefendUranus.Entities
             #endregion Sprites
         }
 
+        #endregion Constructor
+
+        #region Game Loop
+
+        #region Update
+
         public override void Update(GameTime gameTime)
         {
-            Position = new Vector2(Position.X - _growth, Position.Y - _growth);
-            _size += (_growth * 2);
-            _scale = (float) _size / 32f;
+            if (ExplosionFinished(gameTime))
+                return;
 
-            #region Lifetime control
-            if (_lifetime > 0f )
+            UpdateSize();
+
+            DamageNearbyEntities();
+
+            base.Update(gameTime);
+        }
+
+        /// <summary>
+        /// Update the explosion life-time.
+        /// </summary>
+        /// <param name="gameTime">Current game time.</param>
+        /// <returns>True if the explosion finished.</returns>
+        bool ExplosionFinished(GameTime gameTime)
+        {
+            if (_lifetime > 0f)
             {
                 _remainingTime -= gameTime.ElapsedGameTime.Milliseconds;
 
-                _transparency = _remainingTime/_lifetime;
+                _transparency = _remainingTime / _lifetime;
 
                 if (_remainingTime < 0f)
                 {
                     _level.RemoveEntity(this);
+                    return true;
                 }
             }
-            #endregion Lifetime control
 
-            #region Damage
-            IEnumerable<PhysicsEntity> collided =
-                _level.Entities.Where((e => e.RotatedCollisionArea.Intersects(this.RotatedCollisionArea)));
-
-            foreach (PhysicsEntity entity in collided)
-            {
-                if (!_alreadyHit.Contains(entity))
-                {
-                    if (entity is Ship)
-                    {
-                        Ship ship = entity as Ship;
-                        ship.Health.Quantity -= Convert.ToInt32(10f*_transparency);
-                    }
-                    else
-                    {
-                        if (entity is GamePlayEntity)
-                        {
-                            (entity as GamePlayEntity).Destroy();
-                        }
-                        else
-                        {
-                            _level.RemoveEntity(entity);
-                        }
-                    }
-
-                    _alreadyHit.Add(entity);
-                }
-            }
-            #endregion Damage
-
-            base.Update(gameTime);
+            return false;
         }
+
+        /// <summary>
+        /// Increases the explosion size with time.
+        /// </summary>
+        void UpdateSize()
+        {
+            Position = new Vector2(Position.X - _growth, Position.Y - _growth);
+            _size += (_growth * 2);
+            _scale = (float)_size / 32f;
+        }
+
+        /// <summary>
+        /// Damage all entities touching the explosion.
+        /// </summary>
+        void DamageNearbyEntities()
+        {
+            var collided = _level.Entities.Where(InCollisionArea)
+                                          .Distinct()
+                                          .Except(_alreadyHit)
+                                          .ToList();
+
+            foreach (var entity in collided)
+            {
+                if (entity.Health != null)
+                {
+                    entity.Health.Quantity -= Convert.ToInt32(10f * _transparency);
+                }
+                else
+                {
+                    entity.Destroy();
+                }
+            }
+
+            _alreadyHit.AddRange(collided);
+        }
+
+        #endregion Update
+
+        #region Draw
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, Color? colorOverride = null, Vector2? scale = null)
         {
             base.Draw(gameTime, spriteBatch, _color * _transparency, new Vector2(_scale, _scale));
         }
+
+        #endregion Draw
+
+        #endregion Game Loop
+
+        #region Public
+
+        /// <summary>
+        /// Checks if a specified entity is inside the explosion range.
+        /// </summary>
+        /// <param name="entity">Entity to be tested.</param>
+        /// <returns>True if the entity is in the explosion.</returns>
+        public bool InCollisionArea(GamePlayEntity entity)
+        {
+            return entity.RotatedCollisionArea.Intersects(this.RotatedCollisionArea);
+        }
+
+        #endregion Public
     }
 }
