@@ -9,8 +9,19 @@ namespace DefendUranus.Entities
 {
     class Asteroid : GamePlayEntity
     {
-        public Asteroid(GamePlay level) : base(level, "Sprites/Asteroid")
+        #region Contants
+        new public const int Mass = 5;
+        new public const int MaxSpeed = 10;
+        new public const int MaxRotationSpeed = 2;
+        #endregion
+
+        public Asteroid(GamePlay level)
+            : base(level, "Sprites/Asteroid")
         {
+            base.Mass = Asteroid.Mass;
+            base.MaxSpeed = Asteroid.MaxSpeed;
+            base.MaxRotationSpeed = Asteroid.MaxRotationSpeed;
+
             Collided += OnCollided;
         }
 

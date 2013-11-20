@@ -451,11 +451,6 @@ namespace DefendUranus.Activities
         /// </summary>
         void SpawnAsteroid()
         {
-            const int AsteroidMass = 5;
-            const int AsteroidMinSpeed = 1;
-            const int AsteroidMaxSpeed = 10;
-            const int AsteroidMaxRotationSpeed = 2;
-
             var camera = GetCamera();
             var area = camera.GetArea(GraphicsDevice.Viewport);
 
@@ -465,12 +460,9 @@ namespace DefendUranus.Activities
 
             AddEntity(new Asteroid(this)
             {
-                Mass = AsteroidMass,
-                MaxSpeed = AsteroidMaxSpeed,
-                MaxRotationSpeed = AsteroidMaxRotationSpeed,
                 Position = camera.Position + directionFromCamera * screenSizeRatio,
-                Momentum = -directionFromCamera * RandomNumberGenerator.Next(AsteroidMinSpeed, AsteroidMaxSpeed),
-                AngularMomentum = RandomNumberGenerator.Next(-AsteroidMaxRotationSpeed, AsteroidMaxRotationSpeed)
+                Momentum = -directionFromCamera * RandomNumberGenerator.Next(max: Asteroid.MaxSpeed),
+                AngularMomentum = RandomNumberGenerator.Next(-Asteroid.MaxRotationSpeed, Asteroid.MaxRotationSpeed)
             });
         }
 
