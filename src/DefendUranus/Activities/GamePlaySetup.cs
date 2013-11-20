@@ -388,7 +388,7 @@ namespace DefendUranus.Activities
         async static Task Invisibility(Ship owner)
         {
             owner.Visible = false;
-            await owner.Level.Delay(TimeSpan.FromSeconds(6));
+            await owner.UpdateContext.Delay(TimeSpan.FromSeconds(6));
             owner.Visible = true;
         }
 

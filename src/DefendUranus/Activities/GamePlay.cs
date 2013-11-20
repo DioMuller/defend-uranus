@@ -229,7 +229,7 @@ namespace DefendUranus.Activities
                 if (!IsValidEntity(camera, ent))
                     continue;
 
-                ent.Update(gameTime);
+                ent.UpdateContext.RunLoop(gameTime);
 
                 for (int j = i + 1; j < upEnt.Count; j++)
                 {

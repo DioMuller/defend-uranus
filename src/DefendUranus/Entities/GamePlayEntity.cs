@@ -1,6 +1,7 @@
 ﻿using DefendUranus.Activities;
 using DefendUranus.Events;
 using Microsoft.Xna.Framework;
+using MonoGameLib.Activities;
 using MonoGameLib.Core.Sprites;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace DefendUranus.Entities
     {
         #region Events
         public event EntityCollisionEventHandler Collided;
+        public SyncContext UpdateContext;
         #endregion
 
         #region Attributes
@@ -62,6 +64,8 @@ namespace DefendUranus.Entities
         public GamePlayEntity(GamePlay level, string texturePath)
             : base(texturePath)
         {
+            UpdateContext = new SyncContext(Update);
+
             Level = level;
             if(texturePath != null)
                 Size = base.Size;

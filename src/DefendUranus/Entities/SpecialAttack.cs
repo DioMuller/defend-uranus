@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Lifetime;
 using System.Text;
+using System.Threading.Tasks;
 using DefendUranus.Events;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -17,9 +18,7 @@ namespace DefendUranus.Entities
     {
         #region Attributes
         private ParticleEmiter _particleEmiter;
-        private float _remainingLifetime;
         protected Ship _owner;
-        protected float _lifetime;
         protected Color _particleColor;
         private float _vulnerabilityTime;
         #endregion Attributes
@@ -40,9 +39,6 @@ namespace DefendUranus.Entities
 
             _vulnerabilityTime = 300f;
 
-            _lifetime = lifetime;
-            _remainingLifetime = _lifetime;
-
             #region Particle
             _particleColor = particleColor;
 
@@ -53,11 +49,12 @@ namespace DefendUranus.Entities
             particleStates.Add(new ParticleState() { StartTime = 400f, Color = _particleColor * 0.3f, Scale = 1f });
             particleStates.Add(new ParticleState() { StartTime = 500f, Color = _particleColor * 0.2f, Scale = 1f });
 
-
             _particleEmiter = new ParticleEmiter("particles/spark.png", particleStates) { ParticleMaxTime = 500f, MillisecondsToEmit = 8f, OpeningAngle = 20f, ParticleSpeed = 1f };
             #endregion Particle
 
             Collided += OnCollided;
+            using(UpdateContext.Activate())
+                AutoDestroy(lifetime);
         }
         #endregion Constructor
 
@@ -83,17 +80,8 @@ namespace DefendUranus.Entities
             _particleEmiter.Update(gameTime);
             #endregion Particles
 
-            if (_vulnerabilityTime > 0f) _vulnerabilityTime -= gameTime.ElapsedGameTime.Milliseconds;
-
-            if ( _lifetime > 0f)
-            {
-                _remainingLifetime -= gameTime.ElapsedGameTime.Milliseconds;
-
-                if ( _remainingLifetime < 0f )
-                {
-                    Destroy();
-                }
-            }
+            if (_vulnerabilityTime > 0f)
+                _vulnerabilityTime -= gameTime.ElapsedGameTime.Milliseconds;
 
             base.Update(gameTime);
         }
@@ -105,5 +93,13 @@ namespace DefendUranus.Entities
         }
 
         #endregion Game Cycle
+
+        #region Private Methods
+        async private void AutoDestroy(float lifetime)
+        {
+            await UpdateContext.Delay(TimeSpan.FromMilliseconds(lifetime));
+            Destroy();
+        }
+        #endregion
     }
 }
