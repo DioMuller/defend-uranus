@@ -16,7 +16,7 @@ namespace DefendUranus.Entities
     class Ship : GamePlayEntity
     {
         #region Nested
-        public delegate SpecialAttack SpecialAttackCreator(Ship owner);
+        public delegate Task SpecialAttackMethod(Ship owner);
         #endregion
 
         #region Constants
@@ -86,9 +86,9 @@ namespace DefendUranus.Entities
         public AsyncOperation SpecialWeapon { get; set; }
 
         /// <summary>
-        /// The method that this ship will use to create its special attack.
+        /// The method that this ship will use as special attack.
         /// </summary>
-        public SpecialAttackCreator SpecialAttack { get; set; }
+        public SpecialAttackMethod SpecialAttack { get; set; }
         #endregion
 
         #region Constructors
@@ -136,7 +136,7 @@ namespace DefendUranus.Entities
             Mass = description.Mass;
             MaxSpeed = description.MaxSpeed;
             RotationStabilizer = description.RotationStabilizer;
-            SpecialAttack = description.SpecialAttack.Creator;
+            SpecialAttack = description.SpecialAttack.Special;
 
             Fuel = new AutoRegenContainer((int)description.FuelDuration.TotalMilliseconds, FuelRegenTime)
             {
@@ -303,8 +303,9 @@ namespace DefendUranus.Entities
 
             SpecialWeaponAmmo.Quantity--;
             SoundManager.PlaySound("Special03");
-            DeployAttack(SpecialAttack(this));
-            await Level.Delay(SpecialWeaponDelay);
+            await TaskEx.WhenAll(
+                SpecialAttack(this),
+                Level.Delay(SpecialWeaponDelay));
             return true;
         }
         #endregion

@@ -15,10 +15,10 @@ namespace DefendUranus.Entities
     class ShipDescription
     {
         #region Nested
-        public class Special
+        public class SpecialAttackDescription
         {
             public string Name { get; set; }
-            public Ship.SpecialAttackCreator Creator { get; set; }
+            public Ship.SpecialAttackMethod Special { get; set; }
         }
         #endregion
 
@@ -51,7 +51,7 @@ namespace DefendUranus.Entities
         /// <summary>
         /// The special attack that the ship will use.
         /// </summary>
-        public Special SpecialAttack { get; private set; }
+        public SpecialAttackDescription SpecialAttack { get; private set; }
 
         /// <summary>
         /// How long does the fuel takes to empty, when on full power.
@@ -65,7 +65,7 @@ namespace DefendUranus.Entities
         #endregion
 
         #region Constructors
-        public ShipDescription(ContentManager content, string texturePath, string name, Special specialAttack, float mass, float maxSpeed, TimeSpan fuel)
+        public ShipDescription(ContentManager content, string texturePath, string name, SpecialAttackDescription specialAttack, float mass, float maxSpeed, TimeSpan fuel)
         {
             Texture = content.Load<Texture2D>(texturePath);
             TexturePath = texturePath;

@@ -363,25 +363,51 @@ namespace DefendUranus.Activities
             yield return new ShipDescription(Content, "Sprites/Meteoroid", "Meteoroid Alienform", SpecialAttack("Meteoroid Alienform"), mass: 3, maxSpeed: 30, fuel: TimeSpan.FromSeconds(4)) { ParticleColor = Color.Green }; ;
         }
 
-        static ShipDescription.Special SpecialAttack(string name)
+        static ShipDescription.SpecialAttackDescription SpecialAttack(string name)
         {
-            var specialCreators = new Dictionary<string, Ship.SpecialAttackCreator>
+            var specialCreators = new Dictionary<string, Ship.SpecialAttackMethod>
             {
-                { "Pursuiter Missile", ship => new PursuiterMissile(ship, 5000f) },
-                { "Wanderer Probe", ship => new WandererProbe(ship, 15000f) },
-                { "Fleeing Fake", ship => new FleeingFake(ship, 7500f) },
-                { "Meteoroid Alienform", ship => new MeteoroidAlienform(ship, 5000f) },
+                { "Pursuiter Missile", DeployPursuiterMissile },
+                { "Wanderer Probe", DeployWandererProbe },
+                { "Fleeing Fake", DeployFleeingFake },
+                { "Meteoroid Alienform", DeployMeteoroidAlienform },
             };
 
             if (!specialCreators.ContainsKey(name))
                 throw new NotImplementedException("Special attack \"" + name + "\" could not be found.");
 
-            return new ShipDescription.Special
+            return new ShipDescription.SpecialAttackDescription
             {
                 Name = name,
-                Creator = specialCreators[name]
+                Special = specialCreators[name]
             };
         }
+
+        #region SpecialAttacks
+        static Task DeployPursuiterMissile(Ship owner)
+        {
+            owner.DeployAttack(new PursuiterMissile(owner, 5000f));
+            return TaskEx.FromResult(true);
+        }
+
+        static Task DeployWandererProbe(Ship owner)
+        {
+            owner.DeployAttack(new WandererProbe(owner, 15000f));
+            return TaskEx.FromResult(true);
+        }
+
+        static Task DeployMeteoroidAlienform(Ship owner)
+        {
+            owner.DeployAttack(new MeteoroidAlienform(owner, 5000f));
+            return TaskEx.FromResult(true);
+        }
+
+        static Task DeployFleeingFake(Ship owner)
+        {
+            owner.DeployAttack(new FleeingFake(owner, 7500f));
+            return TaskEx.FromResult(true);
+        }
+        #endregion
         #endregion
         #endregion
     }
