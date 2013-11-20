@@ -34,11 +34,13 @@ namespace DefendUranus.Components
             Health = new ProgressBar("Health", font);
             Fuel = new ProgressBar("Fuel", font);
             Ammo = new ProgressBar("Ammo", font);
+            Special = new ProgressBar("Special", font);
 
             Children.Add(NameLabel);
             Children.Add(Health);
             Children.Add(Fuel);
             Children.Add(Ammo);
+            Children.Add(Special);
 
             var pSize = new Point(size.X, Math.Min((size.Y - itemMargin * Children.Count) / Children.Count, maxItemHeight));
             for (int i = 0; i < Children.Count; i++)
@@ -55,6 +57,8 @@ namespace DefendUranus.Components
         public ProgressBar Fuel { get; set; }
         public ProgressBar Ammo { get; set; }
 
+        public ProgressBar Special { get; set; }
+
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             base.Draw(gameTime, spriteBatch);
@@ -62,6 +66,9 @@ namespace DefendUranus.Components
             UpdateProgress(Health, Ship.Health);
             UpdateProgress(Fuel, Ship.Fuel);
             UpdateProgress(Ammo, Ship.MainWeaponAmmo);
+            UpdateProgress(Special, Ship.SpecialWeaponAmmo);
+
+            Special.Text = "SP: " + Ship.SpecialWeaponAmmo.Quantity + "/" + Ship.SpecialWeaponAmmo.Maximum;
 
             foreach (var it in Children)
                 it.Draw(gameTime, spriteBatch);
