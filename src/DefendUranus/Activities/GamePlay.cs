@@ -87,7 +87,7 @@ namespace DefendUranus.Activities
         readonly AsyncOperation _spawnAsteroids;
 
         readonly List<GamePlayEntity> _entities;
-        private readonly List<Entity> _nonPhysicsEntities; 
+        readonly List<Entity> _nonPhysicsEntities;
         readonly List<Ship> _ships;
 
         GameInput _gameInput;
@@ -221,7 +221,7 @@ namespace DefendUranus.Activities
             var upEnt = _entities.ToList();
 
             //Updates non physics
-            for (int k = 0; k < _nonPhysicsEntities.Count; k++) _nonPhysicsEntities[k].Update(gameTime);
+            _nonPhysicsEntities.ForEach(e => e.Update(gameTime));
 
             for (int i = 0; i < upEnt.Count; i++)
             {
@@ -334,11 +334,9 @@ namespace DefendUranus.Activities
         {
             SpriteBatch.Begin(camera, GraphicsDevice.Viewport);
 
-            //Updates non physics
-            foreach (Entity e in _nonPhysicsEntities) e.Draw(gameTime, SpriteBatch);
-
-            foreach (var ent in _entities.ToList())
+            foreach (var ent in _entities.Concat(_nonPhysicsEntities))
                 ent.Draw(gameTime, SpriteBatch, ent.Color);
+
             SpriteBatch.End();
         }
 
