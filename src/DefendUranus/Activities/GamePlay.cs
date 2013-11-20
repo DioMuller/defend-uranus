@@ -439,7 +439,7 @@ namespace DefendUranus.Activities
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                await Delay(SpawnAsteroidsDelay, cancellationToken);
+                await UpdateContext.Delay(SpawnAsteroidsDelay, cancellationToken);
                 SpawnAsteroid();
             }
         }

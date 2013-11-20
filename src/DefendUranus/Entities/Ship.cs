@@ -302,7 +302,7 @@ namespace DefendUranus.Entities
             SoundManager.PlaySound("Shoot01");
             Level.AddEntity(laser);
 
-            await Level.Delay(MainWeaponDelay);
+            await Level.UpdateContext.Delay(MainWeaponDelay);
             return true;
         }
 
@@ -315,7 +315,7 @@ namespace DefendUranus.Entities
             SoundManager.PlaySound("Special03");
             await TaskEx.WhenAll(
                 SpecialAttack(this),
-                Level.Delay(SpecialWeaponDelay));
+                Level.UpdateContext.Delay(SpecialWeaponDelay));
             return true;
         }
         #endregion

@@ -23,9 +23,6 @@ namespace DefendUranus.Activities
         #region Attributes
         float _screenOpacity = 1;
         CancellationTokenSource _fadeCancellation;
-
-        TaskCompletionSource<GameTime> _syncDraw, _syncUpdate;
-        int _waitingDraw, _waitingUpdate;
         #endregion
 
         #region Properties
@@ -104,87 +101,6 @@ namespace DefendUranus.Activities
         #region Game Loop
         #endregion
 
-        #region Async
-        /// <summary>
-        /// Creates a task that will complete after a time delay.
-        /// </summary>
-        /// <param name="dueTime">The time span to wait before completing the returned task.</param>
-        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
-        public async Task<GameTime> Delay(TimeSpan dueTime, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            TimeSpan totalGameTime;
-            TimeSpan elapsed = TimeSpan.Zero;
-
-            do
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                var gt = await WaitUpdate();
-                elapsed += gt.ElapsedGameTime;
-                totalGameTime = gt.TotalGameTime;
-            } while(elapsed < dueTime);
-
-            return new GameTime(totalGameTime, elapsed);
-        }
-        #endregion
-
-        #region Synchronization
-        /// <summary>
-        /// Wait asynchronously for the next Draw.
-        /// </summary>
-        /// <returns>A task that completes on PostDraw.</returns>
-        public async Task<GameTime> WaitDraw()
-        {
-            if (_waitingDraw++ == 0)
-                PostDraw += NotifyDrawCompleted;
-
-            if (_syncDraw == null)
-                _syncDraw = new TaskCompletionSource<GameTime>();
-            var res = await _syncDraw.Task;
-
-            if (--_waitingDraw == 0)
-                PostDraw -= NotifyDrawCompleted;
-
-            return res;
-        }
-
-        /// <summary>
-        /// Wait asynchronously for the next Update.
-        /// </summary>
-        /// <returns>A task that completes on PostUpdate.</returns>
-        public async Task<GameTime> WaitUpdate()
-        {
-            if (_waitingUpdate++ == 0)
-                PostUpdate += NotifyUpdateCompleted;
-
-            if (_syncUpdate == null)
-                _syncUpdate = new TaskCompletionSource<GameTime>();
-            var res = await _syncUpdate.Task;
-
-            if (--_waitingUpdate == 0)
-                PostUpdate -= NotifyUpdateCompleted;
-
-            return res;
-        }
-
-        void NotifyUpdateCompleted(object sender, GameLoopEventArgs e)
-        {
-            if (_syncUpdate != null)
-            {
-                _syncUpdate.TrySetResult(e.GameTime);
-                _syncUpdate = null;
-            }
-        }
-
-        void NotifyDrawCompleted(object sender, GameLoopEventArgs e)
-        {
-            if (_syncDraw != null)
-            {
-                _syncDraw.TrySetResult(e.GameTime);
-                _syncDraw = null;
-            }
-        }
-        #endregion
-
         #region Animations
         public async Task FloatAnimation(int duration, float startValue, float endValue, Action<float> valueStep, TweeningFunction easingFunction = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -204,7 +120,7 @@ namespace DefendUranus.Activities
             do
             {
                 updateValue(curDuration);
-                var gt = await WaitDraw();
+                var gt = await DrawContext.WaitNextLoop();
                 curDuration += (int)gt.ElapsedGameTime.TotalMilliseconds;
             } while (curDuration < duration);
             updateValue(curDuration);
@@ -217,14 +133,14 @@ namespace DefendUranus.Activities
             if (_fadeCancellation != null)
                 _fadeCancellation.Cancel();
             else
-                PostDraw += FadeScreen;
+                DrawContext.PostLoop += FadeScreen;
 
             _fadeCancellation = new CancellationTokenSource();
             var duration = (int)(Math.Abs(_screenOpacity - textureDesiredOpacity) * completeDuration);
             if (_screenOpacity != textureDesiredOpacity)
                 await FloatAnimation(duration, _screenOpacity, textureDesiredOpacity, v => _screenOpacity = v, cancellationToken: _fadeCancellation.Token);
 
-            PostDraw -= FadeScreen;
+            DrawContext.PostLoop -= FadeScreen;
             _fadeCancellation = null;
         }
 
