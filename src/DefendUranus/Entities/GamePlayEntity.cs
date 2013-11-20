@@ -98,7 +98,7 @@ namespace DefendUranus.Entities
             return (Momentum + AbsoluteMomentum).Length();
         }
 
-        public void Destroy()
+        public virtual void Destroy()
         {
             Level.RemoveEntity(this);
             Level.AddEntity(new Explosion(this.Position, Level, 1, 1000f, Color));

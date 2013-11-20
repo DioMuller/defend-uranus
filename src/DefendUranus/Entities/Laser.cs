@@ -48,5 +48,10 @@ namespace DefendUranus.Entities
 
             base.Update(gameTime);
         }
+
+        public override void Destroy()
+        {
+            //DO NOTHING
+        }
     }
 }
