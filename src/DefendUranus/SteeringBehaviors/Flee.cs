@@ -25,6 +25,9 @@ namespace DefendUranus.SteeringBehaviors
         /// <returns>Movement vector</returns>
         public override Vector2 Calculate(GameTime gameTime)
         {
+            if (Target == null)
+                return Vector2.Zero;
+
             Vector2 desiredVelocity = Parent.Position - Target.Position;
             float distance = desiredVelocity.Length();
 
