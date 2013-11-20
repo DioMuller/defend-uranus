@@ -220,6 +220,12 @@
     <Content Include="Content\Sprites\Avenger.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\Sprites\Chameleon-Invisible.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Sprites\Chameleon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Sprites\Explorer-WandererProbe.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
