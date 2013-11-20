@@ -224,6 +224,8 @@ namespace DefendUranus.Entities
         #region Update
         public override void Update(GameTime gameTime)
         {
+            const float InvisibleParticleIntensity = 0.3f;
+
             Fuel.Regenerate = _rotating == 0 && _accelerating == 0;
             Fuel.Update(gameTime);
             MainWeaponAmmo.Update(gameTime);
@@ -232,18 +234,26 @@ namespace DefendUranus.Entities
             #region Particles
             _thrustParticleEmiter.Enabled = _accelerating != 0;
             if (_thrustParticleEmiter.Enabled)
+            {
                 _thrustParticleEmiter.Intensity = Math.Abs(_accelerating);
+                if (!Visible)
+                    _thrustParticleEmiter.Intensity *= InvisibleParticleIntensity;
+            }
             _thrustParticleEmiter.Position = this.Position;
-            _thrustParticleEmiter.Direction = new Vector2(0, _accelerating > 0? 1 : -1).RotateRadians(Rotation);
-
+            _thrustParticleEmiter.Direction = new Vector2(0, _accelerating > 0 ? 1 : -1).RotateRadians(Rotation);
             _thrustParticleEmiter.Update(gameTime);
 
             _rotateParticleEmiter.Enabled = _rotating != 0;
             if (_rotateParticleEmiter.Enabled)
+            {
                 _rotateParticleEmiter.Intensity = Math.Abs(_rotating);
+                if (!Visible)
+                    _rotateParticleEmiter.Intensity *= InvisibleParticleIntensity;
+            }
             _rotateParticleEmiter.Position = this.Position + new Vector2(0, -8).RotateRadians(Rotation);
-            _rotateParticleEmiter.Direction = new Vector2(_rotating < 0? 1 : -1, 0).RotateRadians(Rotation);
+            _rotateParticleEmiter.Direction = new Vector2(_rotating < 0 ? 1 : -1, 0).RotateRadians(Rotation);
             _rotateParticleEmiter.Update(gameTime);
+
             #endregion Particles
 
             base.Update(gameTime);

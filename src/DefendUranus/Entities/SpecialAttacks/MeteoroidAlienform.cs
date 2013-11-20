@@ -32,7 +32,7 @@ namespace DefendUranus.Entities.SpecialAttacks
         {
             #region Selects target
              var target = _owner.Level.Entities.OfType<SpecialAttack>()
-                .Where(s => s != this)
+                .Where(s => s != this && s.Visible)
                 .OrderBy(s => (s.Position - Position).LengthSquared())
                 .FirstOrDefault();
 

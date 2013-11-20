@@ -30,10 +30,10 @@ namespace DefendUranus.Entities.SpecialAttacks
         #region Game Loop
         public override void Update(GameTime gameTime)
         {
-            if (_pursuit.Target == null)
+            if (_pursuit.Target == null || !_pursuit.Target.Visible)
             {
                 var target = _owner.Level.Entities.OfType<Ship>()
-                    .Where(s => s != _owner)
+                    .Where(s => s != _owner && s.Visible)
                     .OrderBy(s => (s.Position - Position).LengthSquared())
                     .FirstOrDefault();
 

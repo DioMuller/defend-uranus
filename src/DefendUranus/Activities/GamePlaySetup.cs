@@ -367,6 +367,7 @@ namespace DefendUranus.Activities
         {
             var specialCreators = new Dictionary<string, Ship.SpecialAttackMethod>
             {
+                { "Invisibility Cloak", Invisibility },
                 { "Pursuiter Missile", DeployPursuiterMissile },
                 { "Wanderer Probe", DeployWandererProbe },
                 { "Fleeing Fake", DeployFleeingFake },
@@ -384,6 +385,13 @@ namespace DefendUranus.Activities
         }
 
         #region SpecialAttacks
+        async static Task Invisibility(Ship owner)
+        {
+            owner.Visible = false;
+            await owner.Level.Delay(TimeSpan.FromSeconds(6));
+            owner.Visible = true;
+        }
+
         static Task DeployPursuiterMissile(Ship owner)
         {
             owner.DeployAttack(new PursuiterMissile(owner, 5000f));
