@@ -357,11 +357,11 @@ namespace DefendUranus.Activities
         IEnumerable<ShipDescription> LoadShips()
         {
             // TODO: Load ships from XML?
-            yield return new ShipDescription(Content, "Sprites/Avenger", "Earth Avenger", SpecialAttack("Pursuiter Missile"), mass: 2, maxSpeed: 20, fuel: TimeSpan.FromSeconds(2)) {ParticleColor = Color.Red};
-            yield return new ShipDescription(Content, "Sprites/Explorer", "Uranus Explorer", SpecialAttack("Wanderer Probe"), mass: 1, maxSpeed: 10, fuel: TimeSpan.FromSeconds(1.5f)) { ParticleColor = Color.CornflowerBlue };
-            yield return new ShipDescription(Content, "Sprites/Fatboy", "Big Fatboy", SpecialAttack("Fleeing Fake"), mass: 4, maxSpeed: 40, fuel: TimeSpan.FromSeconds(6)) { ParticleColor = Color.Yellow };
-            yield return new ShipDescription(Content, "Sprites/Meteoroid", "Meteoroid Alienform", SpecialAttack("Meteoroid Seeker"), mass: 3, maxSpeed: 30, fuel: TimeSpan.FromSeconds(4)) { ParticleColor = Color.Green };
-            yield return new ShipDescription(Content, "Sprites/Chameleon", "The Chameleon", SpecialAttack("Invisibility Cloak"), mass: 1, maxSpeed: 50, fuel: TimeSpan.FromSeconds(1)) { ParticleColor = Color.White };
+            yield return new ShipDescription(Content, "Sprites/Avenger", "Earth Avenger", SpecialAttack("Pursuiter Missile"), mass: 2, maxSpeed: 20, fuel: TimeSpan.FromSeconds(2), normalAmmo: 20, specialAmmo: 3) { ParticleColor = Color.Red };
+            yield return new ShipDescription(Content, "Sprites/Explorer", "Uranus Explorer", SpecialAttack("Wanderer Probe"), mass: 1, maxSpeed: 10, fuel: TimeSpan.FromSeconds(1.5f), normalAmmo: 15, specialAmmo: 5) { ParticleColor = Color.CornflowerBlue };
+            yield return new ShipDescription(Content, "Sprites/Fatboy", "Big Fatboy", SpecialAttack("Fleeing Fake"), mass: 4, maxSpeed: 40, fuel: TimeSpan.FromSeconds(6), normalAmmo: 20, specialAmmo: 3) { ParticleColor = Color.Yellow };
+            yield return new ShipDescription(Content, "Sprites/Meteoroid", "Meteoroid Alienform", SpecialAttack("Meteoroid Seeker"), mass: 3, maxSpeed: 30, fuel: TimeSpan.FromSeconds(4), normalAmmo: 25, specialAmmo: 1) { ParticleColor = Color.Green };
+            yield return new ShipDescription(Content, "Sprites/Chameleon", "The Chameleon", SpecialAttack("Invisibility Cloak"), mass: 1, maxSpeed: 50, fuel: TimeSpan.FromSeconds(1), normalAmmo: 25, specialAmmo: 2) { ParticleColor = Color.White };
         }
 
         static ShipDescription.SpecialAttackDescription SpecialAttack(string name)

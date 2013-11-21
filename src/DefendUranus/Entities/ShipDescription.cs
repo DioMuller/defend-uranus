@@ -62,15 +62,28 @@ namespace DefendUranus.Entities
         /// Propulsion particle color.
         /// </summary>
         public Color ParticleColor { get; set; }
+
+        /// <summary>
+        /// Normal ammo quantity.
+        /// </summary>
+        public int NormalAmmo { get; private set; }
+
+        /// <summary>
+        /// Special ammo quantity.
+        /// </summary>
+        public int SpecialAmmo { get; private set; }
         #endregion
 
         #region Constructors
-        public ShipDescription(ContentManager content, string texturePath, string name, SpecialAttackDescription specialAttack, float mass, float maxSpeed, TimeSpan fuel)
+        public ShipDescription(ContentManager content, string texturePath, string name, SpecialAttackDescription specialAttack, float mass, float maxSpeed, TimeSpan fuel, int normalAmmo, int specialAmmo)
         {
             Texture = content.Load<Texture2D>(texturePath);
             TexturePath = texturePath;
             Mass = mass;
             Name = name;
+
+            NormalAmmo = normalAmmo;
+            SpecialAmmo = specialAmmo;
 
             MaxSpeed = maxSpeed;
             RotationStabilizer = 0.5f;

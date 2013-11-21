@@ -97,7 +97,7 @@ namespace DefendUranus.Entities
         /// </summary>
         /// <param name="level">The level that will contain this Ship.</param>
         /// <param name="texturePath">The location of the ship's draw image.</param>
-        public Ship(GamePlay level, string texturePath, Color particleColor)
+        public Ship(GamePlay level, string texturePath, Color particleColor, int normalAmmo, int specialAmmo)
             : base(level, texturePath)
         {
             Health = new Container(20);
@@ -106,6 +106,9 @@ namespace DefendUranus.Entities
             MaxSpeed = 10;
             ThrotleForce = 40;
             Restitution = 0.5f;
+
+            MainWeaponAmmo.Maximum = normalAmmo;
+            SpecialWeaponAmmo.Maximum = specialAmmo;
 
             MainWeapon = new AsyncOperation(c => FireWeapon(MainWeaponAmmo, FireLaser, c));
             SpecialWeapon = new AsyncOperation(c => FireWeapon(SpecialWeaponAmmo, FireSpecialWeapon, c));
@@ -131,7 +134,7 @@ namespace DefendUranus.Entities
         /// <param name="level">The level that will contain this Ship.</param>
         /// <param name="description">The ship description details.</param>
         public Ship(GamePlay level, ShipDescription description)
-            : this(level, description.TexturePath, description.ParticleColor)
+            : this(level, description.TexturePath, description.ParticleColor, description.NormalAmmo, description.SpecialAmmo)
         {
             Mass = description.Mass;
             MaxSpeed = description.MaxSpeed;
