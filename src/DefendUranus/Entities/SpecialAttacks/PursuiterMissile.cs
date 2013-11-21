@@ -11,6 +11,7 @@ namespace DefendUranus.Entities.SpecialAttacks
     {
         #region Attributes
         Pursuit _pursuit;
+        private Wander _wander;
         #endregion
 
         #region Constructors
@@ -24,6 +25,16 @@ namespace DefendUranus.Entities.SpecialAttacks
 
             _pursuit = new Pursuit(this);
             SteeringBehaviors.Add(_pursuit);
+
+            // Wander, for when the target is not visible.
+            _wander = new Wander(this)
+            {
+                Jitter = 1.25f,
+                WanderDistance = 1f,
+                WanderRadius = 100f,
+            };
+
+            SteeringBehaviors.Add(_wander);
         }
         #endregion
 

@@ -21,7 +21,7 @@ namespace DefendUranus.SteeringBehaviors
         /// <returns>Movement vector</returns>
         public override Vector2 Calculate(GameTime gameTime)
         {
-            if( Target != null )
+            if (Target != null && Target.Visible)
             {
                 Vector2 desiredVelocity = Target.Position - Parent.Position;
                 desiredVelocity.Normalize();

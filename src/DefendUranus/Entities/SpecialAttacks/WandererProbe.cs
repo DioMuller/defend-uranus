@@ -26,13 +26,13 @@ namespace DefendUranus.Entities.SpecialAttacks
             _wander = new Wander(this)
             {
                 Jitter = 1.25f,
-                WanderDistance = 50f,
-                WanderRadius = 90f,
+                WanderDistance = 1f,
+                WanderRadius = 100f,
             };
 
             _seek = new Seek(this) { Target =  null };
             
-            SteeringBehaviors.Add(_seek);
+            //SteeringBehaviors.Add(_seek);
             SteeringBehaviors.Add(_wander);
         }
         #endregion
@@ -40,14 +40,14 @@ namespace DefendUranus.Entities.SpecialAttacks
         #region Game Loop
         public override void Update(GameTime gameTime)
         {
-            if (_seek.Target == null)
+            if (_seek.Target == null || !_seek.Target.Visible )
             {
                 var target = _owner.Level.Entities.OfType<PhysicsEntity>()
                     .Where(s => s != _owner && s != this)
                     .OrderBy(s => (s.Position - Position).LengthSquared())
                     .FirstOrDefault();
 
-                if ( target != null && (target.Position - Position).LengthSquared() < 5000)
+                if ( target != null && (target.Position - Position).LengthSquared() < 1600)
                 {
                     _seek.Target = target;   
                 }

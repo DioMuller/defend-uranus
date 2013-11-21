@@ -5,6 +5,7 @@ using System.Text;
 using DefendUranus.Entities;
 using Microsoft.Xna.Framework;
 using MonoGameLib.Core;
+using MonoGameLib.Core.Extensions;
 
 namespace DefendUranus.SteeringBehaviors
 {
@@ -63,7 +64,11 @@ namespace DefendUranus.SteeringBehaviors
             position += (Parent.Direction * WanderDistance);
             position += _target;
 
-            return position - Parent.Position;
+            // Normalizes the speed
+            Vector2 direction = (position - Parent.Position);
+            direction.Normalize();
+
+            return direction * Parent.MaxSpeed;
         }
         #endregion Methods
     }

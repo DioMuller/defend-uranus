@@ -361,7 +361,7 @@ namespace DefendUranus.Activities
             yield return new ShipDescription(Content, "Sprites/Explorer", "Uranus Explorer", SpecialAttack("Wanderer Probe"), mass: 1, maxSpeed: 10, fuel: TimeSpan.FromSeconds(1.5f)) { ParticleColor = Color.CornflowerBlue };
             yield return new ShipDescription(Content, "Sprites/Fatboy", "Big Fatboy", SpecialAttack("Fleeing Fake"), mass: 4, maxSpeed: 40, fuel: TimeSpan.FromSeconds(6)) { ParticleColor = Color.Yellow };
             yield return new ShipDescription(Content, "Sprites/Meteoroid", "Meteoroid Alienform", SpecialAttack("Meteoroid Seeker"), mass: 3, maxSpeed: 30, fuel: TimeSpan.FromSeconds(4)) { ParticleColor = Color.Green };
-            yield return new ShipDescription(Content, "Sprites/Chameleon", "The Chameleon", SpecialAttack("Invisibility Cloak"), mass: 1, maxSpeed: 50, fuel: TimeSpan.FromSeconds(2)) { ParticleColor = Color.Lime };
+            yield return new ShipDescription(Content, "Sprites/Chameleon", "The Chameleon", SpecialAttack("Invisibility Cloak"), mass: 1, maxSpeed: 50, fuel: TimeSpan.FromSeconds(1)) { ParticleColor = Color.White };
         }
 
         static ShipDescription.SpecialAttackDescription SpecialAttack(string name)
@@ -389,13 +389,13 @@ namespace DefendUranus.Activities
         async static Task Invisibility(Ship owner)
         {
             owner.Visible = false;
-            await owner.UpdateContext.Delay(TimeSpan.FromSeconds(6));
+            await owner.UpdateContext.Delay(TimeSpan.FromSeconds(3));
             owner.Visible = true;
         }
 
         static Task DeployPursuiterMissile(Ship owner)
         {
-            owner.DeployAttack(new PursuiterMissile(owner, 5000f));
+            owner.DeployAttack(new PursuiterMissile(owner, 7500f));
             return TaskEx.FromResult(true);
         }
 
