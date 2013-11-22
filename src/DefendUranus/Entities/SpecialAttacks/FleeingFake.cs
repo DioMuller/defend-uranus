@@ -35,12 +35,14 @@ namespace DefendUranus.Entities.SpecialAttacks
         {
             if (_flee.Target == null || !_flee.Target.Visible)
             {
-                var target = _owner.Level.Entities.OfType<Ship>()
-                    .Where(s => s != _owner && s.Visible)
+                var target = _owner.Level.Entities.OfType<SteeringEntity>()
+                    .Where(s => s != this && s.Visible)
                     .OrderBy(s => (s.Position - Position).LengthSquared())
                     .FirstOrDefault();
 
                 _flee.Target = target;
+
+                target.SteeringBehaviors.Add(new Flee(target) { Target = this, PanicDistance = 3000f});
             }
 
             base.Update(gameTime);
