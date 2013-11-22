@@ -1,6 +1,7 @@
 ﻿#region Using Statements
 using DefendUranus.Helpers;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGameLib.Core.Input;
 using System;
@@ -12,6 +13,7 @@ namespace DefendUranus.Activities
     {
         #region Attributes
         GameInput _gameInput;
+        Texture2D _background;
         #endregion
 
         #region Constructors
@@ -26,6 +28,8 @@ namespace DefendUranus.Activities
         {
             base.Activating();
             _gameInput = new GameInput();
+
+            _background = Content.Load<Texture2D>("Images/Controls");
         }
         #endregion
 
@@ -39,10 +43,13 @@ namespace DefendUranus.Activities
 
         protected override void Draw(GameTime gameTime)
         {
+            var screen = GraphicsDevice.Viewport;
+
             GraphicsDevice.Clear(Color.Black);
 
-            //SpriteBatch.Begin();
-            //SpriteBatch.End();
+            SpriteBatch.Begin();
+            SpriteBatch.Draw(_background, screen.Bounds, Color.White);
+            SpriteBatch.End();
         }
         #endregion
     }
