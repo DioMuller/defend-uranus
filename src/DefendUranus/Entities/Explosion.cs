@@ -149,6 +149,9 @@ namespace DefendUranus.Entities
         /// <returns>True if the entity is in the explosion.</returns>
         public bool InCollisionArea(GamePlayEntity entity)
         {
+            if (!entity.InteractWithEntities)
+                return false;
+
             return entity.RotatedCollisionArea.Intersects(this.RotatedCollisionArea);
         }
 
