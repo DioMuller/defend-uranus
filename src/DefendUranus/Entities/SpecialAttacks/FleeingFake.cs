@@ -33,7 +33,7 @@ namespace DefendUranus.Entities.SpecialAttacks
         #region Game Loop
         public override void Update(GameTime gameTime)
         {
-            if (_flee.Target == null || !_flee.Target.Visible)
+            if (_flee.Target == null)
             {
                 var target = _owner.Level.Entities.OfType<SteeringEntity>()
                     .Where(s => s != this && s.Visible)
