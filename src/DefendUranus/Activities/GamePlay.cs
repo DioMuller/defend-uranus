@@ -178,7 +178,7 @@ namespace DefendUranus.Activities
         protected override void Update(GameTime gameTime)
         {
             _duration += gameTime.ElapsedGameTime;
-            _gameInput.Update();
+            //_gameInput.Update();
 
             if (IsGameEnded())
                 return;
