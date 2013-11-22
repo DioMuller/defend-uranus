@@ -53,8 +53,7 @@ namespace DefendUranus.Entities
             #endregion Particle
 
             Collided += OnCollided;
-            using(UpdateContext.Activate())
-                AutoDestroy(lifetime);
+            AutoDestroy(TimeSpan.FromMilliseconds(lifetime));
         }
         #endregion Constructor
 
@@ -93,13 +92,5 @@ namespace DefendUranus.Entities
         }
 
         #endregion Game Cycle
-
-        #region Private Methods
-        async private void AutoDestroy(float lifetime)
-        {
-            await UpdateContext.Delay(TimeSpan.FromMilliseconds(lifetime));
-            Destroy();
-        }
-        #endregion
     }
 }

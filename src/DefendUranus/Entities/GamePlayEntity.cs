@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DefendUranus.Entities
 {
@@ -99,6 +100,12 @@ namespace DefendUranus.Entities
         #endregion
 
         #region Public
+        public Task AutoDestroy(TimeSpan lifetime)
+        {
+            using (UpdateContext.Activate())
+                return ContextAutoDestroy(lifetime);
+        }
+
         public float AbsoluteSpeed()
         {
             return (Momentum + AbsoluteMomentum).Length();
@@ -116,6 +123,12 @@ namespace DefendUranus.Entities
         {
             if(Collided != null)
                 Collided(this, new EntityCollisionEventArgs(this, ent, gameTime, level));
+        }
+
+        async Task ContextAutoDestroy(TimeSpan lifeTime)
+        {
+            await UpdateContext.Delay(lifeTime);
+            Destroy();
         }
         #endregion
     }
