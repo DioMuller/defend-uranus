@@ -114,7 +114,7 @@ namespace DefendUranus.Activities
             : base(game)
         {
             const int guiHMargin = 10;
-            var guiSize = new Point(100, 140);
+            var guiSize = new Point(100, 160);
 
             var p1Ship = new Ship(this, setup.Player1Selection) { Position = new Vector2(-100, 0) };
             var p2Ship = new Ship(this, setup.Player2Selection) { Position = new Vector2(100, 0) };
