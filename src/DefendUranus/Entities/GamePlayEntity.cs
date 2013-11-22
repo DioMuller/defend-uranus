@@ -34,6 +34,11 @@ namespace DefendUranus.Entities
 
         #region Properties
         /// <summary>
+        /// Tells if this entity can interact with other entities.
+        /// </summary>
+        public bool InteractWithEntities { get; set; }
+
+        /// <summary>
         /// The level in which this entity is in.
         /// </summary>
         public GamePlay Level { get; set; }
@@ -64,6 +69,7 @@ namespace DefendUranus.Entities
         public GamePlayEntity(GamePlay level, string texturePath)
             : base(texturePath)
         {
+            InteractWithEntities = true;
             UpdateContext = new SyncContext(Update);
 
             Level = level;

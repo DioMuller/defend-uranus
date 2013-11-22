@@ -231,9 +231,15 @@ namespace DefendUranus.Activities
 
                 ent.UpdateContext.RunLoop(gameTime);
 
+                if (!ent.InteractWithEntities)
+                    continue;
+
                 for (int j = i + 1; j < upEnt.Count; j++)
                 {
                     var cEnt = upEnt[j];
+                    if (!cEnt.InteractWithEntities)
+                        continue;
+
                     var dist = ent.Position - cEnt.Position;
 
                     var minDist = ent.Size.Y / 2 + cEnt.Size.Y / 2;
