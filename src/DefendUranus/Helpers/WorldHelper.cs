@@ -26,6 +26,11 @@ namespace DefendUranus.Helpers
             return value / MPP;
         }
 
+        public static float PixelsToMeters(float value)
+        {
+            return value * PPM;
+        }
+
         public static Vector2 MetersToPixels(Vector2 vector)
         {
             return vector / MPP;

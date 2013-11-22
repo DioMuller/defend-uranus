@@ -5,16 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MonoGameLib.Core.Extensions;
+using DefendUranus.Activities;
+using DefendUranus.Helpers;
 
 namespace MonoGameLib.Core.Particles
 {
-    #region Delegates
-    public delegate void OnDecayedDelegate();
-    #endregion Delegates
-
-    public class ParticleEmiter
+    class ParticleEmiter
     {
         #region Attributes
+        private GamePlay _level;
         private string _particleTexture;
         private List<Particle> _particles;
         private float _sinceLastEmision;
@@ -28,20 +27,21 @@ namespace MonoGameLib.Core.Particles
         public Vector2 Direction { get; set; }
         public float ParticleSpeed { get; set; }
         public float OpeningAngle { get; set; }
-        public float ParticleMaxTime { get; set; }
         public List<ParticleState> ParticleStates { get; protected set; }
         public bool Enabled { get; set; }
         public float DecayTime { get; set; }
         public float Intensity { get; set; }
+        public Vector2 Momentum { get; set; }
         #endregion Properties
 
         #region Delegates
-        public OnDecayedDelegate OnDecay { get; set; }
+        public event EventHandler OnDecay;
         #endregion Delegates
 
         #region Constructor
-        public ParticleEmiter(string texture, List<ParticleState> particleStates)
+        public ParticleEmiter(GamePlay level, string texture, List<ParticleState> particleStates)
         {
+            _level = level;
             Intensity = 1f;
 
             _particleTexture = texture;
@@ -81,41 +81,24 @@ namespace MonoGameLib.Core.Particles
                 {
                     float angle = (float)(_rng.NextDouble() * (2 * OpeningAngle)) - OpeningAngle;
                     _sinceLastEmision -= toEmit;
-                    _particles.Add(new Particle(_particleTexture, Position, Direction.Rotate(angle), ParticleStates) { Speed = ParticleSpeed, Opacity = Intensity });
+                    var particle = new Particle(_level, _particleTexture, Position, ParticleStates)
+                    {
+                        Opacity = Intensity,
+                        Momentum = Momentum + Direction.Rotate(angle) * WorldHelper.PixelsToMeters(ParticleSpeed)
+                    };
+                    _particles.Add(particle);
+                    _level.AddEntity(particle);
+                    particle.OnDecay += Particle_OnDecay;
                 }
-            }
-
-            foreach (Particle p in _particles)
-            {
-                p.Update(gameTime);
-            }
-
-            if (ParticleMaxTime > 0f)
-            {
-                List<Particle> toRemove = _particles.Where((p) => p.TimeAlive > ParticleMaxTime).ToList();
-
-                foreach (Particle p in toRemove)
-                {
-                    _particles.Remove(p);
-                }
-            }
-
-            if (_decaying && _particles.Count == 0 && OnDecay != null)
-            {
-                OnDecay();
             }
         }
 
-        /// <summary>
-        /// Draw the particles.
-        /// </summary>
-        /// <param name="gameTime">Current Game Time.</param>
-        /// <param name="spriteBatch">Sprite Batch.</param>
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        void Particle_OnDecay(object sender, EventArgs e)
         {
-            foreach (Particle p in _particles)
+            _particles.Remove((Particle)sender);
+            if (_decaying && _particles.Count == 0 && OnDecay != null)
             {
-                p.Draw(gameTime, spriteBatch);
+                OnDecay(this, EventArgs.Empty);
             }
         }
         #endregion Methods

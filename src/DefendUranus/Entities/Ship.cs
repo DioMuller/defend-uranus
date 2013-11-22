@@ -116,15 +116,13 @@ namespace DefendUranus.Entities
             #region Particle
             _particleColor = particleColor;
 
-            List<ParticleState> particleStates = new List<ParticleState>();
-            particleStates.Add(new ParticleState() { StartTime = 0f, Color = _particleColor, Scale = 1f });
-            particleStates.Add(new ParticleState() { StartTime = 200f, Color = _particleColor * 0.8f, Scale = 1f });
-            particleStates.Add(new ParticleState() { StartTime = 300f, Color = _particleColor * 0.6f, Scale = 1f });
-            particleStates.Add(new ParticleState() { StartTime = 400f, Color = _particleColor * 0.3f, Scale = 1f });
-            particleStates.Add(new ParticleState() { StartTime = 500f, Color = _particleColor * 0.2f, Scale = 1f });
+            List<ParticleState> particleStates = new List<ParticleState> {
+                new ParticleState { Color = _particleColor, Scale = 1f, Duration = 500f },
+                new ParticleState { Color = new Color(_particleColor * 0.2f, 0), Scale = 3f }
+            };
 
-            _thrustParticleEmiter = new ParticleEmiter("particles/spark.png", particleStates) { ParticleMaxTime = 500f, MillisecondsToEmit = 8f, OpeningAngle = 20f, ParticleSpeed = 1f };
-            _rotateParticleEmiter = new ParticleEmiter("particles/spark.png", particleStates) { ParticleMaxTime = 250f, MillisecondsToEmit = 8f, OpeningAngle = 20f, ParticleSpeed = 2f };
+            _thrustParticleEmiter = new ParticleEmiter(Level, "particles/spark.png", particleStates) { MillisecondsToEmit = 8f, OpeningAngle = 20f, ParticleSpeed = 1f };
+            _rotateParticleEmiter = new ParticleEmiter(Level, "particles/spark.png", particleStates) { MillisecondsToEmit = 8f, OpeningAngle = 10f, ParticleSpeed = 2f };
             #endregion Particle
         }
 
@@ -238,6 +236,7 @@ namespace DefendUranus.Entities
             _thrustParticleEmiter.Enabled = _accelerating != 0;
             if (_thrustParticleEmiter.Enabled)
             {
+                _thrustParticleEmiter.Momentum = Momentum;
                 _thrustParticleEmiter.Intensity = Math.Abs(_accelerating);
                 if (!Visible)
                     _thrustParticleEmiter.Intensity *= InvisibleParticleIntensity;
@@ -249,6 +248,7 @@ namespace DefendUranus.Entities
             _rotateParticleEmiter.Enabled = _rotating != 0;
             if (_rotateParticleEmiter.Enabled)
             {
+                _rotateParticleEmiter.Momentum = Momentum;
                 _rotateParticleEmiter.Intensity = Math.Abs(_rotating);
                 if (!Visible)
                     _rotateParticleEmiter.Intensity *= InvisibleParticleIntensity;
@@ -262,16 +262,6 @@ namespace DefendUranus.Entities
             base.Update(gameTime);
         }
         #endregion
-
-        #region Draw
-        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, Color? colorOverride = null, Vector2? scale = null)
-        {
-            _rotateParticleEmiter.Draw(gameTime, spriteBatch);
-            _thrustParticleEmiter.Draw(gameTime, spriteBatch);
-            base.Draw(gameTime, spriteBatch, colorOverride);
-        }
-
-        #endregion Draw
         #endregion
 
         #region Private

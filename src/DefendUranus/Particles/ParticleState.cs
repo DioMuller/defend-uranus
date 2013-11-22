@@ -8,7 +8,7 @@ namespace MonoGameLib.Core.Particles
 {
     public class ParticleState
     {
-        public float StartTime { get; set; }
+        public float Duration { get; set; }
         public Color Color { get; set; }
         public float Scale { get; set; }
     }

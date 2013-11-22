@@ -1,50 +1,34 @@
-﻿using Microsoft.Xna.Framework;
+﻿using DefendUranus.Activities;
+using DefendUranus.Entities;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace MonoGameLib.Core.Particles
 {
-    public class Particle
+    class Particle : GamePlayEntity
     {
-        #region Attributes
-        private int _currentState;
-        #endregion Attributes
+        #region Events
+        public event EventHandler OnDecay;
+        #endregion
 
         #region Properties
-        public Texture2D Texture { get; protected set; }
-        public Vector2 Position { get; protected set; }
-        public Vector2 Direction { get; protected set; }
-        public List<ParticleState> States { get; protected set; }
-        public float Speed { get; set; }
-        public float TimeAlive { get; set; }
         public float Opacity { get; set; }
-
-        public ParticleState CurrentState
-        {
-            get
-            {
-                if (_currentState < (States.Count - 1))
-                {
-                    if (States[_currentState + 1].StartTime < TimeAlive) _currentState++;
-                }
-
-                return States[_currentState];
-            }
-        }
         #endregion Properties
 
         #region Constructor
-        public Particle(string texture, Vector2 position, Vector2 direction, List<ParticleState> states)
+        public Particle(GamePlay level, string texture, Vector2 position, List<ParticleState> states)
+            : base(level, texture)
         {
-            Texture = GameContent.LoadContent<Texture2D>(texture);
+            InteractWithEntities = false;
             Position = position;
-            Direction = direction;
-            States = states;
-            _currentState = 0;
             Opacity = 1;
+            using (Level.DrawContext.Activate())
+                Animate(states);
         }
         #endregion Constructor
 
@@ -55,17 +39,44 @@ namespace MonoGameLib.Core.Particles
         }
         #endregion Particle Methos
 
-        #region Cycle Methods
-        public void Update(GameTime gameTime)
+        public override void Destroy()
         {
-            TimeAlive += gameTime.ElapsedGameTime.Milliseconds;
-            CalculatePosition();
+            Level.RemoveEntity(this);
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        private async void Animate(List<ParticleState> states)
         {
-            spriteBatch.Draw(Texture, Position, null, new Color(CurrentState.Color, Opacity), 0f, Vector2.Zero, CurrentState.Scale, SpriteEffects.None, 0 );
+            for (int i = 0; i < states.Count; i++)
+            {
+                var state = states[i];
+                var nextState = states.Count > i + 1 ? states[i + 1] : null;
+
+                Color = state.Color * Opacity;
+                Scale = new Vector2(state.Scale);
+
+                if (state.Duration <= 0)
+                    continue;
+
+                if (nextState == null)
+                    await Level.DrawContext.Delay(TimeSpan.FromMilliseconds(state.Duration));
+                else
+                {
+                    await TaskEx.WhenAll(
+                        Level.FloatAnimation((int)state.Duration, state.Scale, nextState.Scale, v => Scale = new Vector2(v)),
+                        Level.FloatAnimation((int)state.Duration, 0, 1, p =>
+                        {
+                            Color = Color.FromNonPremultiplied(
+                                r: (int)MathHelper.Lerp(state.Color.R, nextState.Color.R, p),
+                                g: (int)MathHelper.Lerp(state.Color.G, nextState.Color.G, p),
+                                b: (int)MathHelper.Lerp(state.Color.B, nextState.Color.B, p),
+                                a: (int)(MathHelper.Lerp(state.Color.A, nextState.Color.A, p) * Opacity)
+                            );
+                        }));
+                }
+            }
+            Level.RemoveEntity(this);
+            if (OnDecay != null)
+                OnDecay(this, EventArgs.Empty);
         }
-        #endregion Cycle Methods
     }
 }
