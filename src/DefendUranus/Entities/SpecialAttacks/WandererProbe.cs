@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MonoGameLib.Core.Particles;
 
 namespace DefendUranus.Entities.SpecialAttacks
 {
@@ -32,7 +33,7 @@ namespace DefendUranus.Entities.SpecialAttacks
 
             _seek = new Seek(this) { Target =  null };
             
-            //SteeringBehaviors.Add(_seek);
+            SteeringBehaviors.Add(_seek);
             SteeringBehaviors.Add(_wander);
         }
         #endregion
@@ -43,11 +44,11 @@ namespace DefendUranus.Entities.SpecialAttacks
             if (_seek.Target == null || !_seek.Target.Visible )
             {
                 var target = _owner.Level.Entities.OfType<PhysicsEntity>()
-                    .Where(s => s != _owner && s != this)
+                    .Where(s => s != _owner && s != this && !(s is Particle))
                     .OrderBy(s => (s.Position - Position).LengthSquared())
                     .FirstOrDefault();
 
-                if ( target != null && (target.Position - Position).LengthSquared() < 1600)
+                if ( target != null && (target.Position - Position).LengthSquared() < 32000)
                 {
                     _seek.Target = target;   
                 }
