@@ -121,8 +121,8 @@ namespace DefendUranus.Entities
                 new ParticleState { Color = new Color(_particleColor * 0.2f, 0), Scale = 3f }
             };
 
-            _thrustParticleEmiter = new ParticleEmiter(Level, "particles/spark.png", particleStates) { MillisecondsToEmit = 8f, OpeningAngle = 20f, ParticleSpeed = 1f };
-            _rotateParticleEmiter = new ParticleEmiter(Level, "particles/spark.png", particleStates) { MillisecondsToEmit = 8f, OpeningAngle = 10f, ParticleSpeed = 2f };
+            _thrustParticleEmiter = new ParticleEmiter(Level, "Particles/spark.png", particleStates) { MillisecondsToEmit = 8f, OpeningAngle = 20f, ParticleSpeed = 1f };
+            _rotateParticleEmiter = new ParticleEmiter(Level, "Particles/spark.png", particleStates) { MillisecondsToEmit = 8f, OpeningAngle = 10f, ParticleSpeed = 2f };
             #endregion Particle
         }
 

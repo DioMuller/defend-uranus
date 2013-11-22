@@ -47,7 +47,7 @@ namespace DefendUranus.Entities
                 new ParticleState { Color = new Color(_particleColor * 0.2f, 0), Scale = 3f }
             };
 
-            _particleEmiter = new ParticleEmiter(Level, "particles/spark.png", particleStates) { MillisecondsToEmit = 8f, OpeningAngle = 20f, ParticleSpeed = 1f };
+            _particleEmiter = new ParticleEmiter(Level, "Particles/spark.png", particleStates) { MillisecondsToEmit = 8f, OpeningAngle = 20f, ParticleSpeed = 1f };
             #endregion Particle
 
             Collided += OnCollided;
