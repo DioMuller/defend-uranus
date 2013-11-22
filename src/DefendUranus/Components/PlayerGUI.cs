@@ -20,7 +20,7 @@ namespace DefendUranus.Components
         #region Constructors
         public PlayerGUI(string name, Ship ship, Point position, Point size)
         {
-            const string font = "fonts/DefaultFont";
+            const string font = "Fonts/DefaultFont";
             const int itemMargin = 4;
             const int maxItemHeight = 31;
 
