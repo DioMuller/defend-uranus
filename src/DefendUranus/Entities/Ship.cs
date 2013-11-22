@@ -36,7 +36,7 @@ namespace DefendUranus.Entities
         /// How long does it take for the power to refill.
         /// Refill will only occur if the power is not in use.
         /// </summary>
-        static readonly TimeSpan FuelRegenTime = TimeSpan.FromSeconds(3);
+        static readonly TimeSpan FuelRegenTime = TimeSpan.FromSeconds(2);
         /// <summary>
         /// How much fuel is needed for automatic operations.
         /// RotationStabilizer is only applied when the fuel is not on reserve.
@@ -51,7 +51,7 @@ namespace DefendUranus.Entities
         {
             Reserve = (int)FuelReserve.TotalMilliseconds
         };
-        public readonly AutoRegenContainer MainWeaponAmmo = new AutoRegenContainer(20, TimeSpan.FromSeconds(2));
+        public readonly AutoRegenContainer MainWeaponAmmo = new AutoRegenContainer(20, TimeSpan.FromSeconds(5));
         public readonly AutoRegenContainer SpecialWeaponAmmo = new AutoRegenContainer(3, TimeSpan.FromSeconds(60));
 
         private ParticleEmiter _thrustParticleEmiter, _rotateParticleEmiter;
