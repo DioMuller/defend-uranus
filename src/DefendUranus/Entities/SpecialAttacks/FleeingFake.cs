@@ -33,17 +33,21 @@ namespace DefendUranus.Entities.SpecialAttacks
         #region Game Loop
         public override void Update(GameTime gameTime)
         {
-            if (_flee.Target == null)
+            #region Selects target
+            var target = _owner.Level.Entities.OfType<SpecialAttack>()
+               .Where(s => s != this && s.Visible)
+               .OrderBy(s => (s.Position - Position).LengthSquared())
+               .FirstOrDefault();
+
+            // If you got a new target...
+            if (target != null && _flee.Target != target)
             {
-                var target = _owner.Level.Entities.OfType<SteeringEntity>()
-                    .Where(s => s != this && s.Visible)
-                    .OrderBy(s => (s.Position - Position).LengthSquared())
-                    .FirstOrDefault();
-
+                //target.SteeringBehaviors.Clear();
+                target.SteeringBehaviors.Insert(0, new Pursuit(target) { Target = this });
                 _flee.Target = target;
-
-                target.SteeringBehaviors.Add(new Flee(target) { Target = this, PanicDistance = 3000f});
             }
+
+            #endregion Selects target
 
             base.Update(gameTime);
         }
