@@ -61,5 +61,14 @@ namespace DefendUranus.Helpers
                 newWidth,
                 newHeight);
         }
+
+        public static Vector2 Truncate(this Vector2 vector, float maxLength)
+        {
+            var lengthSquared = vector.LengthSquared();
+            if (lengthSquared <= maxLength * maxLength)
+                return vector;
+            vector.Normalize();
+            return  vector * maxLength;
+        }
     }
 }

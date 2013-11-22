@@ -5,6 +5,7 @@ using System.Text;
 using DefendUranus.SteeringBehaviors;
 using Microsoft.Xna.Framework;
 using DefendUranus.Activities;
+using DefendUranus.Helpers;
 
 namespace DefendUranus.Entities
 {
@@ -38,7 +39,7 @@ namespace DefendUranus.Entities
 
             foreach( SteeringBehavior sb in SteeringBehaviors )
             {
-                Vector2 force = sb.Calculate(gameTime);
+                Vector2 force = sb.Calculate(gameTime).Truncate(MaxSpeed);
                 float length = force.LengthSquared();
 
                 if (totalSpeed + length <= speedSquared)
