@@ -155,8 +155,8 @@ namespace DefendUranus.Helpers
             return new InputState
             {
                 Rotate = Math.Abs(state.ThumbSticks.Left.X) <= analogToDigital ? 0 : state.ThumbSticks.Left.X / 0.8f - 0.25f * rotDir,
-                Thrust = state.Triggers.Right - state.Triggers.Left,
-                FireMainWeapon = state.Buttons.B == ButtonState.Pressed,
+                Thrust = state.Triggers.Left - state.Triggers.Right,
+                FireMainWeapon = state.Buttons.A == ButtonState.Pressed,
                 FireSpecialWeapon = state.Buttons.X == ButtonState.Pressed,
 
                 Confirm = state.IsButtonDown(Buttons.Start),

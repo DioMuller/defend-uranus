@@ -79,9 +79,9 @@ namespace DefendUranus.Activities
             SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);
             SpriteBatch.Draw(_title, Vector2.Zero, scale: _scale);
 
-            SpriteBatch.DrawString(_font, "[ENTER/START]   New Game" , new Vector2(450, 50), Color.White );
-            SpriteBatch.DrawString(_font, "[F1/BIG BUTTON] Help" , new Vector2(450, 90), Color.White );
-            SpriteBatch.DrawString(_font, "[ESC/BACK]      Quit" , new Vector2(450, 130), Color.White );
+            SpriteBatch.DrawString(_font, "[ENTER/START] New Game" , new Vector2(450, 50), Color.White );
+            SpriteBatch.DrawString(_font, "[F1/Y]        Help" , new Vector2(450, 90), Color.White );
+            SpriteBatch.DrawString(_font, "[ESC/BACK]    Quit" , new Vector2(450, 130), Color.White );
 
                                                                         
             SpriteBatch.End();

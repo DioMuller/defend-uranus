@@ -160,7 +160,7 @@ namespace DefendUranus.Helpers
                 Confirm = state.IsButtonDown(Buttons.Start),
                 TogglePause = state.IsButtonDown(Buttons.Start),
                 Cancel = state.IsButtonDown(Buttons.Back),
-                Help = state.IsButtonDown(Buttons.BigButton),
+                Help = state.IsButtonDown(Buttons.Y),
                 Up = state.IsButtonDown(Buttons.DPadUp) || state.ThumbSticks.Left.Y > 0.4,
                 Down = state.IsButtonDown(Buttons.DPadDown) || state.ThumbSticks.Left.Y < -0.4,
                 Left = state.IsButtonDown(Buttons.DPadLeft) || state.ThumbSticks.Left.X < -0.4,
