@@ -36,8 +36,8 @@ namespace DefendUranus.Activities
         const float MaxZoomFactor = 2f;
         const float MinZoomFactor = 0.5f;
 
-        const float MinZoomDistance = 150;
-        const float MaxZoomDistance = 650;
+        const float MinZoomDistance = 250;
+        const float MaxZoomDistance = 750;
 
         public const float BackgroundSlideFactor = 0.05f;
         const float BackgroundMaxScale = 0.9f;
