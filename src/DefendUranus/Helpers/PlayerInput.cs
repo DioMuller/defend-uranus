@@ -148,7 +148,7 @@ namespace DefendUranus.Helpers
 
         InputState GetState(GamePadState state)
         {
-            const float analogToDigital = 0.4f;
+            const float analogToDigital = 0.8f;
 
             var rotDir = state.ThumbSticks.Left.X > 0 ? 1 : -1;
 
