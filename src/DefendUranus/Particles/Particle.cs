@@ -27,6 +27,7 @@ namespace MonoGameLib.Core.Particles
             InteractWithEntities = false;
             Position = position;
             Opacity = 1;
+            LayerDepth = 1;
             using (Level.DrawContext.Activate())
                 Animate(states);
         }

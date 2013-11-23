@@ -18,7 +18,7 @@ namespace DefendUranus.Helpers
                 Matrix.CreateScale(new Vector3(camera.ZoomFactor, camera.ZoomFactor, 1)) *
                 Matrix.CreateTranslation(new Vector3(gameViewport.Width * 0.5f, gameViewport.Height * 0.5f, 0));
 
-            spriteBatch.Begin(SpriteSortMode.Immediate,
+            spriteBatch.Begin(SpriteSortMode.BackToFront,
                         BlendState.NonPremultiplied,
                         null,
                         null,

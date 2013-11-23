@@ -97,7 +97,7 @@ namespace DefendUranus.Entities
         /// </summary>
         /// <param name="level">The level that will contain this Ship.</param>
         /// <param name="texturePath">The location of the ship's draw image.</param>
-        public Ship(GamePlay level, string texturePath, Color particleColor, int normalAmmo, int specialAmmo)
+        public Ship(GamePlay level, string texturePath, Color particleColor, float particleDuration, int normalAmmo, int specialAmmo)
             : base(level, texturePath)
         {
             Health = new Container(20);
@@ -117,7 +117,7 @@ namespace DefendUranus.Entities
             _particleColor = particleColor;
 
             List<ParticleState> particleStates = new List<ParticleState> {
-                new ParticleState { Color = _particleColor, Scale = 1f, Duration = 500f },
+                new ParticleState { Color = _particleColor, Scale = 1f, Duration = particleDuration },
                 new ParticleState { Color = new Color(_particleColor * 0.2f, 0), Scale = 3f }
             };
 
@@ -132,7 +132,7 @@ namespace DefendUranus.Entities
         /// <param name="level">The level that will contain this Ship.</param>
         /// <param name="description">The ship description details.</param>
         public Ship(GamePlay level, ShipDescription description)
-            : this(level, description.TexturePath, description.ParticleColor, description.NormalAmmo, description.SpecialAmmo)
+            : this(level, description.TexturePath, description.ParticleColor, description.ParticleDuration, description.NormalAmmo, description.SpecialAmmo)
         {
             Mass = description.Mass;
             MaxSpeed = description.MaxSpeed;
@@ -238,11 +238,13 @@ namespace DefendUranus.Entities
             {
                 _thrustParticleEmiter.Momentum = Momentum;
                 _thrustParticleEmiter.Intensity = Math.Abs(_accelerating);
+
                 if (!Visible)
                     _thrustParticleEmiter.Intensity *= InvisibleParticleIntensity;
+
+                _thrustParticleEmiter.Position = this.Position + new Vector2(0, 10 * _accelerating > 0? 1 : -1).RotateRadians(Rotation);
+                _thrustParticleEmiter.Direction = new Vector2(0, _accelerating > 0 ? 1 : -1).RotateRadians(Rotation);
             }
-            _thrustParticleEmiter.Position = this.Position;
-            _thrustParticleEmiter.Direction = new Vector2(0, _accelerating > 0 ? 1 : -1).RotateRadians(Rotation);
             _thrustParticleEmiter.Update(gameTime);
 
             _rotateParticleEmiter.Enabled = _rotating != 0;
@@ -250,11 +252,13 @@ namespace DefendUranus.Entities
             {
                 _rotateParticleEmiter.Momentum = Momentum;
                 _rotateParticleEmiter.Intensity = Math.Abs(_rotating);
+
                 if (!Visible)
                     _rotateParticleEmiter.Intensity *= InvisibleParticleIntensity;
+
+                _rotateParticleEmiter.Position = this.Position + new Vector2(0, -8).RotateRadians(Rotation);
+                _rotateParticleEmiter.Direction = new Vector2(_rotating < 0 ? 1 : -1, 0).RotateRadians(Rotation);
             }
-            _rotateParticleEmiter.Position = this.Position + new Vector2(0, -8).RotateRadians(Rotation);
-            _rotateParticleEmiter.Direction = new Vector2(_rotating < 0 ? 1 : -1, 0).RotateRadians(Rotation);
             _rotateParticleEmiter.Update(gameTime);
 
             #endregion Particles

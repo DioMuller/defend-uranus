@@ -64,6 +64,11 @@ namespace DefendUranus.Entities
         public Color ParticleColor { get; set; }
 
         /// <summary>
+        /// Propulsion particle duration.
+        /// </summary>
+        public float ParticleDuration { get; set; }
+
+        /// <summary>
         /// Normal ammo quantity.
         /// </summary>
         public int NormalAmmo { get; private set; }
