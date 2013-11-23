@@ -15,9 +15,8 @@ namespace DefendUranus.Entities.SpecialAttacks
 
         #region Constructors
         public FleeingFake(Ship owner, float lifetime)
-            : base(owner.Level, "Sprites/Fatboy-FleeingFake.png", Color.Yellow, owner, lifetime)
+            : base(owner, "Sprites/Fatboy-FleeingFake.png", Color.Yellow, lifetime)
         {
-            _owner = owner;
             RotateToMomentum = true;
             Momentum = Vector2.One;
             MaxSpeed = 10f;
@@ -34,8 +33,8 @@ namespace DefendUranus.Entities.SpecialAttacks
         public override void Update(GameTime gameTime)
         {
             #region Selects target
-            var target = _owner.Level.Entities.OfType<SpecialAttack>()
-               .Where(s => s != this && s.Visible)
+            var target = Level.Entities.OfType<SpecialAttack>()
+               .Where(s => s.Owner != Owner && s.Visible)
                .OrderBy(s => (s.Position - Position).LengthSquared())
                .FirstOrDefault();
 

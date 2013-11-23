@@ -15,9 +15,8 @@ namespace DefendUranus.Entities.SpecialAttacks
 
         #region Constructors
         public MeteoroidAlienform(Ship owner, float lifetime)
-            : base(owner.Level, "Sprites/Meteoroid-Alienform.png", Color.Green, owner, lifetime)
+            : base(owner, "Sprites/Meteoroid-Alienform.png", Color.Green, lifetime)
         {
-            _owner = owner;
             RotateToMomentum = true;
             Momentum = Vector2.One;
             MaxSpeed = 9f;
@@ -31,16 +30,16 @@ namespace DefendUranus.Entities.SpecialAttacks
         public override void Update(GameTime gameTime)
         {
             #region Selects target
-             var target = _owner.Level.Entities.OfType<SpecialAttack>()
-                .Where(s => s != this && s.Visible)
-                .OrderBy(s => (s.Position - Position).LengthSquared())
-                .FirstOrDefault();
+            var target = Level.Entities.OfType<SpecialAttack>()
+               .Where(s => s.Owner != Owner && s.Visible)
+               .OrderBy(s => (s.Position - Position).LengthSquared())
+               .FirstOrDefault();
 
             // If you got a new target...
             if (target != null && _pursuit.Target != target)
             {
                 //target.SteeringBehaviors.Clear();
-                target.SteeringBehaviors.Insert(0, new Flee(target) { PanicDistance = 10000f, Target = this});
+                target.SteeringBehaviors.Insert(0, new Flee(target) { PanicDistance = 10000f, Target = this });
                 _pursuit.Target = target;
             }
 

@@ -17,9 +17,8 @@ namespace DefendUranus.Entities.SpecialAttacks
 
         #region Constructors
         public WandererProbe(Ship owner, float lifetime)
-            : base(owner.Level, "Sprites/Explorer-WandererProbe.png", Color.CornflowerBlue, owner, lifetime)
+            : base(owner, "Sprites/Explorer-WandererProbe.png", Color.CornflowerBlue, lifetime)
         {
-            _owner = owner;
             RotateToMomentum = true;
             Momentum = Vector2.One;
             MaxSpeed = 12f;
@@ -43,8 +42,8 @@ namespace DefendUranus.Entities.SpecialAttacks
         {
             if (_seek.Target == null || !_seek.Target.Visible )
             {
-                var target = _owner.Level.Entities
-                    .Where(s => s != _owner && s != this && s.InteractWithEntities)
+                var target = Level.Entities
+                    .Where(s => s != Owner && (!(s is SpecialAttack) || ((SpecialAttack)s).Owner != Owner) && s.InteractWithEntities && s.Visible)
                     .OrderBy(s => (s.Position - Position).LengthSquared())
                     .FirstOrDefault();
 

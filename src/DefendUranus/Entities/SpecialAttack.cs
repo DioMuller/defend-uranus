@@ -18,15 +18,17 @@ namespace DefendUranus.Entities
     {
         #region Attributes
         private ParticleEmiter _particleEmiter;
-        protected Ship _owner;
         protected Color _particleColor;
         private float _vulnerabilityTime;
+
+        public Ship Owner;
         #endregion Attributes
 
         #region Constructor
-        public SpecialAttack(GamePlay level, string texturePath, Color particleColor, Ship owner, float lifetime)
-            : base(level)
+        public SpecialAttack(Ship owner, string texturePath, Color particleColor, float lifetime)
+            : base(owner.Level)
         {
+            Owner = owner;
             Sprite = new Sprite(texturePath, new Point(16, 16), 0);
             Sprite.Animations.Add(new Animation("default", 0, 0, 0));
             Sprite.Origin = new Vector2(Sprite.FrameSize.X, Sprite.FrameSize.Y) / 2;
@@ -34,8 +36,6 @@ namespace DefendUranus.Entities
 
             MaxRotationSpeed = 4;
             MaxSpeed = 12;
-
-            _owner = owner;
 
             _vulnerabilityTime = 300f;
 
