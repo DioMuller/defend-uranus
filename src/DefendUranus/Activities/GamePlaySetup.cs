@@ -198,15 +198,9 @@ namespace DefendUranus.Activities
         void CheckPlayerInput(SelectionDrawInfo info, PlayerInput input)
         {
             if (input.Right)
-            {
                 ShiftSelection(info, left: false);
-                SoundManager.PlaySound("Select01");
-            }
             else if (input.Left)
-            {
                 ShiftSelection(info, left: true);
-                SoundManager.PlaySound("Select01");
-            }
         }
         #endregion
 
@@ -313,6 +307,7 @@ namespace DefendUranus.Activities
         async void ShiftSelection(SelectionDrawInfo info, bool left)
         {
             if (info.ShiftingSelection) return;
+            SoundManager.PlaySound("Select01");
             info.ShiftingSelection = true;
 
             // Calcula próxima nave, de acordo com direção pressionada
