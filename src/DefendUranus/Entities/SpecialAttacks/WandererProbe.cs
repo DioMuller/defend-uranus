@@ -43,8 +43,8 @@ namespace DefendUranus.Entities.SpecialAttacks
         {
             if (_seek.Target == null || !_seek.Target.Visible )
             {
-                var target = _owner.Level.Entities.OfType<PhysicsEntity>()
-                    .Where(s => s != _owner && s != this && !(s is Particle))
+                var target = _owner.Level.Entities
+                    .Where(s => s != _owner && s != this && s.InteractWithEntities)
                     .OrderBy(s => (s.Position - Position).LengthSquared())
                     .FirstOrDefault();
 
