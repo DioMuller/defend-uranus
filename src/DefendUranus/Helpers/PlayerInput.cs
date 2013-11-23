@@ -152,9 +152,12 @@ namespace DefendUranus.Helpers
 
             var rotDir = state.ThumbSticks.Left.X > 0 ? 1 : -1;
 
+            var rotAnalog = Math.Abs(state.ThumbSticks.Left.X) <= analogToDigital ? 0 : state.ThumbSticks.Left.X / 0.8f - 0.25f * rotDir;
+            var rotDPad = (state.IsButtonDown(Buttons.DPadLeft) ? -1 : 0) + (state.IsButtonDown(Buttons.DPadRight) ? 1 : 0);
+
             return new InputState
             {
-                Rotate = Math.Abs(state.ThumbSticks.Left.X) <= analogToDigital ? 0 : state.ThumbSticks.Left.X / 0.8f - 0.25f * rotDir,
+                Rotate = MathHelper.Clamp(rotAnalog + rotDPad, -1, 1),
                 Thrust = state.Triggers.Left - state.Triggers.Right,
                 FireMainWeapon = state.Buttons.A == ButtonState.Pressed,
                 FireSpecialWeapon = state.Buttons.X == ButtonState.Pressed,
