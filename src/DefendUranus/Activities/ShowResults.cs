@@ -24,7 +24,12 @@ namespace DefendUranus.Activities
         public ShowResults(MainGame game, GamePlay.Result results)
             : base(game)
         {
-            var winnerMessage = "Player " + ( results.Winner + 1 ) + " Wins!";
+            string winnerMessage;
+            if (results.Winner < 0)
+                winnerMessage = "Everyone loses at war.";
+            else
+                winnerMessage = "Player " + ( results.Winner + 1 ) + " Wins!";
+
             _lblWinner = new Label(winnerMessage, "Fonts/BigFont")
             {
                 HorizontalOrigin = HorizontalAlign.Center,
