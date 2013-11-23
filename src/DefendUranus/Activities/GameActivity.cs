@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGameLib.Activities;
 using MonoGameLib.Core.Events;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
@@ -16,6 +17,25 @@ namespace DefendUranus.Activities
 {
     abstract class GameActivity<T> : Activity<T>
     {
+        #region Nested
+        class AnimationInfo
+        {
+            public TaskCompletionSource<bool> Completion;
+            public CancellationToken Cancellation;
+            public float CurrentDuration;
+            public float Duration;
+            public Action<float> ValueStep;
+            public float StartValue;
+            public float EndValue;
+            public TweeningFunction EasingFunction;
+
+            public void NotifyValue()
+            {
+                ValueStep(GetValue(CurrentDuration, Duration, StartValue, EndValue, EasingFunction));
+            }
+        }
+        #endregion
+
         #region Constants
         readonly Texture2D BlackTexture;
         #endregion
@@ -23,6 +43,7 @@ namespace DefendUranus.Activities
         #region Attributes
         float _screenOpacity = 1;
         CancellationTokenSource _fadeCancellation;
+        readonly List<AnimationInfo> _animations;
         #endregion
 
         #region Properties
@@ -35,6 +56,7 @@ namespace DefendUranus.Activities
         {
             BlackTexture = new Texture2D(game.GraphicsDevice, 1, 1);
             BlackTexture.SetData(new[] { Color.Black });
+            _animations = new List<AnimationInfo>();
         }
         #endregion
 
@@ -102,7 +124,7 @@ namespace DefendUranus.Activities
         #endregion
 
         #region Animations
-        public async Task FloatAnimation(int duration, float startValue, float endValue, Action<float> valueStep, TweeningFunction easingFunction = null, CancellationToken cancellationToken = default(CancellationToken))
+        public Task FloatAnimation(int duration, float startValue, float endValue, Action<float> valueStep, TweeningFunction easingFunction = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (duration <= 0)
                 throw new ArgumentOutOfRangeException("duration", "Duration must be greater than zero");
@@ -110,20 +132,47 @@ namespace DefendUranus.Activities
             if (valueStep == null)
                 throw new ArgumentNullException("valueStep");
 
-            Action<float> updateValue = dur =>
+            AnimationInfo info = new AnimationInfo
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                valueStep(GetValue(dur, duration, startValue, endValue, easingFunction));
+                Completion = new TaskCompletionSource<bool>(),
+                Cancellation = cancellationToken,
+                CurrentDuration = 0,
+                Duration = duration,
+                ValueStep = valueStep,
+                StartValue = startValue,
+                EndValue = endValue,
+                EasingFunction = easingFunction,
             };
 
-            float curDuration = 0;
-            do
+            if(cancellationToken != CancellationToken.None)
+                info.Cancellation.Register(() => info.Completion.TrySetCanceled());
+
+            if (_animations.Count == 0)
+                DrawContext.BeforeLoop += UpdateAnimations;
+
+            _animations.Add(info);
+            info.NotifyValue();
+            return info.Completion.Task;
+        }
+
+        void UpdateAnimations(object sender, GameLoopEventArgs e)
+        {
+            foreach(var anim in _animations.ToList())
             {
-                updateValue(curDuration);
-                var gt = await DrawContext.WaitNextLoop();
-                curDuration += (int)gt.ElapsedGameTime.TotalMilliseconds;
-            } while (curDuration < duration);
-            updateValue(curDuration);
+                anim.CurrentDuration += (float)e.GameTime.ElapsedGameTime.TotalMilliseconds;
+                if(anim.CurrentDuration > anim.Duration)
+                    anim.CurrentDuration = anim.Duration;
+                anim.NotifyValue();
+
+                if(anim.CurrentDuration == anim.Duration || anim.Cancellation.IsCancellationRequested)
+                {
+                    anim.Completion.TrySetResult(true);
+                    _animations.Remove(anim);
+                }
+            }
+
+            if (_animations.Count == 0)
+                DrawContext.BeforeLoop -= UpdateAnimations;
         }
 
         async Task FadeTo(float value, int completeDuration)
@@ -163,7 +212,7 @@ namespace DefendUranus.Activities
         #endregion
 
         #region Private
-        static float GetValue(float curDuration, int duration, float startValue, float endValue, TweeningFunction easing)
+        static float GetValue(float curDuration, float duration, float startValue, float endValue, TweeningFunction easing)
         {
             if (easing != null)
                 return easing(curDuration, startValue, endValue - startValue, duration);
