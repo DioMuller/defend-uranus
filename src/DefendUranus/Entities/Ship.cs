@@ -139,9 +139,11 @@ namespace DefendUranus.Entities
             RotationStabilizer = description.RotationStabilizer;
             SpecialAttack = description.SpecialAttack.Special;
 
-            Fuel = new AutoRegenContainer((int)description.FuelDuration.TotalMilliseconds, FuelRegenTime)
+            var fuel = (int)description.FuelDuration.TotalMilliseconds;
+            var minReserve = (int)FuelReserve.TotalMilliseconds;
+            Fuel = new AutoRegenContainer(fuel, FuelRegenTime)
             {
-                Reserve = (int)FuelReserve.TotalMilliseconds
+                Reserve = Math.Max((int)(fuel * 0.5f), minReserve)
             };
         }
         #endregion
@@ -167,16 +169,19 @@ namespace DefendUranus.Entities
 
             if (Math.Abs(force) <= 0.1f)
             {
+                if(!Fuel.IsOnReserve)
+                     _useReserve = true;
+
                 if (Math.Abs(AngularMomentum) < 0.01f)
                 {
-                    _useReserve = false;
                     AngularMomentum = 0;
                     return;
                 }
-                if (Fuel.IsOnReserve && !_useReserve) return;
+                if (!_useReserve) return;
                 force = MathHelper.Clamp(-AngularMomentum * RotationStabilizer, -1, 1);
-                _useReserve = true;
             }
+            else
+                _useReserve = !Fuel.IsOnReserve;
 
             var fuelNeeded = (int)(gameTime.ElapsedGameTime.TotalMilliseconds * Math.Abs(force));
 

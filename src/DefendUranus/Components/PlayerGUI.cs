@@ -95,7 +95,11 @@ namespace DefendUranus.Components
             return new Color(0, 1, 0, alpha); /*/
 
             // Dynamic color
-            var ratio = container.Quantity / (float)container.Maximum;
+            float ratio;
+            if (container.Reserve != null)
+                ratio = (float)(container.Quantity - container.Reserve) / (float)(container.Maximum - container.Reserve);
+            else
+                ratio = container.Quantity / (float)container.Maximum;
 
             return new Color(
                 r: MathHelper.Clamp((1 - ratio) * 2, 0, 1),
