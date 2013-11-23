@@ -167,7 +167,7 @@ namespace DefendUranus.Entities
 
             _rotating = 0;
 
-            if (Math.Abs(force) <= 0.1f)
+            if (Math.Abs(force) <= 0.3f)
             {
                 if(!Fuel.IsOnReserve)
                      _useReserve = true;
