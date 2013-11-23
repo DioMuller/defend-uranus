@@ -178,7 +178,7 @@ namespace DefendUranus.Activities
         protected override void Update(GameTime gameTime)
         {
             _duration += gameTime.ElapsedGameTime;
-            //_gameInput.Update();
+            _gameInput.Update();
 
             if (IsGameEnded())
                 return;
@@ -270,7 +270,7 @@ namespace DefendUranus.Activities
         bool IsGameEnded()
         {
             // Check game abort
-            if (_gameInput.Cancel)
+            if (_gameInput.AbortGamePlay)
             {
                 Exit(new Result { Aborted = true });
                 return true;

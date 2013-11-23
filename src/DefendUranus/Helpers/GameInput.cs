@@ -29,6 +29,10 @@ namespace DefendUranus.Helpers
             /// </summary>
             public bool Cancel;
             /// <summary>
+            /// The user wants to abort the game.
+            /// </summary>
+            public bool AbortGamePlay;
+            /// <summary>
             /// The user is moving the cursor up.
             /// </summary>
             public bool Up;
@@ -92,6 +96,14 @@ namespace DefendUranus.Helpers
             {
                 return _lastState != null &&
                     !_lastState.Value.Cancel && _state.Value.Cancel;
+            }
+        }
+        public bool AbortGamePlay
+        {
+            get
+            {
+                return _lastState != null &&
+                    !_lastState.Value.AbortGamePlay && _state.Value.AbortGamePlay;
             }
         }
         public bool Up
@@ -160,6 +172,7 @@ namespace DefendUranus.Helpers
                 Confirm = state.IsButtonDown(Buttons.Start) || state.IsButtonDown(Buttons.A),
                 TogglePause = state.IsButtonDown(Buttons.Start),
                 Cancel = state.IsButtonDown(Buttons.Back) || state.IsButtonDown(Buttons.B),
+                AbortGamePlay = state.IsButtonDown(Buttons.Back),
                 Help = state.IsButtonDown(Buttons.Y),
                 Up = state.IsButtonDown(Buttons.DPadUp) || state.ThumbSticks.Left.Y > 0.4,
                 Down = state.IsButtonDown(Buttons.DPadDown) || state.ThumbSticks.Left.Y < -0.4,
@@ -175,6 +188,7 @@ namespace DefendUranus.Helpers
                 Confirm = state.IsKeyDown(Keys.Enter),
                 TogglePause = state.IsKeyDown(Keys.Pause),
                 Cancel = state.IsKeyDown(Keys.Escape),
+                AbortGamePlay = state.IsKeyDown(Keys.Escape),
                 Help = state.IsKeyDown(Keys.F1),
                 Up = state.IsKeyDown(Keys.Up),
                 Down = state.IsKeyDown(Keys.Down),
